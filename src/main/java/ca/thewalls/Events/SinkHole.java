@@ -9,8 +9,9 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import ca.thewalls.Arena;
 import ca.thewalls.Config;
-import ca.thewalls.TheWalls;
+import ca.thewalls.Messages;
 import ca.thewalls.Utils;
 import ca.thewalls.Walls.TempBlock;
 
@@ -22,13 +23,13 @@ class SinkHoleHandler {
     private int taskID = 0;
     private boolean sunk = false;
     private final ArrayList<TempBlock> blocks = new ArrayList<>();
-    TheWalls walls;
+    Arena arena;
 
-    public SinkHoleHandler(Player p, TheWalls walls) {
+    public SinkHoleHandler(Player p, Arena arena) {
         this.p = p;
-        this.walls = walls;
+        this.arena = arena;
 
-        ArmorStand stand = (ArmorStand) this.walls.world.world.spawnEntity(p.getLocation().subtract(0, 2, 0), EntityType.ARMOR_STAND);
+        ArmorStand stand = (ArmorStand) this.arena.getWorld().world.spawnEntity(p.getLocation().subtract(0, 2, 0), EntityType.ARMOR_STAND);
         stand.setVisible(false);
         stand.setGravity(false);
         stand.setSmall(true);
@@ -40,17 +41,17 @@ class SinkHoleHandler {
         taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Utils.getPlugin(), () -> {
 
             stand.setCustomNameVisible(true);
-            stand.setCustomName(Utils.formatText("&0&lSink Hole &r- &c&l" + timer + "s"));
+            stand.customName(Utils.format("&0&lSink Hole &r- &c&l" + timer + "s"));
 
             if (timer <= 0 && !sunk) {
                 stand.remove();
                 for (int x = -size; x < (size + 1); x++) {
                     for (int z = -size; z < (size + 1); z++) {
                         for (int y = -64; y < 325; y++) {
-                            if (this.walls.world.world.getBlockAt(playerLoc.getBlockX() + x, y, playerLoc.getBlockZ() + z).getType() == Material.AIR) continue;
-                            Block temp = this.walls.world.world.getBlockAt(playerLoc.getBlockX() + x, y, playerLoc.getBlockZ() + z);
+                            if (this.arena.getWorld().world.getBlockAt(playerLoc.getBlockX() + x, y, playerLoc.getBlockZ() + z).getType() == Material.AIR) continue;
+                            Block temp = this.arena.getWorld().world.getBlockAt(playerLoc.getBlockX() + x, y, playerLoc.getBlockZ() + z);
                             blocks.add(new TempBlock(temp.getLocation(), temp.getType()));
-                            this.walls.world.world.getBlockAt(playerLoc.getBlockX() + x, y, playerLoc.getBlockZ() + z).setType(Material.AIR);
+                            this.arena.getWorld().world.getBlockAt(playerLoc.getBlockX() + x, y, playerLoc.getBlockZ() + z).setType(Material.AIR);
                         }
                     }
                 }
@@ -59,7 +60,7 @@ class SinkHoleHandler {
 
             if (timer <= -Config.data.getInt("events.sinkHole.timeUntilReset") && sunk && blocks.size() >= 1) {
                 for (TempBlock b : blocks) {
-                    this.walls.world.world.getBlockAt(b.loc).setType(b.block);
+                    this.arena.getWorld().world.getBlockAt(b.loc).setType(b.block);
                 }
                 Bukkit.getScheduler().cancelTask(taskID);
             }
@@ -71,17 +72,17 @@ class SinkHoleHandler {
 
 public class SinkHole extends Event {
 
-    public SinkHole(String eventName, TheWalls walls) {
-        super(eventName, walls);
+    public SinkHole(String eventName, Arena arena) {
+        super(eventName, arena);
     }
 
     @Override
     public void run() {
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : this.arena.getPlayers()) {
             p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_GUITAR, 255, 1);
-            p.sendMessage(Utils.formatText("&0&lSink Hole&r&c opening in " + Config.data.getInt("events.sinkHole.seconds") + "s!"));
+            p.sendMessage(Messages.msg("events.sinkhole_in", java.util.Map.of("seconds", String.valueOf(Config.data.getInt("events.sinkHole.seconds")))));
             if (!Utils.isAlive(p)) continue;
-            new SinkHoleHandler(p, this.walls);
+            new SinkHoleHandler(p, this.arena);
         }
     }
 }

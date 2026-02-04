@@ -6,28 +6,29 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import ca.thewalls.Arena;
 import ca.thewalls.Config;
-import ca.thewalls.TheWalls;
+import ca.thewalls.Messages;
 import ca.thewalls.Utils;
 
 class HailStormHandler {
     Player p;
     int taskID = 0;
     int timer = Config.data.getInt("events.hailStorm.delay");
-    TheWalls walls;
+    Arena arena;
 
-    public HailStormHandler(Player p, TheWalls walls) {
+    public HailStormHandler(Player p, Arena arena) {
         this.p = p;
-        this.walls = walls;
+        this.arena = arena;
 
         taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Utils.getPlugin(), () -> {
             if (timer <= 0) {
-                p.sendMessage(Utils.formatText("&l&3Hail of Arrows incoming!"));
+                p.sendMessage(Messages.msg("events.hailstorm_now"));
 
                 int amountOfArrows = Config.data.getInt("events.hailStorm.volleySize");
                 for (int x = -amountOfArrows; x < amountOfArrows; x++) {
                     for (int z = -amountOfArrows; z < amountOfArrows; z++) {
-                        Arrow tempArrow = (Arrow) this.walls.world.world.spawnEntity(p.getLocation().add(x, Config.data.getInt("events.hailStorm.height"), z), EntityType.ARROW);
+                        Arrow tempArrow = (Arrow) this.arena.getWorld().world.spawnEntity(p.getLocation().add(x, Config.data.getInt("events.hailStorm.height"), z), EntityType.ARROW);
                         tempArrow.setCritical(true);
                         tempArrow.setDamage(Config.data.getInt("events.hailStorm.arrowDamage"));
                     }
@@ -41,17 +42,17 @@ class HailStormHandler {
 }
 
 public class HailStorm extends Event {
-    public HailStorm(String eventName, TheWalls walls) {
-        super(eventName, walls);
+    public HailStorm(String eventName, Arena arena) {
+        super(eventName, arena);
     }
 
     @Override
     public void run() {
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : this.arena.getPlayers()) {
             p.playSound(p.getLocation(), Sound.ENTITY_ARROW_SHOOT, 255, 1);
-            p.sendMessage(Utils.formatText("&1A &3&lHail of Arrows&r&1 is dropping in " + Config.data.getInt("events.hailStorm.delay") + " seconds!"));
+            p.sendMessage(Messages.msg("events.hailstorm_in", java.util.Map.of("seconds", String.valueOf(Config.data.getInt("events.hailStorm.delay")))));
             if (!Utils.isAlive(p)) continue;
-            new HailStormHandler(p, this.walls);
+            new HailStormHandler(p, this.arena);
         }
     }
 }

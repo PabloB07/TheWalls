@@ -11,8 +11,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import ca.thewalls.Arena;
 import ca.thewalls.Config;
-import ca.thewalls.TheWalls;
+import ca.thewalls.Messages;
 import ca.thewalls.Utils;
 import ca.thewalls.Walls.Team;
 
@@ -25,19 +26,23 @@ class BossManRunn implements Runnable {
     }
     
     public void run() {
-        if (!this.handler.walls.game.started) {
+        if (!this.handler.arena.getGame().started) {
             handler.boss.setHealth(0);
             Bukkit.getServer().getScheduler().cancelTask(handler.taskID);
             return;
         }
         if (handler.boss.isDead()) {
-            for (Player p : Bukkit.getOnlinePlayers()) {
+            for (Player p : handler.arena.getPlayers()) {
                 p.playSound(handler.ply.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 255, 1);
-                p.sendMessage(Utils.formatText("&l" + Team.getPlayerTeam(p, this.handler.walls.game.teams).teamColor + p.getName() + "&r&5 has slain a " + Config.data.getString("events.bossMan.name") + "!"));
+                p.sendMessage(Messages.msg("events.bossman_slain", java.util.Map.of(
+                        "team", Team.getPlayerTeam(p, this.handler.arena.getGame().teams).teamColor,
+                        "player", p.getName(),
+                        "name", String.valueOf(Config.data.getString("events.bossMan.name"))
+                )));
             }
             Bukkit.getServer().getScheduler().cancelTask(handler.taskID);
         } else {
-            handler.boss.setCustomName(Utils.formatText("&c&l" + Config.data.getString("events.bossMan.name") + ": " + Math.round(handler.boss.getHealth()) + " HP"));
+            handler.boss.customName(Utils.format("&c&l" + Config.data.getString("events.bossMan.name") + ": " + Math.round(handler.boss.getHealth()) + " HP"));
             handler.boss.setTarget(handler.ply);
         }
     }
@@ -47,18 +52,21 @@ class BossManHandler {
     Player ply;
     Zombie boss;
     int taskID;
-    TheWalls walls;
+    Arena arena;
 
-    public BossManHandler(Player p, TheWalls walls) {
-        this.walls = walls;
+    public BossManHandler(Player p, Arena arena) {
+        this.arena = arena;
         this.ply = p;
         ply.playSound(ply.getLocation(), Sound.ENTITY_ZOMBIE_AMBIENT, 255, 1);
-        ply.sendMessage(Utils.formatText("&c&l" + Config.data.getString("events.bossMan.name") + " is about to spawn! You have " + Config.data.getInt("events.bossMan.prepTime") + "s to prepare!"));
+        ply.sendMessage(Messages.msg("events.bossman_spawn", java.util.Map.of(
+                "name", String.valueOf(Config.data.getString("events.bossMan.name")),
+                "seconds", String.valueOf(Config.data.getInt("events.bossMan.prepTime"))
+        )));
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Utils.getPlugin(), new Runnable() {
             public void run() {
                 boss = (Zombie) p.getWorld().spawnEntity(p.getLocation().add(Math.random() * 2, Math.random() * 2, Math.random() * 2), EntityType.ZOMBIE, false);
-                boss.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 999999999, 3, false));
-                boss.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 999999999, Config.data.getInt("events.bossMan.resistance")));
+                boss.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 999999999, 3, false));
+                boss.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 999999999, Config.data.getInt("events.bossMan.resistance")));
                 boss.setTarget(ply);
                 boss.setAdult();
                 boss.setRemoveWhenFarAway(false);
@@ -66,20 +74,20 @@ class BossManHandler {
 
                 // Create items
                 ItemStack helm = new ItemStack(Material.DIAMOND_HELMET, 1);
-                helm.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, Config.data.getInt("events.bossMan.protectionLevel"));
-                helm.addUnsafeEnchantment(Enchantment.DURABILITY, 5);
+                helm.addUnsafeEnchantment(Enchantment.PROTECTION, Config.data.getInt("events.bossMan.protectionLevel"));
+                helm.addUnsafeEnchantment(Enchantment.UNBREAKING, 5);
                 ItemStack chest = new ItemStack(Material.DIAMOND_CHESTPLATE, 1);
-                chest.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, Config.data.getInt("events.bossMan.protectionLevel"));
-                chest.addUnsafeEnchantment(Enchantment.DURABILITY, 5);
+                chest.addUnsafeEnchantment(Enchantment.PROTECTION, Config.data.getInt("events.bossMan.protectionLevel"));
+                chest.addUnsafeEnchantment(Enchantment.UNBREAKING, 5);
                 ItemStack pants = new ItemStack(Material.DIAMOND_LEGGINGS, 1);
-                pants.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, Config.data.getInt("events.bossMan.protectionLevel"));
-                pants.addUnsafeEnchantment(Enchantment.DURABILITY, 5);
+                pants.addUnsafeEnchantment(Enchantment.PROTECTION, Config.data.getInt("events.bossMan.protectionLevel"));
+                pants.addUnsafeEnchantment(Enchantment.UNBREAKING, 5);
                 ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS, 1);
-                boots.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, Config.data.getInt("events.bossMan.protectionLevel"));
-                boots.addUnsafeEnchantment(Enchantment.DURABILITY, 5);
+                boots.addUnsafeEnchantment(Enchantment.PROTECTION, Config.data.getInt("events.bossMan.protectionLevel"));
+                boots.addUnsafeEnchantment(Enchantment.UNBREAKING, 5);
                 ItemStack sword = new ItemStack(Material.DIAMOND_SWORD, 1);
-                sword.addUnsafeEnchantment(Enchantment.DURABILITY, 5);
-                sword.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 5);
+                sword.addUnsafeEnchantment(Enchantment.UNBREAKING, 5);
+                sword.addUnsafeEnchantment(Enchantment.SHARPNESS, 5);
                 sword.addUnsafeEnchantment(Enchantment.KNOCKBACK, 3);
                 sword.addUnsafeEnchantment(Enchantment.FIRE_ASPECT, 2);
 
@@ -104,15 +112,15 @@ class BossManHandler {
 
 public class BossMan extends Event {
 
-    public BossMan(String eventName, TheWalls walls) {
-        super(eventName, walls);
+    public BossMan(String eventName, Arena arena) {
+        super(eventName, arena);
     }
 
     @Override
     public void run() {
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : this.arena.getPlayers()) {
             if (!Utils.isAlive(p)) continue;
-            new BossManHandler(p, this.walls);
+            new BossManHandler(p, this.arena);
         }
     }
     

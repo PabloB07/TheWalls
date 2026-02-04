@@ -1,6 +1,5 @@
 package ca.thewalls.Events;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -14,9 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 
+import ca.thewalls.Arena;
 import ca.thewalls.Config;
-import ca.thewalls.TheWalls;
-import ca.thewalls.Utils;
+import ca.thewalls.Messages;
 import ca.thewalls.Walls.TempBlock;
 
 import java.util.ArrayList;
@@ -63,8 +62,8 @@ public class SupplyChest extends Event{
     };
     ArrayList<ItemStack[]> chests = new ArrayList<>();
 
-    public SupplyChest(String eventName, TheWalls walls) {
-        super(eventName, walls);
+    public SupplyChest(String eventName, Arena arena) {
+        super(eventName, arena);
         chests.add(enchantChest);
         chests.add(gearChest);
         chests.add(griefChest);
@@ -74,24 +73,24 @@ public class SupplyChest extends Event{
     @Override
     public void run() {
         double reducer = 1 - Config.data.getDouble("events.supplyChest.allowedRegionPercentageOfSize");
-        int[] positionOne = new int[]{(int) (this.walls.world.positionOne[0] - (this.walls.game.size * reducer)), (int) (this.walls.world.positionOne[1] - (this.walls.game.size * reducer))};
-        int[] positionTwo = new int[]{(int) (this.walls.world.positionTwo[0] + (this.walls.game.size * reducer)), (int) (this.walls.world.positionTwo[1] + (this.walls.game.size * reducer))};
+        int[] positionOne = new int[]{(int) (this.arena.getWorld().positionOne[0] - (this.arena.getGame().size * reducer)), (int) (this.arena.getWorld().positionOne[1] - (this.arena.getGame().size * reducer))};
+        int[] positionTwo = new int[]{(int) (this.arena.getWorld().positionTwo[0] + (this.arena.getGame().size * reducer)), (int) (this.arena.getWorld().positionTwo[1] + (this.arena.getGame().size * reducer))};
 
         Random rand = new Random();
         int randX = rand.nextInt(positionOne[0] - positionTwo[0]) + positionTwo[0];
         int randZ = rand.nextInt(positionOne[1] - positionTwo[1]) + positionTwo[1];
-        int y = this.walls.world.world.getHighestBlockYAt(randX, randZ);
+        int y = this.arena.getWorld().world.getHighestBlockYAt(randX, randZ);
 
-        Location chestLoc = new Location(this.walls.world.world, randX, y + 1, randZ);
+        Location chestLoc = new Location(this.arena.getWorld().world, randX, y + 1, randZ);
         TempBlock t = new TempBlock(chestLoc, chestLoc.getBlock().getType());
-        this.walls.world.originalBlocks.add(t); // Used for world resetting after the game finishes
+        this.arena.getWorld().originalBlocks.add(t); // Used for world resetting after the game finishes
       
         chestLoc.getBlock().setType(Material.CHEST);
         Chest chest = (Chest) chestLoc.getBlock().getState();
         int chestInv = rand.nextInt(chests.size());
         chest.getInventory().setContents(chests.get(chestInv));
 
-        Firework firework = (Firework) this.walls.world.world.spawnEntity(chestLoc.add(0, 4, 0), EntityType.FIREWORK);
+        Firework firework = (Firework) this.arena.getWorld().world.spawnEntity(chestLoc.add(0, 4, 0), EntityType.FIREWORK_ROCKET);
         FireworkMeta meta = firework.getFireworkMeta();
         FireworkEffect.Builder fwb = FireworkEffect.builder();
         fwb.flicker(true);
@@ -102,10 +101,10 @@ public class SupplyChest extends Event{
         meta.addEffect(fwb.build());
         firework.setFireworkMeta(meta);
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : this.arena.getPlayers()) {
             p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 255, 1);
             p.playSound(chestLoc, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 255, 1);
-            p.sendMessage(Utils.formatText("&2A Supply Chest has spawned near the center of the map!"));
+            p.sendMessage(Messages.msg("events.supply_chest"));
         }
     }
 }

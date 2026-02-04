@@ -11,8 +11,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import ca.thewalls.TheWalls;
-import ca.thewalls.Utils;
+import ca.thewalls.Messages;
 import ca.thewalls.Walls.Team;
+import net.kyori.adventure.text.Component;
 
 public class PlayerDeath implements Listener {
     public TheWalls walls;
@@ -23,26 +24,32 @@ public class PlayerDeath implements Listener {
     
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerDeath(PlayerDeathEvent e) {
-        if (!this.walls.game.started) return;
-        e.setDeathMessage("");
+        ca.thewalls.Arena arena = this.walls.getArenaByPlayer(e.getEntity());
+        if (arena == null) return;
+        if (!arena.getGame().started) return;
+        e.deathMessage(Component.empty());
 
         Player ply = e.getEntity();
         ply.setGameMode(GameMode.SPECTATOR);
-        Team temp = Team.getPlayerTeam(ply, this.walls.game.teams);
+        Team temp = Team.getPlayerTeam(ply, arena.getGame().teams);
         if (temp == null) {
-            Bukkit.broadcastMessage(Utils.formatText("&c" + ply.getName() + " has been eliminated from The Walls!"));
+            for (Player p : arena.getPlayers()) {
+                p.sendMessage(Messages.msg("death.eliminated", java.util.Map.of("player", ply.getName())));
+            }
         } else {
-            Bukkit.broadcastMessage(Utils.formatText(temp.teamColor + ply.getName() + " &r&chas been eliminated from The Walls!"));
+            for (Player p : arena.getPlayers()) {
+                p.sendMessage(Messages.msg("death.eliminated_team", java.util.Map.of("team", temp.teamColor, "player", ply.getName())));
+            }
         }
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : arena.getPlayers()) {
             p.playSound(ply.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 100, 1);
-            LightningStrike strike = this.walls.world.world.strikeLightning(ply.getLocation().add(0, 15, 0));
+            LightningStrike strike = arena.getWorld().world.strikeLightning(ply.getLocation().add(0, 15, 0));
             strike.setVisualFire(false);
             strike.setFireTicks(0);
         }
 
-        this.walls.utils.checkWinner();
+        arena.getUtils().checkWinner();
     }
 
 }

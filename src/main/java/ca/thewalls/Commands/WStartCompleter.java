@@ -21,7 +21,10 @@ public class WStartCompleter implements TabCompleter {
             return Collections.emptyList();
         }
         if (args.length == 1) {
-            return Collections.singletonList("size");
+            java.util.List<String> options = new java.util.ArrayList<>();
+            options.addAll(walls.arenas.getArenas().keySet());
+            options.add("size");
+            return options;
         }
         if (args.length == 2) {
             return Collections.singletonList("prepTime");

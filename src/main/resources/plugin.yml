@@ -1,17 +1,59 @@
 name: TheWalls
 version: '${project.version}'
 main: ca.thewalls.TheWalls
-api-version: 1.19
+api-version: 1.21
 authors: [ CKAY9 ]
 description: Play The Walls in any Minecraft world
+softdepend: [HologramLib, PacketEvents]
 commands:
   wstart:
     description: Start a new game of The Walls
+    usage: /wstart [arena] [size] [prepTime] [borderCloseTime] [borderCloseSpeed] [eventCooldown]
   wend:
     description: End the ongoing game of The Walls
+    usage: /wend [arena]
   wforceteam:
     description: Switch/Respawn a player to a team
+    usage: /wforceteam <player> <team>
   wleaderboard:
     description: Get the top 5 best players
+    usage: /wleaderboard
   wevents:
     description: Get the active events for The Walls
+    usage: /wevents
+  wreload:
+    description: Reload The Walls config and messages
+    usage: /wreload
+  walls:
+    description: The Walls main command
+    aliases: [w]
+    usage: /walls [list|join|leave|team|lobby|sign|arena]
+permissions:
+  thewalls.start:
+    default: op
+  thewalls.end:
+    default: op
+  thewalls.forceteam:
+    default: op
+  thewalls.reload:
+    default: op
+  thewalls.leaderboard:
+    default: true
+  thewalls.events:
+    default: true
+  thewalls.walls.list:
+    default: true
+  thewalls.walls.join:
+    default: true
+  thewalls.walls.leave:
+    default: true
+  thewalls.walls.team:
+    default: true
+  thewalls.walls.lobby:
+    default: op
+  thewalls.walls.sign:
+    default: op
+  thewalls.walls:
+    default: true
+  thewalls.walls.arena:
+    default: op

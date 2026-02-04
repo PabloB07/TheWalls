@@ -17,8 +17,11 @@ public class EntityDamage implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageEvent e) {
-        if (!this.walls.game.started) return;
-        if (e.getCause() == EntityDamageEvent.DamageCause.LIGHTNING && e.getEntity() instanceof Player) {
+        if (!(e.getEntity() instanceof Player)) return;
+        ca.thewalls.Arena arena = this.walls.getArenaByPlayer((Player) e.getEntity());
+        if (arena == null) return;
+        if (!arena.getGame().started) return;
+        if (e.getCause() == EntityDamageEvent.DamageCause.LIGHTNING) {
             e.setCancelled(true);
         }
     }

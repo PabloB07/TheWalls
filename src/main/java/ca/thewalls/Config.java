@@ -1,6 +1,8 @@
 package ca.thewalls;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -13,6 +15,8 @@ public class Config {
     public static YamlConfiguration data;
     public static File leaderboardFile;
     public static YamlConfiguration leaderboard;
+    public static File lobbiesFile;
+    public static YamlConfiguration lobbies;
 
     public static void initializeData() {
         try {
@@ -139,6 +143,17 @@ public class Config {
                 data.set("theWalls.autoExecute.speedOfBorderClose", 180);
                 data.set("theWalls.autoExecute.worldName", "world");
             }
+            if (!data.isSet("lobby.minPlayers")) {
+                data.set("lobby.minPlayers", 2);
+            }
+            if (!data.isSet("lobby.countdownSeconds")) {
+                data.set("lobby.countdownSeconds", 20);
+            }
+            if (!data.isSet("lobby.items.enabled")) {
+                data.set("lobby.items.enabled", true);
+                data.set("lobby.items.teamSelectorSlot", 0);
+                data.set("lobby.items.leaveSlot", 8);
+            }
             if (!data.isSet("events.bossMan.enabled")) {
                 data.set("events.bossMan.enabled", true);
                 data.set("events.bossMan.prepTime", 3);
@@ -183,6 +198,11 @@ public class Config {
                 data.set("events.bombingRun.alertTime", 5);
                 data.set("events.bombingRun.detonationtime", 10);
             }
+            if (!data.isSet("arenas.list")) {
+                java.util.List<String> list = new java.util.ArrayList<>();
+                list.add("main");
+                data.set("arenas.list", list);
+            }
 
             data.save(dataFile);
 
@@ -196,6 +216,18 @@ public class Config {
                 }
             }
             leaderboard = YamlConfiguration.loadConfiguration(leaderboardFile);
+
+            lobbiesFile = new File(Utils.getPlugin().getDataFolder(), "lobbies.yml");
+            if (!lobbiesFile.exists()) {
+                if (lobbiesFile.getParentFile().mkdirs()) {
+                    Utils.getPlugin().getLogger().info("Created data folder!");
+                }
+                if (lobbiesFile.createNewFile()) {
+                    Utils.getPlugin().getLogger().info("Created lobbies file!");
+                }
+            }
+            lobbies = YamlConfiguration.loadConfiguration(lobbiesFile);
+            migrateLobbiesFromConfig();
 
             for (Player p : Bukkit.getOnlinePlayers()) {
                 createLeaderboardPlayer(p);
@@ -216,6 +248,200 @@ public class Config {
 
         try {
             Config.leaderboard.save(Config.leaderboardFile);
+        } catch (IOException ex) {
+            Utils.getPlugin().getLogger().warning(ex.toString());
+        }
+    }
+
+    public static void setArenaLobby(String arenaName, Location loc) {
+        if (arenaName == null || loc == null) return;
+        String key = "arenas." + arenaName.toLowerCase() + ".lobby";
+        if (lobbies == null) return;
+        lobbies.set(key + ".world", loc.getWorld().getName());
+        lobbies.set(key + ".x", loc.getX());
+        lobbies.set(key + ".y", loc.getY());
+        lobbies.set(key + ".z", loc.getZ());
+        lobbies.set(key + ".yaw", loc.getYaw());
+        lobbies.set(key + ".pitch", loc.getPitch());
+        try {
+            lobbies.save(lobbiesFile);
+        } catch (IOException ex) {
+            Utils.getPlugin().getLogger().warning(ex.toString());
+        }
+    }
+
+    public static Location getArenaLobby(String arenaName) {
+        if (arenaName == null) return null;
+        String key = "arenas." + arenaName.toLowerCase() + ".lobby";
+        if (lobbies == null) return null;
+        if (!lobbies.isSet(key + ".world")) return null;
+        World world = Bukkit.getWorld(lobbies.getString(key + ".world"));
+        if (world == null) return null;
+        double x = lobbies.getDouble(key + ".x");
+        double y = lobbies.getDouble(key + ".y");
+        double z = lobbies.getDouble(key + ".z");
+        float yaw = (float) lobbies.getDouble(key + ".yaw");
+        float pitch = (float) lobbies.getDouble(key + ".pitch");
+        return new Location(world, x, y, z, yaw, pitch);
+    }
+
+    public static void removeArenaLobby(String arenaName) {
+        if (arenaName == null || lobbies == null) return;
+        String key = "arenas." + arenaName.toLowerCase() + ".lobby";
+        lobbies.set(key, null);
+        try {
+            lobbies.save(lobbiesFile);
+        } catch (IOException ex) {
+            Utils.getPlugin().getLogger().warning(ex.toString());
+        }
+    }
+
+    public static void setPlayerArena(java.util.UUID uuid, String arenaName) {
+        if (uuid == null) return;
+        if (arenaName == null || arenaName.isEmpty()) {
+            data.set("players." + uuid + ".arena", null);
+        } else {
+            data.set("players." + uuid + ".arena", arenaName.toLowerCase());
+        }
+        try {
+            data.save(dataFile);
+        } catch (IOException ex) {
+            Utils.getPlugin().getLogger().warning(ex.toString());
+        }
+    }
+
+    public static String getPlayerArena(java.util.UUID uuid) {
+        if (uuid == null) return null;
+        return data.getString("players." + uuid + ".arena", null);
+    }
+
+    public static void setPlayerTeamPref(java.util.UUID uuid, String arenaName, Integer teamId) {
+        if (uuid == null || arenaName == null) return;
+        String key = "players." + uuid + ".teamPref." + arenaName.toLowerCase();
+        if (teamId == null) {
+            data.set(key, null);
+        } else {
+            data.set(key, teamId);
+        }
+        try {
+            data.save(dataFile);
+        } catch (IOException ex) {
+            Utils.getPlugin().getLogger().warning(ex.toString());
+        }
+    }
+
+    public static Integer getPlayerTeamPref(java.util.UUID uuid, String arenaName) {
+        if (uuid == null || arenaName == null) return null;
+        String key = "players." + uuid + ".teamPref." + arenaName.toLowerCase();
+        if (!data.isSet(key)) return null;
+        return data.getInt(key);
+    }
+
+    public static java.util.List<String> getArenaSigns(String arenaName) {
+        if (arenaName == null) return java.util.Collections.emptyList();
+        String key = "arenas." + arenaName.toLowerCase() + ".signs";
+        return data.getStringList(key);
+    }
+
+    public static void addArenaSign(String arenaName, Location loc) {
+        if (arenaName == null || loc == null) return;
+        String key = "arenas." + arenaName.toLowerCase() + ".signs";
+        java.util.List<String> list = new java.util.ArrayList<>(data.getStringList(key));
+        String entry = loc.getWorld().getName() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
+        if (!list.contains(entry)) {
+            list.add(entry);
+            data.set(key, list);
+            try {
+                data.save(dataFile);
+            } catch (IOException ex) {
+                Utils.getPlugin().getLogger().warning(ex.toString());
+            }
+        }
+    }
+
+    public static void clearArenaSigns(String arenaName) {
+        if (arenaName == null) return;
+        String key = "arenas." + arenaName.toLowerCase() + ".signs";
+        data.set(key, null);
+        try {
+            data.save(dataFile);
+        } catch (IOException ex) {
+            Utils.getPlugin().getLogger().warning(ex.toString());
+        }
+    }
+
+    public static java.util.Set<String> getArenaNames() {
+        if (data == null) return java.util.Collections.emptySet();
+        java.util.Set<String> names = new java.util.LinkedHashSet<>();
+        java.util.List<String> list = data.getStringList("arenas.list");
+        if (list != null && !list.isEmpty()) {
+            for (String name : list) {
+                if (name != null && !name.isEmpty()) {
+                    names.add(name.toLowerCase());
+                }
+            }
+            return names;
+        }
+        ConfigurationSection sec = data.getConfigurationSection("arenas");
+        if (sec == null) return names;
+        for (String key : sec.getKeys(false)) {
+            if (key != null && !key.equalsIgnoreCase("list")) {
+                names.add(key.toLowerCase());
+            }
+        }
+        return names;
+    }
+
+    public static void addArenaName(String arenaName) {
+        if (arenaName == null) return;
+        String name = arenaName.toLowerCase();
+        java.util.List<String> list = new java.util.ArrayList<>(data.getStringList("arenas.list"));
+        if (!list.contains(name)) {
+            list.add(name);
+            data.set("arenas.list", list);
+            try {
+                data.save(dataFile);
+            } catch (IOException ex) {
+                Utils.getPlugin().getLogger().warning(ex.toString());
+            }
+        }
+    }
+
+    public static void removeArenaName(String arenaName) {
+        if (arenaName == null) return;
+        String name = arenaName.toLowerCase();
+        java.util.List<String> list = new java.util.ArrayList<>(data.getStringList("arenas.list"));
+        if (list.remove(name)) {
+            data.set("arenas.list", list);
+        }
+        data.set("arenas." + name, null);
+        try {
+            data.save(dataFile);
+        } catch (IOException ex) {
+            Utils.getPlugin().getLogger().warning(ex.toString());
+        }
+    }
+
+    private static void migrateLobbiesFromConfig() {
+        if (data == null || lobbies == null) return;
+        ConfigurationSection arenas = data.getConfigurationSection("arenas");
+        if (arenas == null) return;
+        boolean changed = false;
+        for (String key : arenas.getKeys(false)) {
+            String lobbyKey = "arenas." + key.toLowerCase() + ".lobby";
+            if (!data.isSet(lobbyKey + ".world")) continue;
+            if (lobbies.isSet(lobbyKey + ".world")) continue;
+            lobbies.set(lobbyKey + ".world", data.getString(lobbyKey + ".world"));
+            lobbies.set(lobbyKey + ".x", data.getDouble(lobbyKey + ".x"));
+            lobbies.set(lobbyKey + ".y", data.getDouble(lobbyKey + ".y"));
+            lobbies.set(lobbyKey + ".z", data.getDouble(lobbyKey + ".z"));
+            lobbies.set(lobbyKey + ".yaw", data.getDouble(lobbyKey + ".yaw"));
+            lobbies.set(lobbyKey + ".pitch", data.getDouble(lobbyKey + ".pitch"));
+            changed = true;
+        }
+        if (!changed) return;
+        try {
+            lobbies.save(lobbiesFile);
         } catch (IOException ex) {
             Utils.getPlugin().getLogger().warning(ex.toString());
         }

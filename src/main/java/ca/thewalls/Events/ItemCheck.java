@@ -10,8 +10,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import ca.thewalls.Arena;
 import ca.thewalls.Config;
-import ca.thewalls.TheWalls;
+import ca.thewalls.Messages;
 import ca.thewalls.Utils;
 
 class ItemCheckObjective {
@@ -30,7 +31,7 @@ class ItemCheckHandler {
     ArrayList<ItemCheckObjective> possibleObjectives;
     Player p;
     ItemCheckObjective currentObjective;
-    public TheWalls walls;
+    public Arena arena;
 
     private void fillObjectives() {
         ConfigurationSection objectives = Config.data.getConfigurationSection("events.itemCheck.materials");
@@ -40,7 +41,7 @@ class ItemCheckHandler {
             ConfigurationSection objSection = objectives.getConfigurationSection(key);
             Material mat = Material.matchMaterial(objSection.getString("material", ""));
             if (mat == null) {
-                this.walls.getLogger().warning("Failed to match material on " + key + "!");
+                this.arena.getPlugin().getLogger().warning("Failed to match material on " + key + "!");
                 continue;
             }
 
@@ -51,31 +52,34 @@ class ItemCheckHandler {
         }
     }
 
-    public ItemCheckHandler(Player p, TheWalls walls) {
+    public ItemCheckHandler(Player p, Arena arena) {
         // Build possible maps
         this.possibleObjectives = new ArrayList<>();
         fillObjectives();
 
         Random rand = new Random();
-        this.walls = walls;
+        this.arena = arena;
 
         this.p = p;
         this.currentObjective = possibleObjectives.get(rand.nextInt(possibleObjectives.size()));
         this.p.sendMessage(
-                Utils.formatText("&cYou must have " + currentObjective.quantity +  " " + this.currentObjective.material.name().replaceAll("_", " ")
-                        + "(s) in your inventory within " + currentObjective.timeInSeconds + "s"));
+                Messages.msg("events.itemcheck_prompt", java.util.Map.of(
+                        "amount", String.valueOf(currentObjective.quantity),
+                        "material", this.currentObjective.material.name().replaceAll("_", " "),
+                        "seconds", String.valueOf(currentObjective.timeInSeconds)
+                )));
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(Utils.getPlugin(), new Runnable() {
             @Override
             public void run() {
                 // stop lightning strike from occuring after game ended
-                if (!walls.game.started) {
+                if (!arena.getGame().started) {
                     return;
                 }
 
                 if (p.getInventory().isEmpty()) {
-                    p.sendMessage(Utils.formatText("&cYou failed to get the item! Sucks..."));
-                    walls.world.world.spawnEntity(p.getLocation(), EntityType.LIGHTNING);
+                    p.sendMessage(Messages.msg("events.itemcheck_fail"));
+                    arena.getWorld().world.spawnEntity(p.getLocation(), EntityType.LIGHTNING_BOLT);
                     return;
                 }
 
@@ -89,12 +93,12 @@ class ItemCheckHandler {
                 }
 
                 if (count >= currentObjective.quantity) {
-                    p.sendMessage(Utils.formatText("&aYou have enough of the item in your inventory! You are safe."));
+                    p.sendMessage(Messages.msg("events.itemcheck_pass"));
                     return;
                 }
 
-                p.sendMessage(Utils.formatText("&cYou failed to get the item! Sucks..."));
-                walls.world.world.spawnEntity(p.getLocation(), EntityType.LIGHTNING);
+                p.sendMessage(Messages.msg("events.itemcheck_fail"));
+                arena.getWorld().world.spawnEntity(p.getLocation(), EntityType.LIGHTNING_BOLT);
                 return;
             }
         }, 20 * currentObjective.timeInSeconds);
@@ -103,16 +107,16 @@ class ItemCheckHandler {
 
 public class ItemCheck extends Event {
 
-    public ItemCheck(String eventName, TheWalls walls) {
-        super(eventName, walls);
+    public ItemCheck(String eventName, Arena arena) {
+        super(eventName, arena);
     }
 
     @Override
     public void run() {
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : this.arena.getPlayers()) {
             if (!Utils.isAlive(p))
                 continue;
-            new ItemCheckHandler(p, this.walls);
+            new ItemCheckHandler(p, this.arena);
         }
     }
 

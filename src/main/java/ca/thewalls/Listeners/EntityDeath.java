@@ -9,8 +9,10 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import ca.thewalls.Config;
+import ca.thewalls.Messages;
 import ca.thewalls.TheWalls;
-import ca.thewalls.Utils;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import java.util.Random;
 
@@ -23,19 +25,24 @@ public class EntityDeath implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDeath(EntityDeathEvent e) {
-        if (!this.walls.game.started) return;
+        if (e.getEntity().getKiller() == null) return;
+        ca.thewalls.Arena arena = this.walls.getArenaByPlayer(e.getEntity().getKiller());
+        if (arena == null) return;
+        if (!arena.getGame().started) return;
 
         // Related to FreeFood event
         if (Config.data.getBoolean("events.gregs.enabled")) {
-            if (e.getEntity().getCustomName() == null) return;
+            Component name = e.getEntity().customName();
+            if (name == null) return;
             if (!(e.getEntity() instanceof Chicken)) return;
-            if (e.getEntity().getCustomName().toLowerCase().contains("greg")) {
+            String plain = PlainTextComponentSerializer.plainText().serialize(name);
+            if (plain.toLowerCase().contains("greg")) {
                 int rnd = new Random().nextInt(10);
                 if (rnd == 9 && e.getEntity().getKiller() != null) {
                     e.getEntity().getKiller().getInventory().addItem(new ItemStack(Material.GOLDEN_APPLE, 2));
-                    e.getEntity().getKiller().sendMessage(Utils.formatText("&2Greg has spared you and has given you some &e&lGolden Apples!"));
+                    e.getEntity().getKiller().sendMessage(Messages.msg("events.greg_blessing"));
                 } else {
-                    this.walls.world.world.createExplosion(e.getEntity().getLocation(), Config.data.getInt("events.gregs.power"), Config.data.getBoolean("events.gregs.fireExplosion"));
+                    arena.getWorld().world.createExplosion(e.getEntity().getLocation(), Config.data.getInt("events.gregs.power"), Config.data.getBoolean("events.gregs.fireExplosion"));
                 }
             }
         }

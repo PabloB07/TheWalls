@@ -1,21 +1,20 @@
 package ca.thewalls.Walls;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import ca.thewalls.Arena;
 import ca.thewalls.Config;
-import ca.thewalls.TheWalls;
 import ca.thewalls.Utils;
 
 import java.util.ArrayList;
 
 public class World {
 
-    public TheWalls walls;
+    public Arena arena;
     public org.bukkit.World world;
 
     /*
@@ -32,14 +31,14 @@ public class World {
     public ArrayList<TempBlock> originalWallBlocks = new ArrayList<>();
     public ArrayList<Location> spawnProtectionBlocks = new ArrayList<>();
   
-    public World(TheWalls walls) {
-        this.walls = walls;
+    public World(Arena arena) {
+        this.arena = arena;
     }
     
     // This method does take a while if the map size if >50;
     public void save() {
         for (Entity ent : world.getEntities()) {
-            if (ent.getType() == EntityType.DROPPED_ITEM) {
+            if (ent.getType() == EntityType.ITEM) {
                 ent.remove();
             }
         }
@@ -48,7 +47,7 @@ public class World {
 
         Utils.getPlugin().getLogger().info("Saving original world data...");
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : this.arena.getPlayers()) {
             if (p.isOp()) {
                 p.sendMessage(Utils.adminMessage("&eSaving original world data..."));
             }
@@ -70,7 +69,7 @@ public class World {
         }
         Utils.getPlugin().getLogger().info("Saved original world data!");
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : this.arena.getPlayers()) {
             if (p.isOp()) {
                 p.sendMessage(Utils.adminMessage("&2Saved original world data!"));
             }
@@ -85,14 +84,14 @@ public class World {
         
         // Clear items from the ground
         for (Entity ent : world.getEntities()) {
-            if (ent.getType() == EntityType.DROPPED_ITEM) {
+            if (ent.getType() == EntityType.ITEM) {
                 ent.remove();
             }
         }
 
         if (!Config.data.getBoolean("world.saving")) return;
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : this.arena.getPlayers()) {
             if (p.isOp()) {
                 p.sendMessage(Utils.adminMessage("&eResetting world to original state..."));
             } 
@@ -108,7 +107,7 @@ public class World {
         originalBlocks.clear();
         spawnProtectionBlocks.clear();
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : this.arena.getPlayers()) {
             if (p.isOp()) {
                 p.sendMessage(Utils.adminMessage("&2Reset world to original state!"));
             }
@@ -120,7 +119,7 @@ public class World {
     public void wallBlocks() {
         Utils.getPlugin().getLogger().info("Saving original wall blocks...");
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : this.arena.getPlayers()) {
             if (p.isOp()) {
                 p.sendMessage(Utils.adminMessage("&eSetting up walls and saving data..."));
             }
@@ -128,22 +127,22 @@ public class World {
 
         for (int x = positionTwo[0]; x < positionOne[0]; x++) {
             for (int y = -64; y < 325; y++) {
-                if (world.getBlockAt(x, y, positionOne[1] - this.walls.game.size).getType() == Material.BEDROCK) continue;
-                originalWallBlocks.add(new TempBlock(world.getBlockAt(x, y, positionOne[1] - this.walls.game.size).getLocation(), world.getBlockAt(x, y, positionOne[1] - this.walls.game.size).getType()));
-                world.getBlockAt(x, y, positionOne[1] - this.walls.game.size).setType(Material.BEDROCK);
+                if (world.getBlockAt(x, y, positionOne[1] - this.arena.getGame().size).getType() == Material.BEDROCK) continue;
+                originalWallBlocks.add(new TempBlock(world.getBlockAt(x, y, positionOne[1] - this.arena.getGame().size).getLocation(), world.getBlockAt(x, y, positionOne[1] - this.arena.getGame().size).getType()));
+                world.getBlockAt(x, y, positionOne[1] - this.arena.getGame().size).setType(Material.BEDROCK);
             }
         }
         for (int z = positionTwo[1]; z < positionOne[1]; z++) {
             for (int y = -64; y < 325; y++) {
-                if (world.getBlockAt(positionOne[0] - this.walls.game.size, y, z).getType() == Material.BEDROCK) continue;
-                originalWallBlocks.add(new TempBlock(world.getBlockAt(positionOne[0] - this.walls.game.size, y, z).getLocation(), world.getBlockAt(positionOne[0] - this.walls.game.size, y, z).getType()));
-                world.getBlockAt(positionOne[0] - this.walls.game.size, y, z).setType(Material.BEDROCK);
+                if (world.getBlockAt(positionOne[0] - this.arena.getGame().size, y, z).getType() == Material.BEDROCK) continue;
+                originalWallBlocks.add(new TempBlock(world.getBlockAt(positionOne[0] - this.arena.getGame().size, y, z).getLocation(), world.getBlockAt(positionOne[0] - this.arena.getGame().size, y, z).getType()));
+                world.getBlockAt(positionOne[0] - this.arena.getGame().size, y, z).setType(Material.BEDROCK);
             }
         }
 
         Utils.getPlugin().getLogger().info("Saved original wall blocks!");
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : this.arena.getPlayers()) {
             if (p.isOp()) {
                 p.sendMessage(Utils.adminMessage("&2Walls are up and saved original block data!"));
             }

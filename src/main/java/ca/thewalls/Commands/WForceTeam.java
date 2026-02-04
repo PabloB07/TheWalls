@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import ca.thewalls.Config;
+import ca.thewalls.Messages;
 import ca.thewalls.TheWalls;
 import ca.thewalls.Utils;
 import ca.thewalls.Walls.Team;
@@ -22,23 +23,28 @@ public class WForceTeam implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.isOp()) {
-            sender.sendMessage(Utils.formatText("&cYou don't have the permissions to run this command!"));
+        if (!sender.hasPermission("thewalls.forceteam") && !sender.isOp()) {
+            sender.sendMessage(Messages.msg("admin.no_permission"));
             return false;
         }
-        if (!this.walls.game.started) {
-            sender.sendMessage(Utils.formatText("&cThere is no game currently going on!"));
-            return false;
-        }
-        if (this.walls.game.borderClosing) {
-            sender.sendMessage(Utils.formatText("&cThis command cannot be performed when the borders are closing!"));
-            return false;
-        }
-
         try {
             Player target = Bukkit.getPlayer(args[0]);
             if (target == null) {
-                sender.sendMessage(Utils.formatText("&cCouldn't find player with the name of " + args[0] + "!"));
+                sender.sendMessage(Utils.format("&cCouldn't find player with the name of " + args[0] + "!"));
+                return false;
+            }
+            ca.thewalls.Arena arena = this.walls.getArenaByPlayer(target);
+            if (arena == null) {
+                arena = (sender instanceof Player)
+                        ? this.walls.getArenaByPlayer((Player) sender)
+                        : this.walls.mainArena;
+            }
+            if (!arena.getGame().started) {
+                sender.sendMessage(Utils.format("&cThere is no game currently going on!"));
+                return false;
+            }
+            if (arena.getGame().borderClosing) {
+                sender.sendMessage(Utils.format("&cThis command cannot be performed when the borders are closing!"));
                 return false;
             }
             StringBuilder newTeamBuilder = new StringBuilder();
@@ -48,25 +54,25 @@ public class WForceTeam implements CommandExecutor {
             String newTeam = newTeamBuilder.toString();
             boolean flag = false;
 
-            for (int i = 0; i < this.walls.game.teams.size(); i++) {
-                Team temp = this.walls.game.teams.get(i);
+            for (int i = 0; i < arena.getGame().teams.size(); i++) {
+                Team temp = arena.getGame().teams.get(i);
                 if (temp.teamName.toLowerCase().equalsIgnoreCase(newTeam)) {
-                    Team prev = Team.getPlayerTeam(target, this.walls.game.teams);
+                    Team prev = Team.getPlayerTeam(target, arena.getGame().teams);
 
                     if (!temp.alive) {
                         temp.alive = true;
-                        this.walls.game.aliveTeams.add(temp);
+                        arena.getGame().aliveTeams.add(temp);
                     }
 
                     temp.members.add(target);
                     target.teleport(temp.teamSpawn);
-                    target.sendMessage(Utils.formatText(temp.teamColor + "You have been swapped to " + temp.teamName + " team!"));
+                    target.sendMessage(Utils.format(temp.teamColor + "You have been swapped to " + temp.teamName + " team!"));
 
                     if (prev != null) {
                         prev.members.remove(target);
                         if (prev.members.size() == 0) {
-                            this.walls.game.aliveTeams.remove(prev);
-                            this.walls.game.teams.remove(prev);
+                            arena.getGame().aliveTeams.remove(prev);
+                            arena.getGame().teams.remove(prev);
                         }
                     }
 
@@ -76,7 +82,7 @@ public class WForceTeam implements CommandExecutor {
             }
             // create relevant team;
             if (!flag) {
-                Team prev = Team.getPlayerTeam(target, this.walls.game.teams);
+                Team prev = Team.getPlayerTeam(target, arena.getGame().teams);
 
                 int teamID = 0;
                 if (newTeam.equalsIgnoreCase(Config.data.getString("teams.one.name").toLowerCase())) {
@@ -89,30 +95,30 @@ public class WForceTeam implements CommandExecutor {
                     teamID = 3;
                 }
 
-                Team newT = new Team(teamID, false, this.walls);
+                Team newT = new Team(teamID, false, arena);
                 newT.members.add(target);
                 target.teleport(newT.teamSpawn);
-                target.sendMessage(Utils.formatText(newT.teamColor + "You have been swapped to " + newT.teamName + " team!"));
+                target.sendMessage(Utils.format(newT.teamColor + "You have been swapped to " + newT.teamName + " team!"));
 
                 if (prev != null) {
                     prev.members.remove(target);
                     if (prev.members.size() == 0) {
-                        this.walls.game.aliveTeams.remove(prev);
-                        this.walls.game.teams.remove(prev);
+                        arena.getGame().aliveTeams.remove(prev);
+                        arena.getGame().teams.remove(prev);
                     }
                 }
             }
 
-            Team finalTeam = Team.getPlayerTeam(target, this.walls.game.teams);
+            Team finalTeam = Team.getPlayerTeam(target, arena.getGame().teams);
             if (finalTeam != null) {
-                target.setDisplayName(Utils.formatText(finalTeam.teamColor + "[" + finalTeam.teamName + "] " + target.getName()));
-                target.setPlayerListName(Utils.formatText(finalTeam.teamColor + "[" + finalTeam.teamName + "] " + target.getName()));
+                target.displayName(Utils.format(finalTeam.teamColor + "[" + finalTeam.teamName + "] " + target.getName()));
+                target.playerListName(Utils.format(finalTeam.teamColor + "[" + finalTeam.teamName + "] " + target.getName()));
                 target.getInventory().clear();
                 target.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, Config.data.getInt("players.spawn.steakAmount")));
                 target.setGameMode(GameMode.SURVIVAL);
             }
         } catch (Exception e) {
-            sender.sendMessage(Utils.formatText("&cArguments provided aren't valid!"));
+            sender.sendMessage(Utils.format("&cArguments provided aren't valid!"));
             Utils.getPlugin().getLogger().warning(e.toString());
         }
 

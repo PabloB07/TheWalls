@@ -7,8 +7,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import ca.thewalls.Config;
+import ca.thewalls.Messages;
 import ca.thewalls.TheWalls;
-import ca.thewalls.Utils;
 
 public class PlayerJoin implements Listener {
     public TheWalls walls;
@@ -21,8 +21,21 @@ public class PlayerJoin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         Config.createLeaderboardPlayer(e.getPlayer());
 
-        if (!this.walls.game.started) return;
+        String savedArena = Config.getPlayerArena(e.getPlayer().getUniqueId());
+        if (savedArena != null) {
+            this.walls.arenas.createArena(savedArena);
+            this.walls.arenas.assignPlayer(e.getPlayer(), savedArena);
+        }
+        ca.thewalls.Arena arena = this.walls.getArenaByPlayer(e.getPlayer());
+        if (arena == null) return;
+        if (arena.getLobby() != null) {
+            e.getPlayer().teleport(arena.getLobby());
+        }
+        this.walls.arenas.onPlayerCountChanged(arena);
+        LobbyItems.give(e.getPlayer(), arena);
+        if (!arena.getGame().started) return;
+        arena.getGame().ensureBoard(e.getPlayer());
         e.getPlayer().setGameMode(GameMode.SPECTATOR);
-        e.getPlayer().sendMessage(Utils.formatText("&cThere is currently a Walls game going on!"));
+        e.getPlayer().sendMessage(Messages.msg("join.spectator"));
     }
 }

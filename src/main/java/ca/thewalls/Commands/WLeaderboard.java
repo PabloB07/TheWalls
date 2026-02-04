@@ -12,6 +12,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import ca.thewalls.Config;
+import ca.thewalls.Messages;
 import ca.thewalls.TheWalls;
 import ca.thewalls.Utils;
 
@@ -23,6 +24,10 @@ public class WLeaderboard implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!sender.hasPermission("thewalls.leaderboard") && !sender.isOp()) {
+            sender.sendMessage(Messages.msg("admin.no_permission"));
+            return false;
+        }
         HashMap<String, Integer> leadeboardEntries = new HashMap<>();
         LinkedHashMap<String, Integer> sortedMap = new LinkedHashMap<>();
         ArrayList<Integer> list = new ArrayList<>();
@@ -41,12 +46,12 @@ public class WLeaderboard implements CommandExecutor {
                 }
             }
         }
-        sender.sendMessage(Utils.formatText("&6&lTOP PLAYERS OF THE WALLS"));
-        sender.sendMessage(Utils.formatText("&6&l========================"));
+        sender.sendMessage(Utils.format("&6&lTOP PLAYERS OF THE WALLS"));
+        sender.sendMessage(Utils.format("&6&l========================"));
         int index = 0;
         for (String key : sortedMap.keySet()) {
             if (index == 5) break;
-            sender.sendMessage(Utils.formatText("&5" + key + " - &9" + sortedMap.get(key) + "&5 wins"));
+            sender.sendMessage(Utils.format("&5" + key + " - &9" + sortedMap.get(key) + "&5 wins"));
             index++;
         }
 

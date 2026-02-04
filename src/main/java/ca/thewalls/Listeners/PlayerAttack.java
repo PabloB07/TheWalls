@@ -20,12 +20,16 @@ public class PlayerAttack implements Listener {
     public void onPlayerAttack(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Player)) return;
         if (!(e.getEntity() instanceof Player)) return;
-        if (!this.walls.game.started) return;
+        ca.thewalls.Arena arena = this.walls.getArenaByPlayer((Player) e.getDamager());
+        ca.thewalls.Arena receiverArena = this.walls.getArenaByPlayer((Player) e.getEntity());
+        if (arena == null || receiverArena == null) return;
+        if (arena != receiverArena) return;
+        if (!arena.getGame().started) return;
 
         Player attacker = (Player) e.getDamager();
         Player receiver = (Player) e.getEntity();
 
-        if (Team.getPlayerTeam(attacker, this.walls.game.teams) == Team.getPlayerTeam(receiver, this.walls.game.teams)) {
+        if (Team.getPlayerTeam(attacker, arena.getGame().teams) == Team.getPlayerTeam(receiver, arena.getGame().teams)) {
             e.setDamage(0); // Cancel damage, but still allow for knock-back
         }
     }

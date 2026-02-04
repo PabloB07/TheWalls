@@ -4,11 +4,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import fr.mrmicky.fastboard.adventure.FastBoard;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.*;
 
+import ca.thewalls.Arena;
 import ca.thewalls.Config;
-import ca.thewalls.TheWalls;
+import ca.thewalls.Messages;
 import ca.thewalls.Utils;
 import ca.thewalls.Events.*;
 
@@ -16,15 +18,19 @@ import javax.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.UUID;
 
 class Loop implements Runnable {
-    TheWalls walls;
+    Arena arena;
     Game game;
-    public Loop(TheWalls walls) {
-        this.walls = walls;
-        this.game = this.walls.game;
+    public Loop(Arena arena) {
+        this.arena = arena;
+        this.game = this.arena.getGame();
     }
 
     @Override
@@ -32,98 +38,34 @@ class Loop implements Runnable {
         if (!game.started) return;
 
         if ((game.time >= game.prepTime) && !game.wallsFallen) {
-            this.walls.world.dropWalls();
-            for (Player p : Bukkit.getOnlinePlayers()) {
+            this.arena.getWorld().dropWalls();
+            for (Player p : this.arena.getPlayers()) {
                 p.playSound(p.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 255, 1);
                 p.playSound(p.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_TWINKLE, 255, 1);
-                p.sendMessage(Utils.formatText("&aThe Walls have fallen!"));
-                p.sendTitle(Utils.formatText("&aThe Walls have fallen!"), "", 10, 80, 10);
+                p.sendMessage(Messages.msg("game.walls_fallen"));
+                Utils.sendTitle(p, Messages.raw("title.walls_fallen"), "", 10, 80, 10);
             }
             game.wallsFallen = true;
         }
 
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            assert manager != null;
-            Scoreboard board = manager.getNewScoreboard();
-            Objective obj = board.registerNewObjective("TheWalls-Primary", "dummy", Utils.formatText("&6&lThe Walls"));
-            obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        if (game.wallsFallen && game.eventTimer <= 0 && game.events.size() >= 1) {
+            int rnd = new Random().nextInt(game.events.size());
+            game.events.get(rnd).run();
+            game.eventTimer = game.eventCooldown;
+        }
 
-            Score border = obj.getScore(Utils.formatText("&6=-=-=-=-=-=-=-=-=-=-="));
-            border.setScore(99);
-
-            Score timeRemaining;
-            if (game.wallsFallen) {
-                timeRemaining = obj.getScore(Utils.formatText("&c&lTHE WALLS ARE DOWN!"));
-                if (game.eventTimer <= 0) {
-                    // Run an event
-                    if (Events.events.size() >= 1) {
-                        int rnd = new Random().nextInt(Events.events.size());
-                        Events.events.get(rnd).run();
-
-                        // Reset timer
-                        game.eventTimer = game.eventCooldown;
-                    }
-                }
-                if (Events.events.size() >= 1) {
-                    Score timeUntilEvent = obj.getScore(Utils.formatText("&6Event in " + game.eventTimer + "s"));
-                    timeUntilEvent.setScore(97);
-                }
-
-                Score timeUntilBorderClose;
-                if (game.borderCloseTimer <= 0) {
-                    // Border are closing
-                    timeUntilBorderClose = obj.getScore(Utils.formatText("&c&lBORDERS CLOSING IN"));
-                    if (!game.borderClosing) {
-                        p.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 255, 1);
-                        p.sendMessage(Utils.formatText("&c&lThe Borders are closing in!"));
-                        this.walls.world.world.getWorldBorder().setSize((double) game.size * Config.data.getDouble("world.borderShrinkPercentageOfSize"), game.borderCloseSpeed);
-                        game.borderClosing = true;
-                    }
-                } else {
-                    timeUntilBorderClose = obj.getScore(Utils.formatText("&6Borders closing in " + game.borderCloseTimer + "s"));
-                }
-                timeUntilBorderClose.setScore(96);
-            } else {
-                timeRemaining = obj.getScore(Utils.formatText("&6Preparation Time: " + (game.prepTime - game.time) + "s"));
+        if (game.wallsFallen && game.borderCloseTimer <= 0 && !game.borderClosing) {
+            for (Player p : this.arena.getPlayers()) {
+                p.playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 255, 1);
+                p.sendMessage(Messages.msg("game.borders_closing"));
             }
-            timeRemaining.setScore(98);
+            this.arena.getWorld().world.getWorldBorder().setSize((double) game.size * Config.data.getDouble("world.borderShrinkPercentageOfSize"), game.borderCloseSpeed);
+            game.borderClosing = true;
+        }
 
-            // Loop through teams
-            Score teamsTitle = obj.getScore(Utils.formatText("&b&l=-=-=- TEAMS -=-=-="));
-            teamsTitle.setScore(80);
+        List<Component> lines = game.buildScoreboardLines();
 
-            int currScore = 79;
-            for (Team t : game.teams) {
-                Score teamName;
-                if (t.alive) {
-                    if (Config.data.getBoolean("theWalls.legacyHud")) {
-                        teamName = obj.getScore(Utils.formatText(t.teamColor + "&l" + t.teamName + "&r - &2ALIVE"));
-                    } else {
-                        teamName = obj.getScore(Utils.formatText(t.teamColor + "&l" + t.teamName + "&r" + t.teamColor + " - " + t.getAliveMembers() + " Alive"));
-                    }
-                } else {
-                    teamName = obj.getScore(Utils.formatText(t.teamColor + "&l" + t.teamName + "&r - &cDEAD"));
-                }
-                teamName.setScore(currScore);
-                currScore--;
-                    // Loop through team members
-                for (Player member : t.members) {
-                    if (member == null) continue;
-
-                    if (Config.data.getBoolean("theWalls.legacyHud")) {
-                        Score tMember;
-                        if (Utils.isAlive(member)) {
-                            tMember = obj.getScore(Utils.formatText(t.teamColor + " - " + member.getName() + "&r - &2ALIVE"));
-                        } else {
-                            tMember = obj.getScore(Utils.formatText(t.teamColor + " - " + member.getName() + "&r - &cDEAD"));
-                        }
-                        tMember.setScore(currScore);
-                        currScore--;
-                    }
-                }
-            }
-
+        for (Player p : this.arena.getPlayers()) {
             if (!Utils.isAlive(p)) {
                 Team tempTeam = Team.getPlayerTeam(p, game.teams);
                 if ((Config.data.getBoolean("theWalls.respawnDuringPrepTime") && !game.wallsFallen) || (Config.data.getBoolean("theWalls.respawnDuringInitialFighting") && !game.borderClosing)) {
@@ -136,28 +78,32 @@ class Loop implements Runnable {
                 }
             }
 
-            p.setScoreboard(board);
+            game.ensureBoard(p);
+            FastBoard board = game.getBoard(p);
+            if (board == null) continue;
+
+            board.updateLines(lines);
         }
 
         game.time++;
         if (game.wallsFallen) {
-            if (Events.events.size() >= 1) {
+            if (game.events.size() >= 1) {
                 game.eventTimer--;
             }
             game.borderCloseTimer--;
         }
         if (Config.data.getBoolean("teams.checkWinEverySecond")) {
-            this.walls.utils.checkWinner();
+            this.arena.getUtils().checkWinner();
         }
     }
 }
 
 public class Game {
 
-    TheWalls walls;
+    Arena arena;
 
-    public Game(TheWalls walls) {
-        this.walls = walls;
+    public Game(Arena arena) {
+        this.arena = arena;
     }
 
     public boolean started = false;
@@ -174,93 +120,217 @@ public class Game {
     public ArrayList<Team> teams = new ArrayList<>();
     // Used to determine the winning team of the walls
     public ArrayList<Team> aliveTeams = new ArrayList<>();
+    public ArrayList<ca.thewalls.Events.Event> events = new ArrayList<>();
     public int gameLoopID = 0;
 
     public int time = 0;
+    private final Map<UUID, FastBoard> boards = new HashMap<>();
+
+    public void ensureBoard(Player player) {
+        if (boards.containsKey(player.getUniqueId())) return;
+        FastBoard board = new FastBoard(player);
+        board.updateTitle(Utils.format("&6&lThe Walls"));
+        boards.put(player.getUniqueId(), board);
+    }
+
+    public void removeBoard(Player player) {
+        FastBoard board = boards.remove(player.getUniqueId());
+        if (board != null) {
+            board.delete();
+        }
+    }
+
+    public FastBoard getBoard(Player player) {
+        return boards.get(player.getUniqueId());
+    }
+
+    private void clearBoards() {
+        for (FastBoard board : boards.values()) {
+            board.delete();
+        }
+        boards.clear();
+    }
+
+    List<Component> buildScoreboardLines() {
+        List<Component> lines = new ArrayList<>();
+        lines.add(Utils.format("&6=-=-=-=-=-=-=-=-=-=-="));
+
+        if (wallsFallen) {
+            lines.add(Messages.msg("game.walls_down"));
+            if (events.size() >= 1) {
+                lines.add(Messages.msg("game.event_in", java.util.Map.of("seconds", String.valueOf(eventTimer))));
+            }
+            if (borderCloseTimer <= 0) {
+                lines.add(Messages.msg("game.borders_closing_now"));
+            } else {
+                lines.add(Messages.msg("game.borders_closing_in", java.util.Map.of("seconds", String.valueOf(borderCloseTimer))));
+            }
+        } else {
+            lines.add(Messages.msg("game.prep_time", java.util.Map.of("seconds", String.valueOf(prepTime - time))));
+        }
+
+        lines.add(Utils.format("&b&l=-=-=- TEAMS -=-=-="));
+
+        for (Team t : teams) {
+            if (t.alive) {
+                if (Config.data.getBoolean("theWalls.legacyHud")) {
+                    lines.add(Utils.format(t.teamColor + "&l" + t.teamName + "&r - &2ALIVE"));
+                } else {
+                    lines.add(Utils.format(t.teamColor + "&l" + t.teamName + "&r" + t.teamColor + " - " + t.getAliveMembers() + " Alive"));
+                }
+            } else {
+                lines.add(Utils.format(t.teamColor + "&l" + t.teamName + "&r - &cDEAD"));
+            }
+
+            for (Player member : t.members) {
+                if (member == null) continue;
+                if (Config.data.getBoolean("theWalls.legacyHud")) {
+                    if (Utils.isAlive(member)) {
+                        lines.add(Utils.format(t.teamColor + " - " + member.getName() + "&r - &2ALIVE"));
+                    } else {
+                        lines.add(Utils.format(t.teamColor + " - " + member.getName() + "&r - &cDEAD"));
+                    }
+                }
+            }
+        }
+
+        return lines;
+    }
+
+    public void updateLobbyBoards() {
+        if (started) return;
+        int minPlayers = Config.data.getInt("lobby.minPlayers", 2);
+        int countdown = this.arena.getLobbyCountdown();
+        List<Component> lines = new ArrayList<>();
+        lines.add(Messages.msg("lobby.title"));
+        lines.add(Messages.msg("lobby.players", java.util.Map.of(
+                "current", String.valueOf(this.arena.getPlayers().size()),
+                "min", String.valueOf(minPlayers)
+        )));
+        if (countdown >= 0) {
+            lines.add(Messages.msg("lobby.starting_in", java.util.Map.of("seconds", String.valueOf(countdown))));
+        } else {
+            lines.add(Messages.msg("lobby.waiting"));
+        }
+
+        for (Player p : this.arena.getPlayers()) {
+            ensureBoard(p);
+            FastBoard board = getBoard(p);
+            if (board == null) continue;
+            board.updateLines(lines);
+        }
+    }
 
     public void start(@Nullable Player starter) {
 
-        if (Bukkit.getOnlinePlayers().size() == 0) {
+        if (this.arena.getPlayers().size() == 0) {
             if (starter != null) {
-                starter.sendMessage(Utils.formatText("&cThere are no online players!"));
+                starter.sendMessage(Messages.msg("game.no_players"));
             }
             return;
         }
 
         if (starter == null) {
-            this.walls.world.world = Bukkit.getWorld(Objects.requireNonNull(Config.data.getString("theWalls.autoExecute.worldName")));
-            assert this.walls.world.world != null;
-            Location loc = new Location(this.walls.world.world, Config.data.getDouble("theWalls.autoExecute.center.x"), 0, Config.data.getDouble("theWalls.autoExecute.center.z"));
-            this.walls.world.world.getWorldBorder().setCenter(loc.getX(), loc.getZ());
-            this.walls.world.positionOne[0] = loc.getBlockX() + size;
-            this.walls.world.positionOne[1] = loc.getBlockZ() + size;
-            this.walls.world.positionTwo[0] = loc.getBlockX() - size;
-            this.walls.world.positionTwo[1] = loc.getBlockZ() - size;
+            this.arena.getWorld().world = Bukkit.getWorld(Objects.requireNonNull(Config.data.getString("theWalls.autoExecute.worldName")));
+            assert this.arena.getWorld().world != null;
+            Location loc = new Location(this.arena.getWorld().world, Config.data.getDouble("theWalls.autoExecute.center.x"), 0, Config.data.getDouble("theWalls.autoExecute.center.z"));
+            this.arena.getWorld().world.getWorldBorder().setCenter(loc.getX(), loc.getZ());
+            this.arena.getWorld().positionOne[0] = loc.getBlockX() + size;
+            this.arena.getWorld().positionOne[1] = loc.getBlockZ() + size;
+            this.arena.getWorld().positionTwo[0] = loc.getBlockX() - size;
+            this.arena.getWorld().positionTwo[1] = loc.getBlockZ() - size;
         } else {
-            this.walls.world.world = starter.getWorld();
-            this.walls.world.world.getWorldBorder().setCenter(starter.getLocation());
-            this.walls.world.positionOne[0] = starter.getLocation().getBlockX() + size;
-            this.walls.world.positionOne[1] = starter.getLocation().getBlockZ() + size;
-            this.walls.world.positionTwo[0] = starter.getLocation().getBlockX() - size;
-            this.walls.world.positionTwo[1] = starter.getLocation().getBlockZ() - size;
+            this.arena.getWorld().world = starter.getWorld();
+            this.arena.getWorld().world.getWorldBorder().setCenter(starter.getLocation());
+            this.arena.getWorld().positionOne[0] = starter.getLocation().getBlockX() + size;
+            this.arena.getWorld().positionOne[1] = starter.getLocation().getBlockZ() + size;
+            this.arena.getWorld().positionTwo[0] = starter.getLocation().getBlockX() - size;
+            this.arena.getWorld().positionTwo[1] = starter.getLocation().getBlockZ() - size;
         }
 
-        this.walls.world.world.getWorldBorder().setSize((size * 2) - 2);
-        this.walls.world.world.setTime(1000);
+        this.arena.getWorld().world.getWorldBorder().setSize((size * 2) - 2);
+        this.arena.getWorld().world.setTime(1000);
 
         // Handle teams
-        if (Bukkit.getOnlinePlayers().size() >= 1) {
-            new Team(0, false, this.walls);
+        java.util.List<Player> arenaPlayers = this.arena.getPlayers();
+        boolean[] needs = new boolean[] { false, false, false, false };
+        if (arenaPlayers.size() >= 1) needs[0] = true;
+        if (arenaPlayers.size() >= 2) needs[1] = true;
+        if (arenaPlayers.size() >= 3) needs[2] = true;
+        if (arenaPlayers.size() >= 4) needs[3] = true;
+        for (Player p : arenaPlayers) {
+            Integer pref = this.arena.getTeamPreference(p);
+            if (pref != null && pref >= 0 && pref < 4) {
+                needs[pref] = true;
+            }
         }
-        if (Bukkit.getOnlinePlayers().size() >= 2) {
-            new Team(1, false, this.walls);
-        }
-        if (Bukkit.getOnlinePlayers().size() >= 3) {
-            new Team(2, false, this.walls);
-        }
-        if (Bukkit.getOnlinePlayers().size() >= 4) {
-            new Team(3, false, this.walls);
+        for (int id = 0; id < 4; id++) {
+            if (needs[id]) {
+                new Team(id, false, this.arena);
+            }
         }
 
-        this.walls.world.save();
-        this.walls.world.wallBlocks();
+        this.arena.getWorld().save();
+        this.arena.getWorld().wallBlocks();
         
+        java.util.Map<Integer, java.util.List<Player>> preferred = new java.util.HashMap<>();
+        for (Player p : arenaPlayers) {
+            Integer pref = this.arena.getTeamPreference(p);
+            if (pref != null && pref >= 0 && pref < 4) {
+                preferred.computeIfAbsent(pref, k -> new java.util.ArrayList<>()).add(p);
+            }
+        }
+
+        for (Team t : teams) {
+            java.util.List<Player> prefList = preferred.get(t.team);
+            if (prefList == null) continue;
+            for (Player p : prefList) {
+                t.members.add(p);
+                t.readyPlayer(p);
+            }
+        }
+
         int i = 0;
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            teams.get(i % 4).members.add(p);
-            teams.get(i % 4).readyPlayer(p);
+        java.util.List<Team> teamList = new java.util.ArrayList<>(teams);
+        for (Player p : arenaPlayers) {
+            Integer pref = this.arena.getTeamPreference(p);
+            if (pref != null && pref >= 0 && pref < 4) continue;
+            if (teamList.isEmpty()) break;
+            Team t = teamList.get(i % teamList.size());
+            t.members.add(p);
+            t.readyPlayer(p);
             i++;
         }
 
         // Register events
         if (Config.data.getBoolean("events.tnt.enabled"))
-            new TNTSpawn("TNT Spawn", this.walls);
+            new TNTSpawn("TNT Spawn", this.arena);
         if (Config.data.getBoolean("events.blindSnail.enabled"))
-            new BlindSnail("Blind Snail", this.walls);
+            new BlindSnail("Blind Snail", this.arena);
         if (Config.data.getBoolean("events.locationSwap.enabled"))
-            new LocationSwap("Player Location Swap", this.walls);
+            new LocationSwap("Player Location Swap", this.arena);
         if (Config.data.getBoolean("events.supplyChest.enabled"))
-            new SupplyChest("Supply Chest", this.walls);
+            new SupplyChest("Supply Chest", this.arena);
         if (Config.data.getBoolean("events.gregs.enabled"))
-            new FreeFood("Free Food / Chicken Explosion", this.walls);
+            new FreeFood("Free Food / Chicken Explosion", this.arena);
         if (Config.data.getBoolean("events.reveal.enabled"))
-            new LocationReveal("Location Reveal", this.walls);
+            new LocationReveal("Location Reveal", this.arena);
         if (Config.data.getBoolean("events.sinkHole.enabled"))
-            new SinkHole("Sink Hole", this.walls);
+            new SinkHole("Sink Hole", this.arena);
         if (Config.data.getBoolean("events.hailStorm.enabled"))
-            new HailStorm("Hail of Arrows", this.walls);
+            new HailStorm("Hail of Arrows", this.arena);
         if (Config.data.getBoolean("events.bossMan.enabled"))
-            new BossMan("Boss Man", this.walls);
+            new BossMan("Boss Man", this.arena);
         if (Config.data.getBoolean("events.itemCheck.enabled"))
-            new ItemCheck("Item Check", this.walls);
+            new ItemCheck("Item Check", this.arena);
         if (Config.data.getBoolean("events.bombingRun.enabled"))
-            new BombingRun("Bombing Run", this.walls);
+            new BombingRun("Bombing Run", this.arena);
 
         started = true;
         time = 0;
         eventTimer = eventCooldown;
         borderCloseTimer = borderCloseTime;
-        gameLoopID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Utils.getPlugin(), new Loop(walls), 20L, 20L);
+        gameLoopID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Utils.getPlugin(), new Loop(arena), 20L, 20L);
 
         Utils.getPlugin().getLogger().info("Started game with teams: ");
         for (Team t : aliveTeams) {
@@ -276,9 +346,9 @@ public class Game {
 
         Bukkit.getScheduler().cancelTask(gameLoopID);
         if (Utils.getPlugin().isEnabled()) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Utils.getPlugin(), this.walls.world::reset, 20*7);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Utils.getPlugin(), this.arena.getWorld()::reset, 20*7);
         } else {
-            this.walls.world.reset();
+            this.arena.getWorld().reset();
         }
 
         if (!forced) {
@@ -300,19 +370,25 @@ public class Game {
                 Utils.getPlugin().getLogger().warning(ex.toString());
             }
         }
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : this.arena.getPlayers()) {
             if (!forced && winningTeam != null) {
-                p.sendTitle(Utils.formatText(winningTeam.teamColor + "&l" + winningTeam.teamName + " Team"), Utils.formatText(winningTeam.teamColor + "IS THE WINNER!"), 10, 80, 20);
+                Utils.sendTitle(
+                        p,
+                        Messages.raw("title.win_title", java.util.Map.of("team", winningTeam.teamColor + "&l" + winningTeam.teamName)),
+                        Messages.raw("title.win_subtitle", java.util.Map.of("team", winningTeam.teamColor)),
+                        10, 80, 20
+                );
             }
-            p.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-            p.sendMessage(Utils.formatText("&aThe Walls has ended!"));
-            p.setDisplayName(p.getName());
+            p.sendMessage(Messages.msg("game.end"));
+            p.displayName(Component.text(p.getName()));
             p.getInventory().clear();
-            p.setPlayerListName(p.getName());
+            p.playerListName(Component.text(p.getName()));
             p.setGameMode(GameMode.SURVIVAL);
         }
-        Events.events.clear();
+        clearBoards();
+        events.clear();
         teams.clear();
         aliveTeams.clear();
+        this.arena.stopLobbyCountdown();
     }
 }

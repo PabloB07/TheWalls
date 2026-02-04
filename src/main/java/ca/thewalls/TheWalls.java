@@ -9,14 +9,27 @@ import ca.thewalls.Walls.World;
 
 public final class TheWalls extends JavaPlugin {
 
-    public Game game = new Game(this);
-    public World world = new World(this);
-    public Utils utils = new Utils(this);
+    public ArenaManager arenas;
+    public Arena mainArena;
+    public Game game;
+    public World world;
+    public Utils utils;
+    public com.samjakob.spigui.SpiGUI spigui;
+    public LobbyHolograms lobbyHolograms;
 
     @Override
     public void onEnable() {
         // Setup/Check for config file
         Config.initializeData();
+        Messages.initialize(this);
+        spigui = new com.samjakob.spigui.SpiGUI(this);
+        arenas = new ArenaManager(this);
+        mainArena = arenas.createMainArena("main");
+        // Legacy fields for current single-arena behavior
+        game = mainArena.getGame();
+        world = mainArena.getWorld();
+        utils = mainArena.getUtils();
+        lobbyHolograms = new LobbyHolograms(this);
 
         // Register commands
         this.getCommand("wstart").setExecutor(new WStart(this));
@@ -26,6 +39,9 @@ public final class TheWalls extends JavaPlugin {
         this.getCommand("wforceteam").setTabCompleter(new WForceTeamCompleter(this));
         this.getCommand("wleaderboard").setExecutor(new WLeaderboard(this));
         this.getCommand("wevents").setExecutor(new WEvents(this));
+        this.getCommand("wreload").setExecutor(new WReload(this));
+        this.getCommand("walls").setExecutor(new WallsInfo(this));
+        this.getCommand("walls").setTabCompleter(new ca.thewalls.Commands.WallsCompleter(this));
 
         // Register Listeners
         this.getServer().getPluginManager().registerEvents(new PlayerLeave(this), this);
@@ -34,12 +50,46 @@ public final class TheWalls extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new PlayerDeath(this), this);
         this.getServer().getPluginManager().registerEvents(new EntityDeath(this), this);
         this.getServer().getPluginManager().registerEvents(new EntityDamage(this), this);
+        this.getServer().getPluginManager().registerEvents(new JoinSign(this), this);
+        this.getServer().getPluginManager().registerEvents(new LobbyProtection(this), this);
+        this.getServer().getPluginManager().registerEvents(new LobbyItemsListener(this), this);
+
+        // Lobby tick: update lobby boards
+        this.getServer().getScheduler().runTaskTimer(this, () -> {
+            if (arenas == null) return;
+            for (Arena arena : arenas.getArenas().values()) {
+                arena.getGame().updateLobbyBoards();
+            }
+        }, 20L, 20L);
+
+        // Sign tick: update dynamic signs
+        this.getServer().getScheduler().runTaskTimer(this, () -> {
+            if (arenas == null) return;
+            SignUpdater.updateAll(this);
+        }, 40L, 40L);
+
+        // Hologram tick: keep lobby holograms synced
+        this.getServer().getScheduler().runTaskTimer(this, () -> {
+            if (lobbyHolograms == null || !lobbyHolograms.isAvailable()) return;
+            lobbyHolograms.refreshAll();
+        }, 20L, 20L);
     }
 
     @Override
     public void onDisable() {
-        if (game.started) {
-            game.end(true, null);
+        if (arenas != null) {
+            for (Arena arena : arenas.getArenas().values()) {
+                if (arena.getGame().started) {
+                    arena.getGame().end(true, null);
+                }
+            }
         }
+        if (lobbyHolograms != null) {
+            lobbyHolograms.shutdown();
+        }
+    }
+
+    public Arena getArenaByPlayer(org.bukkit.entity.Player player) {
+        return arenas == null ? null : arenas.getArenaByPlayer(player);
     }
 }
