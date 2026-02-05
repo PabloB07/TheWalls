@@ -50,6 +50,8 @@ public class SignUpdater {
         side.line(1, line1);
         side.line(2, line2);
         side.line(3, line3);
+        sign.setEditable(false);
+        sign.setWaxed(true);
         sign.update();
     }
 

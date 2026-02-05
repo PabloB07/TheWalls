@@ -43,9 +43,14 @@ public class JoinSign implements Listener {
         e.line(2, Component.text(arenaName));
         Config.addArenaSign(arenaName, e.getBlock().getLocation());
         SignUpdater.updateSign(walls, e.getBlock().getLocation(), arenaName);
+        if (e.getBlock().getState() instanceof Sign sign) {
+            sign.setEditable(false);
+            sign.setWaxed(true);
+            sign.update();
+        }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onSignUse(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         Block block = e.getClickedBlock();
@@ -67,7 +72,10 @@ public class JoinSign implements Listener {
         }
         String arenaName = line2.trim();
         e.setCancelled(true);
+        e.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
+        e.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
         sign.setEditable(false);
+        sign.setWaxed(true);
         sign.update();
         walls.arenas.joinPlayer(player, arenaName);
         player.sendMessage(Messages.msg("walls.joined", java.util.Map.of("arena", arenaName)));
