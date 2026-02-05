@@ -13,6 +13,7 @@ public final class LobbyHolograms {
     private boolean available;
     private boolean warned;
     private final Map<String, Object> holograms = new HashMap<>();
+    private final java.util.Set<String> spawned = new java.util.HashSet<>();
 
     public LobbyHolograms(TheWalls plugin) {
         this.plugin = plugin;
@@ -61,7 +62,11 @@ public final class LobbyHolograms {
         Location display = lobby.clone().add(0.0, 2.2, 0.0);
         setMiniMessageText(hologram, text);
         setLocation(hologram, display);
-        spawn(hologram, display);
+        if (!spawned.contains(id)) {
+            remove(id);
+            spawn(hologram, display);
+            spawned.add(id);
+        }
     }
 
     public void shutdown() {
@@ -70,6 +75,12 @@ public final class LobbyHolograms {
             remove(id);
         }
         holograms.clear();
+        spawned.clear();
+    }
+
+    public void removeArena(Arena arena) {
+        if (!available || arena == null) return;
+        remove(getId(arena));
     }
 
     private void setup() {
@@ -133,6 +144,7 @@ public final class LobbyHolograms {
         tryInvoke(manager, "remove", id);
         tryInvoke(manager, "delete", id);
         holograms.remove(id);
+        spawned.remove(id);
     }
 
     private boolean tryInvoke(Object target, String name, Object... args) {

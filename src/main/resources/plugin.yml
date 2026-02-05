@@ -6,28 +6,10 @@ authors: [ CKAY9 ]
 description: Play The Walls in any Minecraft world
 softdepend: [HologramLib, PacketEvents]
 commands:
-  wstart:
-    description: Start a new game of The Walls
-    usage: /wstart [arena] [size] [prepTime] [borderCloseTime] [borderCloseSpeed] [eventCooldown]
-  wend:
-    description: End the ongoing game of The Walls
-    usage: /wend [arena]
-  wforceteam:
-    description: Switch/Respawn a player to a team
-    usage: /wforceteam <player> <team>
-  wleaderboard:
-    description: Get the top 5 best players
-    usage: /wleaderboard
-  wevents:
-    description: Get the active events for The Walls
-    usage: /wevents
-  wreload:
-    description: Reload The Walls config and messages
-    usage: /wreload
   walls:
     description: The Walls main command
     aliases: [w]
-    usage: /walls [list|join|leave|team|lobby|sign|arena]
+    usage: /walls <start|end|forceteam|leaderboard|events|reload|list|join|leave|team|lobby|sign|arena>
 permissions:
   thewalls.start:
     default: op

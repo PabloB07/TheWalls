@@ -199,9 +199,7 @@ public class Config {
                 data.set("events.bombingRun.detonationtime", 10);
             }
             if (!data.isSet("arenas.list")) {
-                java.util.List<String> list = new java.util.ArrayList<>();
-                list.add("main");
-                data.set("arenas.list", list);
+                data.set("arenas.list", new java.util.ArrayList<String>());
             }
 
             data.save(dataFile);
@@ -283,6 +281,11 @@ public class Config {
         float yaw = (float) lobbies.getDouble(key + ".yaw");
         float pitch = (float) lobbies.getDouble(key + ".pitch");
         return new Location(world, x, y, z, yaw, pitch);
+    }
+
+    public static String getArenaGameWorld(String arenaName) {
+        if (arenaName == null || data == null) return null;
+        return data.getString("arenas." + arenaName.toLowerCase() + ".gameWorld", null);
     }
 
     public static void removeArenaLobby(String arenaName) {

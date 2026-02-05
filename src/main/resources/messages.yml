@@ -11,6 +11,7 @@ game:
   win: "{team}&2 has won The Walls!"
   end: "&aThe Walls has ended!"
   no_players: "&cThere are no online players!"
+  stats: "<gray>Your stats:</gray> <green>{wins}</green> wins <gray>/</gray> <red>{losses}</red> losses"
 
 title:
   walls_fallen: "&aThe Walls have fallen!"
@@ -79,6 +80,7 @@ walls:
   sign_usage: "<gray>Use:</gray> <green>/walls sign add <arena></green>"
   sign_invalid: "<red>Look at a sign within 5 blocks.</red>"
   sign_added: "<green>Sign registered for arena:</green> <yellow>{arena}</yellow>"
+arena:
 menu:
   arena_title: "<gold><bold>Select Arena</bold></gold>"
   arena_item: "<yellow>{arena}</yellow>"
@@ -93,5 +95,9 @@ arena:
   deleted: "<green>Arena deleted:</green> <yellow>{arena}</yellow>"
   exists: "<red>Arena already exists:</red> <yellow>{arena}</yellow>"
   not_found: "<red>Arena not found:</red> <yellow>{arena}</yellow>"
-  delete_main: "<red>You can't delete the main arena.</red>"
   info: "<gold><bold>{arena}</bold></gold> <gray>-</gray> <yellow>{players}</yellow> players <gray>-</gray> <white>{status}</white> <gray>-</gray> lobby: <white>{lobby}</white>"
+wstart:
+  arena_required: "<red>You must specify an arena when running this from console.</red>"
+  no_players: "<red>No players are assigned to arena:</red> <yellow>{arena}</yellow>"
+  invalid_number: "<red>Invalid number in arguments.</red>"
+  world_missing: "<red>World not found:</red> <yellow>{world}</yellow>"

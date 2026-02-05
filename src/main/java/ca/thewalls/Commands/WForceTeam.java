@@ -37,7 +37,11 @@ public class WForceTeam implements CommandExecutor {
             if (arena == null) {
                 arena = (sender instanceof Player)
                         ? this.walls.getArenaByPlayer((Player) sender)
-                        : this.walls.mainArena;
+                        : null;
+            }
+            if (arena == null) {
+                sender.sendMessage(Messages.msg("wstart.arena_required"));
+                return false;
             }
             if (!arena.getGame().started) {
                 sender.sendMessage(Utils.format("&cThere is no game currently going on!"));

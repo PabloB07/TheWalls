@@ -10,10 +10,6 @@ import ca.thewalls.Walls.World;
 public final class TheWalls extends JavaPlugin {
 
     public ArenaManager arenas;
-    public Arena mainArena;
-    public Game game;
-    public World world;
-    public Utils utils;
     public com.samjakob.spigui.SpiGUI spigui;
     public LobbyHolograms lobbyHolograms;
 
@@ -24,22 +20,10 @@ public final class TheWalls extends JavaPlugin {
         Messages.initialize(this);
         spigui = new com.samjakob.spigui.SpiGUI(this);
         arenas = new ArenaManager(this);
-        mainArena = arenas.createMainArena("main");
-        // Legacy fields for current single-arena behavior
-        game = mainArena.getGame();
-        world = mainArena.getWorld();
-        utils = mainArena.getUtils();
+        // No default arena: all arenas are explicit and created via config/commands.
         lobbyHolograms = new LobbyHolograms(this);
 
         // Register commands
-        this.getCommand("wstart").setExecutor(new WStart(this));
-        this.getCommand("wstart").setTabCompleter(new WStartCompleter(this));
-        this.getCommand("wend").setExecutor(new WEnd(this));
-        this.getCommand("wforceteam").setExecutor(new WForceTeam(this));
-        this.getCommand("wforceteam").setTabCompleter(new WForceTeamCompleter(this));
-        this.getCommand("wleaderboard").setExecutor(new WLeaderboard(this));
-        this.getCommand("wevents").setExecutor(new WEvents(this));
-        this.getCommand("wreload").setExecutor(new WReload(this));
         this.getCommand("walls").setExecutor(new WallsInfo(this));
         this.getCommand("walls").setTabCompleter(new ca.thewalls.Commands.WallsCompleter(this));
 

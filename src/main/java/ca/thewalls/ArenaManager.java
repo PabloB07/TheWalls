@@ -12,16 +12,9 @@ public class ArenaManager {
     private final TheWalls plugin;
     private final Map<String, Arena> arenas = new HashMap<>();
     private final Map<java.util.UUID, String> playerArena = new HashMap<>();
-    private Arena mainArena;
-
     public ArenaManager(TheWalls plugin) {
         this.plugin = plugin;
         loadArenas();
-    }
-
-    public Arena createMainArena(String name) {
-        mainArena = createArena(name);
-        return mainArena;
     }
 
     public Arena createArena(String name) {
@@ -40,11 +33,6 @@ public class ArenaManager {
         return arenas.get(name.toLowerCase());
     }
 
-    public Arena getMainArena() {
-        return mainArena;
-    }
-
-    // Base routing stub: until multi-arena join/leave is implemented, use main arena.
     public Arena getArenaByPlayer(Player player) {
         if (player == null) return null;
         String arenaName = playerArena.get(player.getUniqueId());
@@ -98,7 +86,6 @@ public class ArenaManager {
     public boolean deleteArena(String name) {
         if (name == null) return false;
         String key = name.toLowerCase();
-        if (mainArena != null && mainArena.getName().equalsIgnoreCase(key)) return false;
         Arena arena = arenas.remove(key);
         if (arena == null) return false;
 
@@ -106,18 +93,14 @@ public class ArenaManager {
             arena.getGame().end(true, null);
         }
         for (Player p : new java.util.ArrayList<>(getPlayers(arena))) {
-            assignPlayer(p, mainArena.getName());
-            if (mainArena.getLobby() != null) {
-                p.teleport(mainArena.getLobby());
-            }
-            ca.thewalls.Listeners.LobbyItems.give(p, mainArena);
+            clearPlayer(p);
+            ca.thewalls.Listeners.LobbyItems.clear(p);
         }
         Config.clearArenaSigns(key);
         Config.removeArenaLobby(key);
         Config.removeArenaName(key);
-        onPlayerCountChanged(mainArena);
         if (plugin.lobbyHolograms != null) {
-            plugin.lobbyHolograms.updateArena(mainArena);
+            plugin.lobbyHolograms.removeArena(arena);
         }
         return true;
     }
@@ -157,7 +140,11 @@ public class ArenaManager {
             arena.stopLobbyCountdown();
         }
         if (plugin.lobbyHolograms != null) {
-            plugin.lobbyHolograms.updateArena(arena);
+            if (arena.getPlayers().isEmpty()) {
+                plugin.lobbyHolograms.removeArena(arena);
+            } else {
+                plugin.lobbyHolograms.updateArena(arena);
+            }
         }
     }
 }

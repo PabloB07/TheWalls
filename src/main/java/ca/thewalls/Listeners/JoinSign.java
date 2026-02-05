@@ -35,7 +35,8 @@ public class JoinSign implements Listener {
 
         String arenaName = PlainTextComponentSerializer.plainText().serialize(e.line(2));
         if (arenaName == null || arenaName.trim().isEmpty()) {
-            arenaName = "main";
+            e.getPlayer().sendMessage(Messages.msg("walls.join_usage"));
+            return;
         }
         e.line(0, Component.text("[TheWalls]"));
         e.line(1, Component.text("Join"));
@@ -60,7 +61,14 @@ public class JoinSign implements Listener {
         if (!line1.equalsIgnoreCase("Join")) return;
 
         Player player = e.getPlayer();
-        String arenaName = (line2 == null || line2.trim().isEmpty()) ? "main" : line2.trim();
+        if (line2 == null || line2.trim().isEmpty()) {
+            player.sendMessage(Messages.msg("walls.join_usage"));
+            return;
+        }
+        String arenaName = line2.trim();
+        e.setCancelled(true);
+        sign.setEditable(false);
+        sign.update();
         walls.arenas.joinPlayer(player, arenaName);
         player.sendMessage(Messages.msg("walls.joined", java.util.Map.of("arena", arenaName)));
         if (walls.arenas.getArena(arenaName) != null && walls.arenas.getArena(arenaName).getLobby() == null) {

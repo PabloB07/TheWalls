@@ -22,15 +22,16 @@ public class WEnd implements CommandExecutor {
         }
         ca.thewalls.Arena arena = (sender instanceof org.bukkit.entity.Player)
                 ? this.walls.getArenaByPlayer((org.bukkit.entity.Player) sender)
-                : this.walls.mainArena;
-        if (arena == null) {
-            arena = this.walls.mainArena;
-        }
+                : null;
         if (args.length >= 1) {
             ca.thewalls.Arena target = this.walls.arenas.getArena(args[0]);
             if (target != null) {
                 arena = target;
             }
+        }
+        if (arena == null) {
+            sender.sendMessage(Messages.msg("wstart.arena_required"));
+            return false;
         }
 
         if (!arena.getGame().started) {

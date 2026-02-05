@@ -230,7 +230,22 @@ public class Game {
             return;
         }
 
-        if (starter == null) {
+        String configuredWorld = ca.thewalls.Config.getArenaGameWorld(this.arena.getName());
+        if (configuredWorld != null) {
+            this.arena.getWorld().world = Bukkit.getWorld(configuredWorld);
+            if (this.arena.getWorld().world == null) {
+                for (Player p : this.arena.getPlayers()) {
+                    p.sendMessage(Messages.msg("wstart.world_missing", java.util.Map.of("world", configuredWorld)));
+                }
+                return;
+            }
+            Location loc = new Location(this.arena.getWorld().world, Config.data.getDouble("theWalls.autoExecute.center.x"), 0, Config.data.getDouble("theWalls.autoExecute.center.z"));
+            this.arena.getWorld().world.getWorldBorder().setCenter(loc.getX(), loc.getZ());
+            this.arena.getWorld().positionOne[0] = loc.getBlockX() + size;
+            this.arena.getWorld().positionOne[1] = loc.getBlockZ() + size;
+            this.arena.getWorld().positionTwo[0] = loc.getBlockX() - size;
+            this.arena.getWorld().positionTwo[1] = loc.getBlockZ() - size;
+        } else if (starter == null) {
             this.arena.getWorld().world = Bukkit.getWorld(Objects.requireNonNull(Config.data.getString("theWalls.autoExecute.worldName")));
             assert this.arena.getWorld().world != null;
             Location loc = new Location(this.arena.getWorld().world, Config.data.getDouble("theWalls.autoExecute.center.x"), 0, Config.data.getDouble("theWalls.autoExecute.center.z"));
@@ -248,7 +263,11 @@ public class Game {
             this.arena.getWorld().positionTwo[1] = starter.getLocation().getBlockZ() - size;
         }
 
-        this.arena.getWorld().world.getWorldBorder().setSize((size * 2) - 2);
+        int safeSize = Math.max(1, size);
+        double borderSize = (safeSize * 2.0) - 2.0;
+        if (borderSize < 1.0) borderSize = 1.0;
+        if (borderSize > 5.9999968E7) borderSize = 5.9999968E7;
+        this.arena.getWorld().world.getWorldBorder().setSize(borderSize);
         this.arena.getWorld().world.setTime(1000);
 
         // Handle teams
@@ -263,6 +282,14 @@ public class Game {
             if (pref != null && pref >= 0 && pref < 4) {
                 needs[pref] = true;
             }
+        }
+        int enabledTeams = 0;
+        for (boolean need : needs) {
+            if (need) enabledTeams++;
+        }
+        if (arenaPlayers.size() >= 2 && enabledTeams < 2) {
+            needs[0] = true;
+            needs[1] = true;
         }
         for (int id = 0; id < 4; id++) {
             if (needs[id]) {
@@ -384,6 +411,16 @@ public class Game {
             p.getInventory().clear();
             p.playerListName(Component.text(p.getName()));
             p.setGameMode(GameMode.SURVIVAL);
+            int wins = Config.leaderboard.getInt(p.getUniqueId().toString() + ".wins");
+            int losses = Config.leaderboard.getInt(p.getUniqueId().toString() + ".losses");
+            p.sendMessage(Messages.msg("game.stats", java.util.Map.of(
+                    "wins", String.valueOf(wins),
+                    "losses", String.valueOf(losses)
+            )));
+            if (this.arena.getLobby() != null) {
+                p.teleport(this.arena.getLobby());
+            }
+            ca.thewalls.Listeners.LobbyItems.give(p, this.arena);
         }
         clearBoards();
         events.clear();

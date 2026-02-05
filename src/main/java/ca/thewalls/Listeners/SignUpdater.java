@@ -10,6 +10,8 @@ import org.bukkit.block.Sign;
 import net.kyori.adventure.text.Component;
 import org.bukkit.block.sign.SignSide;
 import org.bukkit.block.sign.Side;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 public class SignUpdater {
     private SignUpdater() {}
@@ -32,11 +34,22 @@ public class SignUpdater {
         Sign sign = (Sign) loc.getBlock().getState();
         SignSide side = sign.getSide(Side.FRONT);
         int players = arena.getPlayers().size();
+        int minPlayers = ca.thewalls.Config.data.getInt("lobby.minPlayers", 2);
+        int countdown = arena.getLobbyCountdown();
         String status = arena.getGame().started ? "In-Game" : "Lobby";
-        side.line(0, Component.text("[TheWalls]"));
-        side.line(1, Component.text(arena.getName()));
-        side.line(2, Component.text(status));
-        side.line(3, Component.text(players + " players"));
+        MiniMessage mm = MiniMessage.miniMessage();
+        Component line0 = mm.deserialize("<gradient:#ff8a00:#ffd000><bold>[TheWalls]</bold></gradient>");
+        Component line1 = mm.deserialize("<yellow>" + arena.getName() + "</yellow>");
+        Component line2 = mm.deserialize(status.equals("In-Game") ? "<red>In-Game</red>" : "<green>Lobby</green>");
+        String countText = players + "/" + minPlayers + " players";
+        if (!arena.getGame().started && countdown >= 0) {
+            countText = "Start: " + countdown + "s";
+        }
+        Component line3 = Component.text(countText, NamedTextColor.GRAY);
+        side.line(0, line0);
+        side.line(1, line1);
+        side.line(2, line2);
+        side.line(3, line3);
         sign.update();
     }
 

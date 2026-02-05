@@ -24,6 +24,24 @@ public class WallsInfo implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length >= 1) {
             String sub = args[0].toLowerCase();
+            if (sub.equals("start")) {
+                return new WStart(walls).onCommand(sender, command, label, slice(args, 1));
+            }
+            if (sub.equals("end")) {
+                return new WEnd(walls).onCommand(sender, command, label, slice(args, 1));
+            }
+            if (sub.equals("forceteam")) {
+                return new WForceTeam(walls).onCommand(sender, command, label, slice(args, 1));
+            }
+            if (sub.equals("leaderboard")) {
+                return new WLeaderboard(walls).onCommand(sender, command, label, slice(args, 1));
+            }
+            if (sub.equals("events")) {
+                return new WEvents(walls).onCommand(sender, command, label, slice(args, 1));
+            }
+            if (sub.equals("reload")) {
+                return new WReload(walls).onCommand(sender, command, label, slice(args, 1));
+            }
             if (sub.equals("list")) {
                 if (!sender.hasPermission("thewalls.walls.list") && !sender.isOp()) {
                     sender.sendMessage(Messages.msg("admin.no_permission"));
@@ -85,14 +103,22 @@ public class WallsInfo implements CommandExecutor {
                 }
                 String action = args[1].toLowerCase();
                 if (action.equals("set")) {
-                    String arenaName = args.length >= 3 ? args[2] : "main";
+                    if (args.length < 3) {
+                        sender.sendMessage(Messages.msg("walls.lobby_usage"));
+                        return true;
+                    }
+                    String arenaName = args[2];
                     Arena arena = walls.arenas.createArena(arenaName);
                     arena.setLobby(((Player) sender).getLocation());
                     sender.sendMessage(Messages.msg("walls.lobby_set", java.util.Map.of("arena", arena.getName())));
                     return true;
                 }
                 if (action.equals("tp")) {
-                    String arenaName = args.length >= 3 ? args[2] : "main";
+                    if (args.length < 3) {
+                        sender.sendMessage(Messages.msg("walls.lobby_usage"));
+                        return true;
+                    }
+                    String arenaName = args[2];
                     Arena arena = walls.arenas.getArena(arenaName);
                     if (arena == null || arena.getLobby() == null) {
                         sender.sendMessage(Messages.msg("walls.no_lobby", java.util.Map.of("arena", arenaName)));
@@ -160,10 +186,6 @@ public class WallsInfo implements CommandExecutor {
                         return true;
                     }
                     String arenaName = args[2];
-                    if (walls.mainArena != null && walls.mainArena.getName().equalsIgnoreCase(arenaName)) {
-                        sender.sendMessage(Messages.msg("arena.delete_main"));
-                        return true;
-                    }
                     boolean removed = walls.arenas.deleteArena(arenaName);
                     if (!removed) {
                         sender.sendMessage(Messages.msg("arena.not_found", java.util.Map.of("arena", arenaName)));
@@ -249,5 +271,10 @@ public class WallsInfo implements CommandExecutor {
         if (n.equals(t2) || n.equals("yellow")) return 2;
         if (n.equals(t3) || n.equals("green")) return 3;
         return -1;
+    }
+
+    private String[] slice(String[] args, int from) {
+        if (args == null || args.length <= from) return new String[0];
+        return java.util.Arrays.copyOfRange(args, from, args.length);
     }
 }

@@ -24,11 +24,6 @@ public class WStart implements CommandExecutor {
             return false;
         }
 
-        if (!(sender instanceof Player) && !Config.data.isSet("theWalls.autoExecute.center")) {
-            sender.sendMessage(Utils.format("&cYou need to be a player in the world to run this command or you can setup the default match config in config.yml!"));
-            return false;
-        }
-
         String arenaName = null;
         int index = 0;
         if (args.length >= 1 && !isInt(args[0])) {
@@ -37,16 +32,22 @@ public class WStart implements CommandExecutor {
         }
         ca.thewalls.Arena arena = (sender instanceof Player)
                 ? this.walls.getArenaByPlayer((Player) sender)
-                : this.walls.mainArena;
-        if (arena == null) {
-            arena = this.walls.mainArena;
-        }
+                : null;
         if (arenaName != null) {
             arena = this.walls.arenas.createArena(arenaName);
+        }
+        if (arena == null) {
+            sender.sendMessage(Messages.msg("wstart.arena_required"));
+            return false;
         }
 
         if (arena.getGame().started) {
             sender.sendMessage(Utils.format("&cThere is already an ongoing game of The Walls!"));
+            return false;
+        }
+
+        if (arena.getPlayers().isEmpty()) {
+            sender.sendMessage(Messages.msg("wstart.no_players", java.util.Map.of("arena", arena.getName())));
             return false;
         }
 
@@ -55,29 +56,32 @@ public class WStart implements CommandExecutor {
             // In case the admin doesn't properly setup game values
             arena.getGame().size = Config.data.getInt("theWalls.autoExecute.size");
             if (args.length >= index + 1) {
-                arena.getGame().size = Integer.parseInt(args[index]);
+                arena.getGame().size = parseInt(args[index], "size");
             }
             arena.getGame().prepTime = Config.data.getInt("theWalls.autoExecute.prepTime");
             if (args.length >= index + 2) {
-                arena.getGame().prepTime = Integer.parseInt(args[index + 1]);
+                arena.getGame().prepTime = parseInt(args[index + 1], "prepTime");
             }
             arena.getGame().borderCloseTime = Config.data.getInt("theWalls.autoExecute.timeUntilBorderClose");
             if (args.length >= index + 3) {
-                arena.getGame().borderCloseTime = Integer.parseInt(args[index + 2]);
+                arena.getGame().borderCloseTime = parseInt(args[index + 2], "borderCloseTime");
             }
             arena.getGame().borderCloseSpeed = Config.data.getInt("theWalls.autoExecute.speedOfBorderClose");
             if (args.length >= index + 4) {
-                arena.getGame().borderCloseSpeed = Integer.parseInt(args[index + 3]);
+                arena.getGame().borderCloseSpeed = parseInt(args[index + 3], "borderCloseSpeed");
             }
             arena.getGame().eventCooldown = Config.data.getInt("theWalls.autoExecute.eventCooldown");
             if (args.length >= index + 5) {
-                arena.getGame().eventCooldown = Integer.parseInt(args[index + 4]);
+                arena.getGame().eventCooldown = parseInt(args[index + 4], "eventCooldown");
             }
             if (sender instanceof Player) {
                 arena.getGame().start((Player) sender);
             } else {
                 arena.getGame().start(null);
             }
+        } catch (IllegalArgumentException ex) {
+            sender.sendMessage(Messages.msg("wstart.invalid_number"));
+            return false;
         } catch (Exception ex) {
             sender.sendMessage(Utils.format("&cAn error occured while starting The Walls!"));
             Utils.getPlugin().getLogger().warning(ex.toString());
@@ -95,5 +99,10 @@ public class WStart implements CommandExecutor {
         } catch (NumberFormatException ex) {
             return false;
         }
+    }
+
+    private int parseInt(String input, String name) {
+        if (input == null) throw new IllegalArgumentException(name);
+        return Integer.parseInt(input);
     }
 }

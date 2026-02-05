@@ -22,6 +22,12 @@ public class WallsCompleter implements TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> completions = new ArrayList<>();
         if (args.length == 1) {
+            addIfPerm(sender, completions, "start", "thewalls.start");
+            addIfPerm(sender, completions, "end", "thewalls.end");
+            addIfPerm(sender, completions, "forceteam", "thewalls.forceteam");
+            addIfPerm(sender, completions, "leaderboard", "thewalls.leaderboard");
+            addIfPerm(sender, completions, "events", "thewalls.events");
+            addIfPerm(sender, completions, "reload", "thewalls.reload");
             addIfPerm(sender, completions, "list", "thewalls.walls.list");
             addIfPerm(sender, completions, "join", "thewalls.walls.join");
             addIfPerm(sender, completions, "leave", "thewalls.walls.leave");
@@ -34,6 +40,20 @@ public class WallsCompleter implements TabCompleter {
 
         String sub = args[0].toLowerCase();
         if (args.length == 2) {
+            if (sub.equals("start")) {
+                completions.addAll(walls.arenas.getArenas().keySet());
+                return StringUtil.copyPartialMatches(args[1], completions, new ArrayList<>());
+            }
+            if (sub.equals("end")) {
+                completions.addAll(walls.arenas.getArenas().keySet());
+                return StringUtil.copyPartialMatches(args[1], completions, new ArrayList<>());
+            }
+            if (sub.equals("forceteam")) {
+                for (org.bukkit.entity.Player p : org.bukkit.Bukkit.getOnlinePlayers()) {
+                    completions.add(p.getName());
+                }
+                return StringUtil.copyPartialMatches(args[1], completions, new ArrayList<>());
+            }
             if (sub.equals("join") || sub.equals("lobby") || sub.equals("sign") || sub.equals("arena")) {
                 if (sub.equals("lobby")) {
                     addIfPerm(sender, completions, "set", "thewalls.walls.lobby");
@@ -56,6 +76,14 @@ public class WallsCompleter implements TabCompleter {
         }
 
         if (args.length == 3) {
+            if (sub.equals("forceteam")) {
+                completions.addAll(teamNames());
+                return StringUtil.copyPartialMatches(args[2], completions, new ArrayList<>());
+            }
+            if (sub.equals("start")) {
+                completions.add("size");
+                return StringUtil.copyPartialMatches(args[2], completions, new ArrayList<>());
+            }
             if (sub.equals("lobby")) {
                 completions.addAll(walls.arenas.getArenas().keySet());
                 return StringUtil.copyPartialMatches(args[2], completions, new ArrayList<>());
