@@ -13,6 +13,8 @@ public class Arena {
     private final java.util.Map<java.util.UUID, Integer> teamPrefs = new java.util.HashMap<>();
     private int lobbyCountdownTask = -1;
     private int lobbyCountdown = -1;
+    private int lobbyEndCooldownTask = -1;
+    private int lobbyEndCooldown = -1;
 
     public Arena(TheWalls plugin, String name) {
         this.plugin = plugin;
@@ -88,6 +90,10 @@ public class Arena {
         return lobbyCountdown;
     }
 
+    public int getLobbyEndCooldown() {
+        return lobbyEndCooldown;
+    }
+
     public void startLobbyCountdown(int seconds) {
         if (lobbyCountdownTask != -1) return;
         lobbyCountdown = seconds;
@@ -118,5 +124,25 @@ public class Arena {
         }
         lobbyCountdownTask = -1;
         lobbyCountdown = -1;
+    }
+
+    public void startLobbyEndCooldown(int seconds) {
+        if (lobbyEndCooldownTask != -1) return;
+        lobbyEndCooldown = seconds;
+        lobbyEndCooldownTask = org.bukkit.Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+            if (lobbyEndCooldown <= 0) {
+                stopLobbyEndCooldown();
+                return;
+            }
+            lobbyEndCooldown--;
+        }, 20L, 20L);
+    }
+
+    public void stopLobbyEndCooldown() {
+        if (lobbyEndCooldownTask != -1) {
+            org.bukkit.Bukkit.getScheduler().cancelTask(lobbyEndCooldownTask);
+        }
+        lobbyEndCooldownTask = -1;
+        lobbyEndCooldown = -1;
     }
 }

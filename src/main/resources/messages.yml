@@ -61,7 +61,7 @@ scoreboard:
   lobby_players: "<gray>Players:</gray> <yellow>{current}</yellow><gray>/<yellow>{min}</yellow>"
   lobby_starting: "<green>Starting in:</green> <yellow>{seconds}s</yellow>"
   lobby_waiting: "<gray>Waiting for players...</gray>"
-  game_title: "<gold><bold>The Walls</bold></gold> <gray>•</gray> {team}"
+  game_title: "<gold><bold>The Walls</bold></gold> <gray>•</gray> <reset>{team}"
   game_phase_prep: "<yellow>Prep:</yellow> <white>{seconds}s</white>"
   game_phase_fight: "<red>Fight!</red>"
   game_event_in: "<gray>Event:</gray> <yellow>{seconds}s</yellow>"
@@ -70,8 +70,8 @@ scoreboard:
   game_players: "<gray>Players:</gray> <yellow>{current}</yellow>"
   game_you: "<gray>You:</gray> {team} <gray>|</gray> <red>Kills:</red> <white>{kills}</white>"
   game_teams: "<aqua><bold>Teams</bold></aqua>"
-  game_team_alive: "{team} <gray>-</gray> <green>{alive}</green>"
-  game_team_dead: "{team} <gray>-</gray> <red>DEAD</red>"
+  game_team_alive: "<reset>{team} <gray>-</gray> <green>{alive}</green>"
+  game_team_dead: "<reset>{team} <gray>-</gray> <red>DEAD</red>"
 hologram:
   top:
     title: "<gold><bold>TOP</bold></gold>"
@@ -106,6 +106,7 @@ walls:
   sign_usage: "<gray>Use:</gray> <green>/walls sign add <arena></green>"
   sign_invalid: "<red>Look at a sign within 5 blocks.</red>"
   sign_added: "<green>Sign registered for arena:</green> <yellow>{arena}</yellow>"
+  forceteam_usage: "<gray>Use:</gray> <green>/walls forceteam <player> <team> [arena]</green>"
 hub:
   usage: "<gray>Use:</gray> <green>/walls hub <set|tp|off></green>"
   set: "<green>Hub set.</green>"

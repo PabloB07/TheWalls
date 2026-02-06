@@ -143,6 +143,10 @@ public class ArenaManager {
         if (arena.getGame().started) return;
         int minPlayers = Config.data.getInt("lobby.minPlayers", 2);
         int countdown = Config.data.getInt("lobby.countdownSeconds", 20);
+        if (arena.getLobbyEndCooldown() >= 0) {
+            arena.stopLobbyCountdown();
+            return;
+        }
         if (arena.getPlayers().size() >= minPlayers) {
             arena.startLobbyCountdown(countdown);
         } else {

@@ -431,16 +431,25 @@ public class Game {
                     "wins", String.valueOf(wins),
                     "losses", String.valueOf(losses)
             )));
-            if (this.arena.getLobby() != null) {
-                p.teleport(this.arena.getLobby());
-            }
-            ca.thewalls.Listeners.LobbyItems.give(p, this.arena);
         }
         clearBoards();
         events.clear();
         teams.clear();
         aliveTeams.clear();
         this.arena.stopLobbyCountdown();
+        int endCooldown = Config.data.getInt("lobby.endCooldownSeconds", 10);
+        this.arena.startLobbyEndCooldown(endCooldown);
+        if (this.arena.getLobby() != null) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Utils.getPlugin(), () -> {
+                for (Player p : this.arena.getPlayers()) {
+                    p.teleport(this.arena.getLobby());
+                    ca.thewalls.Listeners.LobbyItems.give(p, this.arena);
+                }
+                this.arena.stopLobbyEndCooldown();
+            }, endCooldown * 20L);
+        } else {
+            this.arena.stopLobbyEndCooldown();
+        }
     }
 
     public void enableTablistHeartsForPlayer(Player player) {

@@ -120,6 +120,10 @@ public class WallsCompleter implements TabCompleter {
         }
 
         if (args.length == 4) {
+            if (sub.equals("forceteam")) {
+                completions.addAll(walls.arenas.getArenas().keySet());
+                return StringUtil.copyPartialMatches(args[3], completions, new ArrayList<>());
+            }
             return Collections.emptyList();
         }
 

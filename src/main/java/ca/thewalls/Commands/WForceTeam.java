@@ -27,6 +27,10 @@ public class WForceTeam implements CommandExecutor {
             sender.sendMessage(Messages.msg("admin.no_permission"));
             return false;
         }
+        if (args.length < 2) {
+            sender.sendMessage(Messages.msg("walls.forceteam_usage"));
+            return false;
+        }
         try {
             Player target = Bukkit.getPlayer(args[0]);
             if (target == null) {
@@ -34,6 +38,13 @@ public class WForceTeam implements CommandExecutor {
                 return false;
             }
             ca.thewalls.Arena arena = this.walls.getArenaByPlayer(target);
+            if (arena == null && args.length >= 3) {
+                ca.thewalls.Arena byName = this.walls.arenas.getArena(args[2]);
+                if (byName != null) {
+                    arena = byName;
+                    this.walls.arenas.assignPlayer(target, byName.getName());
+                }
+            }
             if (arena == null) {
                 arena = (sender instanceof Player)
                         ? this.walls.getArenaByPlayer((Player) sender)
@@ -51,11 +62,7 @@ public class WForceTeam implements CommandExecutor {
                 sender.sendMessage(Utils.format("&cThis command cannot be performed when the borders are closing!"));
                 return false;
             }
-            StringBuilder newTeamBuilder = new StringBuilder();
-            for (int i = 1; i < args.length; i++) {
-                newTeamBuilder.append(args[i]);
-            }
-            String newTeam = newTeamBuilder.toString();
+            String newTeam = args[1];
             boolean flag = false;
 
             for (int i = 0; i < arena.getGame().teams.size(); i++) {

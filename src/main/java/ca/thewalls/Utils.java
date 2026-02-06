@@ -27,7 +27,12 @@ public class Utils {
     }
 
     public static String toLegacy(Component component) {
-        return LEGACY.serialize(component);
+        String legacy = LEGACY.serialize(component);
+        legacy = legacy.replace("§r", "");
+        if (legacy.length() > 0) {
+            legacy = "§r" + legacy;
+        }
+        return legacy;
     }
 
     // Legacy string format for APIs that only accept String (scoreboards, etc.)

@@ -160,6 +160,9 @@ public class Config {
             if (!data.isSet("lobby.countdownSeconds")) {
                 data.set("lobby.countdownSeconds", 20);
             }
+            if (!data.isSet("lobby.endCooldownSeconds")) {
+                data.set("lobby.endCooldownSeconds", 10);
+            }
             if (!data.isSet("lobby.items.enabled")) {
                 data.set("lobby.items.enabled", true);
                 data.set("lobby.items.teamSelectorSlot", 0);
