@@ -34,10 +34,7 @@ class BombingRunHandler {
                 this.arena.getWorld().positionOne[1]
         };
 
-        int tntSpread = Config.data.getInt("events.bombingRun.tntSpread", 2);
-        if (tntSpread <= 0) {
-            tntSpread = 1;
-        }
+        final int tntSpread = Math.max(1, Config.data.getInt("events.bombingRun.tntSpread", 2));
         int totalDifference = Math.abs(zPoints[0] - zPoints[1]);
         int totalIterations = Math.max(1, totalDifference / tntSpread);
 
@@ -71,7 +68,7 @@ class BombingRunHandler {
                 int timer = Config.data.getInt("events.bombingRun.detonationtime", 10);
                 int power = Config.data.getInt("events.bombingRun.tntPower",  16);
 
-                int startZ = Math.min(zPoints[0], zPoints[1]);
+                final int startZ = Math.min(zPoints[0], zPoints[1]);
                 for (int i = 0; i < totalIterations; i++) {
                     Location loc = new Location(arena.getWorld().world, xPos, 325, startZ + ((i + 1) * tntSpread));
                     TNTPrimed tnt = (TNTPrimed) arena.getWorld().world.spawnEntity(loc, EntityType.TNT);
@@ -84,6 +81,7 @@ class BombingRunHandler {
                     }
 
                     final int iter = i;
+                    final int startZFinal = startZ;
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(arena.getPlugin(), new Runnable() {
                         @Override
@@ -92,7 +90,7 @@ class BombingRunHandler {
                                 return;
                             }
 
-                            Block highestBlock = arena.getWorld().world.getHighestBlockAt(xPos, startZ + ((iter + 1) * tntSpread));
+                            Block highestBlock = arena.getWorld().world.getHighestBlockAt(xPos, startZFinal + ((iter + 1) * tntSpread));
                             Location highestLoc = highestBlock.getLocation();
                             arena.getWorld().world.createExplosion(highestLoc, power, true, true);
                             tnt.teleport(new Location(arena.getWorld().world, 20_000_000, 600, 20_000_000));
