@@ -26,7 +26,16 @@ public class TeamSelectMenu {
     }
 
     private static SGButton teamButton(TheWalls plugin, Player player, Arena arena, int teamId, Material mat, String nameKey) {
-        return new SGButton(new ItemBuilder(mat).name(Utils.toLegacy(Messages.msg(nameKey))).build())
+        java.util.List<String> lore = Messages.list("menu.team_lore");
+        ItemBuilder builder = new ItemBuilder(mat).name(Utils.toLegacy(Messages.msg(nameKey)));
+        if (!lore.isEmpty()) {
+            java.util.List<String> formatted = new java.util.ArrayList<>();
+            for (String line : lore) {
+                formatted.add(Utils.toLegacy(Messages.msg(line)));
+            }
+            builder = builder.lore(formatted);
+        }
+        return new SGButton(builder.build())
                 .withListener(event -> {
                     event.setCancelled(true);
                     if (arena.getGame().started) {

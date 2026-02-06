@@ -153,7 +153,7 @@ public class Game {
     List<Component> buildScoreboardLines(Player viewer) {
         List<Component> lines = new ArrayList<>();
         Team myTeam = viewer == null ? null : Team.getPlayerTeam(viewer, teams);
-        String myTeamName = myTeam == null ? "None" : myTeam.teamColor + myTeam.teamName;
+        String myTeamName = myTeam == null ? "<gray>None</gray>" : Utils.toMini(Utils.format(myTeam.teamColor + myTeam.teamName));
         int myKills = 0;
         if (viewer != null) {
             java.util.UUID uid = viewer.getUniqueId();
@@ -187,14 +187,15 @@ public class Game {
 
         lines.add(Messages.msg("scoreboard.game_teams"));
         for (Team t : teams) {
+            String teamName = Utils.toMini(Utils.format(t.teamColor + t.teamName));
             if (t.alive) {
                 lines.add(Messages.msg("scoreboard.game_team_alive", java.util.Map.of(
-                        "team", t.teamColor + t.teamName,
+                        "team", teamName,
                         "alive", String.valueOf(t.getAliveMembers())
                 )));
             } else {
                 lines.add(Messages.msg("scoreboard.game_team_dead", java.util.Map.of(
-                        "team", t.teamColor + t.teamName
+                        "team", teamName
                 )));
             }
         }
@@ -207,7 +208,7 @@ public class Game {
         int minPlayers = Config.data.getInt("lobby.minPlayers", 2);
         int countdown = this.arena.getLobbyCountdown();
         List<Component> lines = new ArrayList<>();
-        lines.add(Messages.msg("scoreboard.lobby_title"));
+        lines.add(getLobbyTitleFrame());
         lines.add(Messages.msg("scoreboard.lobby_arena", java.util.Map.of(
                 "arena", this.arena.getName()
         )));
@@ -227,6 +228,22 @@ public class Game {
             if (board == null) continue;
             board.updateLines(lines);
         }
+    }
+
+    private Component getLobbyTitleFrame() {
+        java.util.List<String> frames = Messages.list("scoreboard.lobby_title_frames");
+        if (frames == null || frames.isEmpty()) {
+            return Messages.msg("scoreboard.lobby_title");
+        }
+        int index = (int) ((System.currentTimeMillis() / 500L) % frames.size());
+        String keyOrRaw = frames.get(index);
+        if (keyOrRaw == null || keyOrRaw.isEmpty()) {
+            return Messages.msg("scoreboard.lobby_title");
+        }
+        if (keyOrRaw.contains(".") && Messages.raw(keyOrRaw) != null && !Messages.raw(keyOrRaw).equals(keyOrRaw)) {
+            return Messages.msg(keyOrRaw);
+        }
+        return Utils.componentFromString(keyOrRaw);
     }
 
     public void start(@Nullable Player starter) {
@@ -439,17 +456,19 @@ public class Game {
         this.arena.stopLobbyCountdown();
         int endCooldown = Config.data.getInt("lobby.endCooldownSeconds", 10);
         this.arena.startLobbyEndCooldown(endCooldown);
-        if (this.arena.getLobby() != null) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Utils.getPlugin(), () -> {
-                for (Player p : this.arena.getPlayers()) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Utils.getPlugin(), () -> {
+            org.bukkit.Location hub = Config.getHub();
+            for (Player p : this.arena.getPlayers()) {
+                if (hub != null) {
+                    p.teleport(hub);
+                    this.arena.getPlugin().arenas.clearPlayer(p);
+                } else if (this.arena.getLobby() != null) {
                     p.teleport(this.arena.getLobby());
                     ca.thewalls.Listeners.LobbyItems.give(p, this.arena);
                 }
-                this.arena.stopLobbyEndCooldown();
-            }, endCooldown * 20L);
-        } else {
+            }
             this.arena.stopLobbyEndCooldown();
-        }
+        }, endCooldown * 20L);
     }
 
     public void enableTablistHeartsForPlayer(Player player) {

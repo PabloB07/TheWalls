@@ -49,6 +49,8 @@ public class PlayerDeath implements Listener {
             strike.setFireTicks(0);
         }
 
+        arena.getGame().ensureBoard(ply);
+
         if (e.getEntity().getKiller() != null) {
             ca.thewalls.Config.incrementKills(e.getEntity().getKiller().getUniqueId());
             if (walls.topHolograms != null) {

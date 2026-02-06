@@ -40,6 +40,8 @@ public class PlayerJoin implements Listener {
         }
         this.walls.arenas.onPlayerCountChanged(arena);
         LobbyItems.give(e.getPlayer(), arena);
+        arena.getGame().ensureBoard(e.getPlayer());
+        arena.getGame().updateLobbyBoards();
         if (!arena.getGame().started) return;
         arena.getGame().ensureBoard(e.getPlayer());
         arena.getGame().enableTablistHeartsForPlayer(e.getPlayer());

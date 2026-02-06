@@ -9,6 +9,7 @@ import org.bukkit.plugin.Plugin;
 import ca.thewalls.Walls.Team;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
 
 import java.time.Duration;
@@ -21,8 +22,17 @@ public class Utils {
     }
 
     private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacyAmpersand();
+    private static final MiniMessage MINI = MiniMessage.miniMessage();
 
     public static Component format(String s) {
+        return LEGACY.deserialize(s);
+    }
+
+    public static Component componentFromString(String s) {
+        if (s == null || s.isEmpty()) return Component.empty();
+        if (s.indexOf('<') >= 0 && s.indexOf('>') >= 0) {
+            return MINI.deserialize(s);
+        }
         return LEGACY.deserialize(s);
     }
 
@@ -33,6 +43,10 @@ public class Utils {
             legacy = "§r" + legacy;
         }
         return legacy;
+    }
+
+    public static String toMini(Component component) {
+        return MINI.serialize(component);
     }
 
     // Legacy string format for APIs that only accept String (scoreboards, etc.)
@@ -50,7 +64,15 @@ public class Utils {
                 Duration.ofMillis(stay * 50L),
                 Duration.ofMillis(fadeOut * 50L)
         );
-        p.showTitle(Title.title(format(title), format(subtitle), times));
+        p.showTitle(Title.title(componentFromString(title), componentFromString(subtitle), times));
+    }
+
+    public static String colorToLegacy(String color) {
+        if (color == null || color.isEmpty()) return "";
+        if (color.indexOf('<') >= 0 && color.indexOf('>') >= 0) {
+            return toLegacy(MINI.deserialize(color));
+        }
+        return color;
     }
 
     public static boolean isAlive(Player p) {

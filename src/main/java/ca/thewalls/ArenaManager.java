@@ -69,6 +69,8 @@ public class ArenaManager {
             player.teleport(arena.getLobby());
         }
         ca.thewalls.Listeners.LobbyItems.give(player, arena);
+        arena.getGame().ensureBoard(player);
+        arena.getGame().updateLobbyBoards();
         onPlayerCountChanged(arena);
         return arena;
     }

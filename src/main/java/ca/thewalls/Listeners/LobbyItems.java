@@ -19,12 +19,12 @@ public class LobbyItems {
 
         ItemStack team = new ItemStack(Material.NETHER_STAR);
         ItemMeta teamMeta = team.getItemMeta();
-        teamMeta.displayName(Messages.msg("lobby.items.team_selector"));
+        teamMeta.displayName(Messages.msg("lobby.items.team_selector").decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false));
         team.setItemMeta(teamMeta);
 
         ItemStack leave = new ItemStack(Material.BARRIER);
         ItemMeta leaveMeta = leave.getItemMeta();
-        leaveMeta.displayName(Messages.msg("lobby.items.leave"));
+        leaveMeta.displayName(Messages.msg("lobby.items.leave").decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false));
         leave.setItemMeta(leaveMeta);
 
         player.getInventory().setItem(teamSlot, team);

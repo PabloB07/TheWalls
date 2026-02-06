@@ -44,6 +44,11 @@ public class Messages {
         return applyPlaceholders(getRaw(key), placeholders);
     }
 
+    public static java.util.List<String> list(String key) {
+        if (data == null) return java.util.Collections.emptyList();
+        return data.getStringList(key);
+    }
+
     private static String getRaw(String key) {
         if (data == null) return key;
         String value = data.getString(key);

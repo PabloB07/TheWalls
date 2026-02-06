@@ -87,19 +87,19 @@ public class Config {
             // teams
             if (!data.isSet("teams.zero.name")) {
                 data.set("teams.zero.name", "Red");
-                data.set("teams.zero.color", "&c");
+                data.set("teams.zero.color", "<#ff3b3b>");
             }
             if (!data.isSet("teams.one.name")) {
                 data.set("teams.one.name", "Blue");
-                data.set("teams.one.color", "&9");
+                data.set("teams.one.color", "<#3b6cff>");
             }
             if (!data.isSet("teams.two.name")) {
                 data.set("teams.two.name", "Yellow");
-                data.set("teams.two.color", "&e");
+                data.set("teams.two.color", "<#ffd23b>");
             }
             if (!data.isSet("teams.three.name")) {
                 data.set("teams.three.name", "Green");
-                data.set("teams.three.color", "&2");
+                data.set("teams.three.color", "<#3bff6f>");
             }
             if (!data.isSet("teams.allowTie")) {
                 data.set("teams.allowTie", false);

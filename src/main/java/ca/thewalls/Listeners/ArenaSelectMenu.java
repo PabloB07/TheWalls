@@ -23,9 +23,17 @@ public class ArenaSelectMenu {
 
         int slot = 0;
         for (Arena arena : arenas) {
-            SGButton button = new SGButton(new ItemBuilder(Material.ENDER_EYE)
-                    .name(Utils.toLegacy(Messages.msg("menu.arena_item", java.util.Map.of("arena", arena.getName()))))
-                    .build())
+            ItemBuilder builder = new ItemBuilder(Material.ENDER_EYE)
+                    .name(Utils.toLegacy(Messages.msg("menu.arena_item", java.util.Map.of("arena", arena.getName()))));
+            java.util.List<String> lore = Messages.list("menu.arena_lore");
+            if (!lore.isEmpty()) {
+                java.util.List<String> formatted = new java.util.ArrayList<>();
+                for (String line : lore) {
+                    formatted.add(Utils.toLegacy(Messages.msg(line)));
+                }
+                builder = builder.lore(formatted);
+            }
+            SGButton button = new SGButton(builder.build())
                 .withListener(event -> {
                     event.setCancelled(true);
                     plugin.arenas.joinPlayer(player, arena.getName());

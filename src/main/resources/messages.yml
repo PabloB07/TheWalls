@@ -53,10 +53,13 @@ lobby:
   starting_in: "<green>Starting in:</green> <yellow>{seconds}s</yellow>"
   waiting: "<gray>Waiting for players...</gray>"
   items:
-    team_selector: "<yellow>Team Selector</yellow>"
-    leave: "<red>Leave Arena</red>"
+    team_selector: "<gradient:#22c55e:#10b981><bold>Team Selector</bold></gradient>"
+    leave: "<gradient:#ef4444:#f97316><bold>Leave Arena</bold></gradient>"
 scoreboard:
-  lobby_title: "<gold><bold>Lobby</bold></gold>"
+  lobby_title: "<gradient:#22d3ee:#a78bfa><bold>THE WALLS</bold></gradient>"
+  lobby_title_frames:
+    - "<gradient:#22d3ee:#a78bfa><bold>THE WALLS</bold></gradient>"
+    - "<gradient:#a78bfa:#22d3ee><bold>THE WALLS</bold></gradient>"
   lobby_arena: "<gray>Arena:</gray> <yellow>{arena}</yellow>"
   lobby_players: "<gray>Players:</gray> <yellow>{current}</yellow><gray>/<yellow>{min}</yellow>"
   lobby_starting: "<green>Starting in:</green> <yellow>{seconds}s</yellow>"
@@ -115,13 +118,19 @@ hub:
   no_hub: "<red>No hub set.</red>"
 arena:
 menu:
-  arena_title: "<gold><bold>Select Arena</bold></gold>"
+  arena_title: "<gradient:#38bdf8:#a78bfa><bold>Select Arena</bold></gradient>"
   arena_item: "<yellow>{arena}</yellow>"
-  team_title: "<gold><bold>Select Team</bold></gold>"
-  team_red: "<red>Red Team</red>"
-  team_blue: "<blue>Blue Team</blue>"
-  team_yellow: "<yellow>Yellow Team</yellow>"
-  team_green: "<green>Green Team</green>"
+  arena_lore:
+    - "<gray>Click to join</gray>"
+    - "<gradient:#38bdf8:#a78bfa>Instant join</gradient>"
+  team_title: "<gradient:#f472b6:#fb7185><bold>Select Team</bold></gradient>"
+  team_red: "<#ff3b3b><bold>Red Team</bold></#ff3b3b>"
+  team_blue: "<#3b6cff><bold>Blue Team</bold></#3b6cff>"
+  team_yellow: "<#ffd23b><bold>Yellow Team</bold></#ffd23b>"
+  team_green: "<#3bff6f><bold>Green Team</bold></#3bff6f>"
+  team_lore:
+    - "<gray>Choose this team</gray>"
+    - "<gradient:#f472b6:#fb7185>Good luck!</gradient>"
 arena:
   usage: "<gray>Use:</gray> <green>/walls arena <create|delete|info> <name></green>"
   created: "<green>Arena created:</green> <yellow>{arena}</yellow>"
