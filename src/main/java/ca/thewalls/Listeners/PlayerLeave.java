@@ -29,6 +29,7 @@ public class PlayerLeave implements Listener {
             return;
         }
         arena.getGame().removeBoard(e.getPlayer());
+        arena.getGame().disableTablistHeartsForPlayer(e.getPlayer());
         Team t = Team.getPlayerTeam(e.getPlayer(), arena.getGame().teams);
         if (t == null) return;
         e.getPlayer().displayName(Component.text(e.getPlayer().getName()));

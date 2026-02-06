@@ -84,6 +84,8 @@ public class ArenaManager {
         }
         clearPlayer(player);
         if (arena != null) {
+            arena.getGame().removeBoard(player);
+            arena.getGame().disableTablistHeartsForPlayer(player);
             ca.thewalls.Listeners.LobbyItems.clear(player);
             onPlayerCountChanged(arena);
         }

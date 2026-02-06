@@ -42,6 +42,7 @@ public class PlayerJoin implements Listener {
         LobbyItems.give(e.getPlayer(), arena);
         if (!arena.getGame().started) return;
         arena.getGame().ensureBoard(e.getPlayer());
+        arena.getGame().enableTablistHeartsForPlayer(e.getPlayer());
         e.getPlayer().setGameMode(GameMode.SPECTATOR);
         e.getPlayer().sendMessage(Messages.msg("join.spectator"));
     }

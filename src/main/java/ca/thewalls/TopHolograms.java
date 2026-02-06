@@ -29,7 +29,7 @@ public final class TopHolograms {
         if (!available) return;
         Location base = Config.getTopHologramLocation();
         if (base == null) {
-            remove();
+            // Keep existing hologram if location isn't set yet.
             return;
         }
 

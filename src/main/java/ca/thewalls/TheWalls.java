@@ -19,6 +19,8 @@ public final class TheWalls extends JavaPlugin {
         spigui = new com.samjakob.spigui.SpiGUI(this);
         arenas = new ArenaManager(this);
         // No default arena: all arenas are explicit and created via config/commands.
+
+        // Health in tablist is enabled only during active games.
         topHolograms = new TopHolograms(this);
 
         // Register commands

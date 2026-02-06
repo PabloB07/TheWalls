@@ -39,13 +39,13 @@ public class SignUpdater {
         String status = arena.getGame().started ? "In-Game" : "Lobby";
         MiniMessage mm = MiniMessage.miniMessage();
         Component line0 = mm.deserialize("<gradient:#ff8a00:#ffd000><bold>[TheWalls]</bold></gradient>");
-        Component line1 = mm.deserialize("<yellow>" + arena.getName() + "</yellow>");
-        Component line2 = mm.deserialize(status.equals("In-Game") ? "<red>In-Game</red>" : "<green>Lobby</green>");
+        Component line1 = mm.deserialize("<green>Join</green>");
+        Component line2 = mm.deserialize("<yellow>" + arena.getName() + "</yellow>");
         String countText = players + "/" + minPlayers + " players";
         if (!arena.getGame().started && countdown >= 0) {
             countText = "Start: " + countdown + "s";
         }
-        Component line3 = Component.text(countText, NamedTextColor.GRAY);
+        Component line3 = mm.deserialize(status.equals("In-Game") ? "<red>In-Game</red>" : "<gray>" + countText + "</gray>");
         side.line(0, line0);
         side.line(1, line1);
         side.line(2, line2);

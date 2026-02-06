@@ -55,6 +55,23 @@ lobby:
   items:
     team_selector: "<yellow>Team Selector</yellow>"
     leave: "<red>Leave Arena</red>"
+scoreboard:
+  lobby_title: "<gold><bold>Lobby</bold></gold>"
+  lobby_arena: "<gray>Arena:</gray> <yellow>{arena}</yellow>"
+  lobby_players: "<gray>Players:</gray> <yellow>{current}</yellow><gray>/<yellow>{min}</yellow>"
+  lobby_starting: "<green>Starting in:</green> <yellow>{seconds}s</yellow>"
+  lobby_waiting: "<gray>Waiting for players...</gray>"
+  game_title: "<gold><bold>The Walls</bold></gold> <gray>•</gray> {team}"
+  game_phase_prep: "<yellow>Prep:</yellow> <white>{seconds}s</white>"
+  game_phase_fight: "<red>Fight!</red>"
+  game_event_in: "<gray>Event:</gray> <yellow>{seconds}s</yellow>"
+  game_border_now: "<red>Border closing</red>"
+  game_border_in: "<gray>Border:</gray> <yellow>{seconds}s</yellow>"
+  game_players: "<gray>Players:</gray> <yellow>{current}</yellow>"
+  game_you: "<gray>You:</gray> {team} <gray>|</gray> <red>Kills:</red> <white>{kills}</white>"
+  game_teams: "<aqua><bold>Teams</bold></aqua>"
+  game_team_alive: "{team} <gray>-</gray> <green>{alive}</green>"
+  game_team_dead: "{team} <gray>-</gray> <red>DEAD</red>"
 hologram:
   top:
     title: "<gold><bold>TOP</bold></gold>"

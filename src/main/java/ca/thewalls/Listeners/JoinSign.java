@@ -57,20 +57,12 @@ public class JoinSign implements Listener {
         if (block == null) return;
         if (!(block.getState() instanceof Sign)) return;
         Sign sign = (Sign) block.getState();
-        SignSide side = sign.getSide(Side.FRONT);
-        String line0 = PlainTextComponentSerializer.plainText().serialize(side.line(0));
-        String line1 = PlainTextComponentSerializer.plainText().serialize(side.line(1));
-        String line2 = PlainTextComponentSerializer.plainText().serialize(side.line(2));
-        if (line0 == null || line1 == null) return;
-        if (!line0.equalsIgnoreCase("[TheWalls]")) return;
-        if (!line1.equalsIgnoreCase("Join")) return;
-
         Player player = e.getPlayer();
-        if (line2 == null || line2.trim().isEmpty()) {
+        String arenaName = getArenaForSign(sign);
+        if (arenaName == null || arenaName.isEmpty()) {
             player.sendMessage(Messages.msg("walls.join_usage"));
             return;
         }
-        String arenaName = line2.trim();
         e.setCancelled(true);
         e.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
         e.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
@@ -84,5 +76,30 @@ public class JoinSign implements Listener {
             player.sendMessage(Messages.msg("walls.no_lobby", java.util.Map.of("arena", arenaName)));
         }
         LobbyItems.give(player, walls.arenas.getArena(arenaName));
+    }
+
+    private String getArenaForSign(Sign sign) {
+        if (sign == null || sign.getWorld() == null) return null;
+        String world = sign.getWorld().getName();
+        int x = sign.getX();
+        int y = sign.getY();
+        int z = sign.getZ();
+        for (String arenaName : ca.thewalls.Config.getArenaNames()) {
+            for (String entry : ca.thewalls.Config.getArenaSigns(arenaName)) {
+                String[] parts = entry.split(",");
+                if (parts.length != 4) continue;
+                if (!parts[0].equalsIgnoreCase(world)) continue;
+                try {
+                    int sx = Integer.parseInt(parts[1]);
+                    int sy = Integer.parseInt(parts[2]);
+                    int sz = Integer.parseInt(parts[3]);
+                    if (sx == x && sy == y && sz == z) {
+                        return arenaName;
+                    }
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+        return null;
     }
 }

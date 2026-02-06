@@ -63,8 +63,6 @@ class Loop implements Runnable {
             game.borderClosing = true;
         }
 
-        List<Component> lines = game.buildScoreboardLines();
-
         for (Player p : this.arena.getPlayers()) {
             if (!Utils.isAlive(p)) {
                 Team tempTeam = Team.getPlayerTeam(p, game.teams);
@@ -81,7 +79,7 @@ class Loop implements Runnable {
             game.ensureBoard(p);
             FastBoard board = game.getBoard(p);
             if (board == null) continue;
-
+            List<Component> lines = game.buildScoreboardLines(p);
             board.updateLines(lines);
         }
 
@@ -125,6 +123,7 @@ public class Game {
 
     public int time = 0;
     private final Map<UUID, FastBoard> boards = new HashMap<>();
+    private final Map<UUID, org.bukkit.scoreboard.Scoreboard> tablistRestore = new HashMap<>();
 
     public void ensureBoard(Player player) {
         if (boards.containsKey(player.getUniqueId())) return;
@@ -151,46 +150,52 @@ public class Game {
         boards.clear();
     }
 
-    List<Component> buildScoreboardLines() {
+    List<Component> buildScoreboardLines(Player viewer) {
         List<Component> lines = new ArrayList<>();
-        lines.add(Utils.format("&6=-=-=-=-=-=-=-=-=-=-="));
+        Team myTeam = viewer == null ? null : Team.getPlayerTeam(viewer, teams);
+        String myTeamName = myTeam == null ? "None" : myTeam.teamColor + myTeam.teamName;
+        int myKills = 0;
+        if (viewer != null) {
+            java.util.UUID uid = viewer.getUniqueId();
+            myKills = Config.leaderboard.getInt(uid.toString() + ".kills", 0);
+        }
+        lines.add(Messages.msg("scoreboard.game_title", java.util.Map.of(
+                "team", myTeamName
+        )));
 
         if (wallsFallen) {
-            lines.add(Messages.msg("game.walls_down"));
+            lines.add(Messages.msg("scoreboard.game_phase_fight"));
             if (events.size() >= 1) {
-                lines.add(Messages.msg("game.event_in", java.util.Map.of("seconds", String.valueOf(eventTimer))));
+                lines.add(Messages.msg("scoreboard.game_event_in", java.util.Map.of("seconds", String.valueOf(eventTimer))));
             }
             if (borderCloseTimer <= 0) {
-                lines.add(Messages.msg("game.borders_closing_now"));
+                lines.add(Messages.msg("scoreboard.game_border_now"));
             } else {
-                lines.add(Messages.msg("game.borders_closing_in", java.util.Map.of("seconds", String.valueOf(borderCloseTimer))));
+                lines.add(Messages.msg("scoreboard.game_border_in", java.util.Map.of("seconds", String.valueOf(borderCloseTimer))));
             }
         } else {
-            lines.add(Messages.msg("game.prep_time", java.util.Map.of("seconds", String.valueOf(prepTime - time))));
+            lines.add(Messages.msg("scoreboard.game_phase_prep", java.util.Map.of("seconds", String.valueOf(prepTime - time))));
         }
 
-        lines.add(Utils.format("&b&l=-=-=- TEAMS -=-=-="));
+        lines.add(Messages.msg("scoreboard.game_players", java.util.Map.of(
+                "current", String.valueOf(this.arena.getPlayers().size())
+        )));
+        lines.add(Messages.msg("scoreboard.game_you", java.util.Map.of(
+                "team", myTeamName,
+                "kills", String.valueOf(myKills)
+        )));
 
+        lines.add(Messages.msg("scoreboard.game_teams"));
         for (Team t : teams) {
             if (t.alive) {
-                if (Config.data.getBoolean("theWalls.legacyHud")) {
-                    lines.add(Utils.format(t.teamColor + "&l" + t.teamName + "&r - &2ALIVE"));
-                } else {
-                    lines.add(Utils.format(t.teamColor + "&l" + t.teamName + "&r" + t.teamColor + " - " + t.getAliveMembers() + " Alive"));
-                }
+                lines.add(Messages.msg("scoreboard.game_team_alive", java.util.Map.of(
+                        "team", t.teamColor + t.teamName,
+                        "alive", String.valueOf(t.getAliveMembers())
+                )));
             } else {
-                lines.add(Utils.format(t.teamColor + "&l" + t.teamName + "&r - &cDEAD"));
-            }
-
-            for (Player member : t.members) {
-                if (member == null) continue;
-                if (Config.data.getBoolean("theWalls.legacyHud")) {
-                    if (Utils.isAlive(member)) {
-                        lines.add(Utils.format(t.teamColor + " - " + member.getName() + "&r - &2ALIVE"));
-                    } else {
-                        lines.add(Utils.format(t.teamColor + " - " + member.getName() + "&r - &cDEAD"));
-                    }
-                }
+                lines.add(Messages.msg("scoreboard.game_team_dead", java.util.Map.of(
+                        "team", t.teamColor + t.teamName
+                )));
             }
         }
 
@@ -202,15 +207,18 @@ public class Game {
         int minPlayers = Config.data.getInt("lobby.minPlayers", 2);
         int countdown = this.arena.getLobbyCountdown();
         List<Component> lines = new ArrayList<>();
-        lines.add(Messages.msg("lobby.title"));
-        lines.add(Messages.msg("lobby.players", java.util.Map.of(
+        lines.add(Messages.msg("scoreboard.lobby_title"));
+        lines.add(Messages.msg("scoreboard.lobby_arena", java.util.Map.of(
+                "arena", this.arena.getName()
+        )));
+        lines.add(Messages.msg("scoreboard.lobby_players", java.util.Map.of(
                 "current", String.valueOf(this.arena.getPlayers().size()),
                 "min", String.valueOf(minPlayers)
         )));
         if (countdown >= 0) {
-            lines.add(Messages.msg("lobby.starting_in", java.util.Map.of("seconds", String.valueOf(countdown))));
+            lines.add(Messages.msg("scoreboard.lobby_starting", java.util.Map.of("seconds", String.valueOf(countdown))));
         } else {
-            lines.add(Messages.msg("lobby.waiting"));
+            lines.add(Messages.msg("scoreboard.lobby_waiting"));
         }
 
         for (Player p : this.arena.getPlayers()) {
@@ -357,6 +365,7 @@ public class Game {
         time = 0;
         eventTimer = eventCooldown;
         borderCloseTimer = borderCloseTime;
+        enableTablistHeartsForPlayers(this.arena.getPlayers());
         gameLoopID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Utils.getPlugin(), new Loop(arena), 20L, 20L);
 
         Utils.getPlugin().getLogger().info("Started game with teams: ");
@@ -372,6 +381,7 @@ public class Game {
         started = false;
 
         Bukkit.getScheduler().cancelTask(gameLoopID);
+        disableTablistHeartsForPlayers(this.arena.getPlayers());
         if (Utils.getPlugin().isEnabled()) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(Utils.getPlugin(), this.arena.getWorld()::reset, 20*7);
         } else {
@@ -431,5 +441,37 @@ public class Game {
         teams.clear();
         aliveTeams.clear();
         this.arena.stopLobbyCountdown();
+    }
+
+    public void enableTablistHeartsForPlayer(Player player) {
+        if (player == null) return;
+        if (tablistRestore.containsKey(player.getUniqueId())) return;
+        org.bukkit.scoreboard.Scoreboard current = player.getScoreboard();
+        tablistRestore.put(player.getUniqueId(), current);
+        org.bukkit.scoreboard.Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
+        org.bukkit.scoreboard.Objective health = board.registerNewObjective("health", org.bukkit.scoreboard.Criteria.HEALTH, net.kyori.adventure.text.Component.text("❤"));
+        health.setRenderType(org.bukkit.scoreboard.RenderType.HEARTS);
+        health.setDisplaySlot(org.bukkit.scoreboard.DisplaySlot.PLAYER_LIST);
+        player.setScoreboard(board);
+    }
+
+    public void disableTablistHeartsForPlayer(Player player) {
+        if (player == null) return;
+        org.bukkit.scoreboard.Scoreboard prev = tablistRestore.remove(player.getUniqueId());
+        if (prev != null) {
+            player.setScoreboard(prev);
+        }
+    }
+
+    private void enableTablistHeartsForPlayers(java.util.List<Player> players) {
+        for (Player p : players) {
+            enableTablistHeartsForPlayer(p);
+        }
+    }
+
+    private void disableTablistHeartsForPlayers(java.util.List<Player> players) {
+        for (Player p : players) {
+            disableTablistHeartsForPlayer(p);
+        }
     }
 }
