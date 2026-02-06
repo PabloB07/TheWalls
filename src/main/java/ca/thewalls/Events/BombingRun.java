@@ -35,8 +35,11 @@ class BombingRunHandler {
         };
 
         int tntSpread = Config.data.getInt("events.bombingRun.tntSpread", 2);
+        if (tntSpread <= 0) {
+            tntSpread = 1;
+        }
         int totalDifference = Math.abs(zPoints[0] - zPoints[1]);
-        int totalIterations = totalDifference / tntSpread;
+        int totalIterations = Math.max(1, totalDifference / tntSpread);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(Utils.getPlugin(), new Runnable() {
             @Override
@@ -61,19 +64,16 @@ class BombingRunHandler {
                     }
                 }
 
-                final int xPos;
-
-                if (closestX > furthestX) {
-                    xPos = rand.nextInt(furthestX, closestX);
-                } else {
-                    xPos = rand.nextInt(closestX, furthestX);
-                }
+                int minX = Math.min(closestX, furthestX);
+                int maxX = Math.max(closestX, furthestX);
+                final int xPos = (minX == maxX) ? minX : rand.nextInt(minX, maxX + 1);
 
                 int timer = Config.data.getInt("events.bombingRun.detonationtime", 10);
                 int power = Config.data.getInt("events.bombingRun.tntPower",  16);
 
+                int startZ = Math.min(zPoints[0], zPoints[1]);
                 for (int i = 0; i < totalIterations; i++) {
-                    Location loc = new Location(arena.getWorld().world, xPos, 325, zPoints[0] + ((i + 1) * tntSpread));
+                    Location loc = new Location(arena.getWorld().world, xPos, 325, startZ + ((i + 1) * tntSpread));
                     TNTPrimed tnt = (TNTPrimed) arena.getWorld().world.spawnEntity(loc, EntityType.TNT);
                     tnt.setFuseTicks(20 * (timer + 2));
 
@@ -92,7 +92,7 @@ class BombingRunHandler {
                                 return;
                             }
 
-                            Block highestBlock = arena.getWorld().world.getHighestBlockAt(xPos, zPoints[0] + ((iter + 1) * tntSpread));
+                            Block highestBlock = arena.getWorld().world.getHighestBlockAt(xPos, startZ + ((iter + 1) * tntSpread));
                             Location highestLoc = highestBlock.getLocation();
                             arena.getWorld().world.createExplosion(highestLoc, power, true, true);
                             tnt.teleport(new Location(arena.getWorld().world, 20_000_000, 600, 20_000_000));

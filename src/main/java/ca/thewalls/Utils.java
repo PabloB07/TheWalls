@@ -84,8 +84,7 @@ public class Utils {
     }
 
     public void checkWinner() {
-        int i = 0;
-        ArrayList<Integer> teamsToRemove = new ArrayList<>();
+        ArrayList<Team> teamsToRemove = new ArrayList<>();
         for (Team t : this.arena.getGame().aliveTeams) {
             for (Player p : t.members) {
                 t.alive = false;
@@ -101,13 +100,12 @@ public class Utils {
                 for (Player p : this.arena.getPlayers()) {
                     p.sendMessage(Messages.msg("game.team_eliminated", java.util.Map.of("team", t.teamColor + t.teamName)));
                 }
-                teamsToRemove.add(i);
+                teamsToRemove.add(t);
             }
-            i++;
         }
-        for (int j = 0; j < teamsToRemove.size(); j++) {
-            Utils.getPlugin().getLogger().info(this.arena.getGame().aliveTeams.get(j).teamName + " has been eliminated!");
-            this.arena.getGame().aliveTeams.remove(j);
+        for (Team team : teamsToRemove) {
+            Utils.getPlugin().getLogger().info(team.teamName + " has been eliminated!");
+            this.arena.getGame().aliveTeams.remove(team);
         }
         if (Config.data.getBoolean("teams.allowTie") || this.arena.getPlayers().size() <= 1) {
             if (this.arena.getGame().aliveTeams.size() == 0) {

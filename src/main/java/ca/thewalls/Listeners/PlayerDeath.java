@@ -1,6 +1,5 @@
 package ca.thewalls.Listeners;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.LightningStrike;

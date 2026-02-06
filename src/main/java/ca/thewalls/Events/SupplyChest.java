@@ -77,8 +77,13 @@ public class SupplyChest extends Event{
         int[] positionTwo = new int[]{(int) (this.arena.getWorld().positionTwo[0] + (this.arena.getGame().size * reducer)), (int) (this.arena.getWorld().positionTwo[1] + (this.arena.getGame().size * reducer))};
 
         Random rand = new Random();
-        int randX = rand.nextInt(positionOne[0] - positionTwo[0]) + positionTwo[0];
-        int randZ = rand.nextInt(positionOne[1] - positionTwo[1]) + positionTwo[1];
+        int minX = Math.min(positionOne[0], positionTwo[0]);
+        int maxX = Math.max(positionOne[0], positionTwo[0]);
+        int minZ = Math.min(positionOne[1], positionTwo[1]);
+        int maxZ = Math.max(positionOne[1], positionTwo[1]);
+
+        int randX = (minX == maxX) ? minX : rand.nextInt((maxX - minX) + 1) + minX;
+        int randZ = (minZ == maxZ) ? minZ : rand.nextInt((maxZ - minZ) + 1) + minZ;
         int y = this.arena.getWorld().world.getHighestBlockYAt(randX, randZ);
 
         Location chestLoc = new Location(this.arena.getWorld().world, randX, y + 1, randZ);
