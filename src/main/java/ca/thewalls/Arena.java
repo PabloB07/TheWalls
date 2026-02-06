@@ -54,9 +54,6 @@ public class Arena {
     public void setLobby(org.bukkit.Location lobby) {
         this.lobby = lobby;
         Config.setArenaLobby(name, lobby);
-        if (plugin.lobbyHolograms != null) {
-            plugin.lobbyHolograms.updateArena(this);
-        }
     }
 
     public void setTeamPreference(org.bukkit.entity.Player player, int teamId) {

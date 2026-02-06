@@ -396,6 +396,10 @@ public class Game {
             } catch (IOException ex) {
                 Utils.getPlugin().getLogger().warning(ex.toString());
             }
+            Config.incrementArenaPlays(this.arena.getName());
+            if (this.arena.getPlugin().topHolograms != null) {
+                this.arena.getPlugin().topHolograms.refresh();
+            }
         }
         for (Player p : this.arena.getPlayers()) {
             if (!forced && winningTeam != null) {

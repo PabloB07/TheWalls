@@ -39,3 +39,5 @@ permissions:
     default: true
   thewalls.walls.arena:
     default: op
+  thewalls.walls.hologram:
+    default: op

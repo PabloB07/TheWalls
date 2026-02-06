@@ -216,6 +216,60 @@ public class WallsInfo implements CommandExecutor {
                 sender.sendMessage(Messages.msg("arena.usage"));
                 return true;
             }
+            if (sub.equals("hologram")) {
+                if (!sender.hasPermission("thewalls.walls.hologram") && !sender.isOp()) {
+                    sender.sendMessage(Messages.msg("admin.no_permission"));
+                    return true;
+                }
+                if (args.length < 3 || !args[1].equalsIgnoreCase("top")) {
+                    sender.sendMessage(Messages.msg("hologram.usage"));
+                    return true;
+                }
+                String action = args[2].toLowerCase();
+                if (action.equals("set")) {
+                    if (args.length < 4) {
+                        sender.sendMessage(Messages.msg("hologram.usage"));
+                        return true;
+                    }
+                    String arenaName = args[3];
+                    Arena arena = walls.arenas.getArena(arenaName);
+                    if (arena == null) {
+                        sender.sendMessage(Messages.msg("arena.not_found", java.util.Map.of("arena", arenaName)));
+                        return true;
+                    }
+                    if (arena.getLobby() == null) {
+                        sender.sendMessage(Messages.msg("walls.no_lobby", java.util.Map.of("arena", arenaName)));
+                        return true;
+                    }
+                    if (walls.topHolograms != null) {
+                        walls.topHolograms.setArena(arenaName);
+                    }
+                    sender.sendMessage(Messages.msg("hologram.set", java.util.Map.of("arena", arenaName)));
+                    return true;
+                }
+                if (action.equals("remove")) {
+                    ca.thewalls.Config.data.set("holograms.top.arena", null);
+                    try {
+                        ca.thewalls.Config.data.save(ca.thewalls.Config.dataFile);
+                    } catch (java.io.IOException ex) {
+                        ca.thewalls.Utils.getPlugin().getLogger().warning(ex.toString());
+                    }
+                    if (walls.topHolograms != null) {
+                        walls.topHolograms.remove();
+                    }
+                    sender.sendMessage(Messages.msg("hologram.removed"));
+                    return true;
+                }
+                if (action.equals("refresh")) {
+                    if (walls.topHolograms != null) {
+                        walls.topHolograms.refresh();
+                    }
+                    sender.sendMessage(Messages.msg("hologram.refreshed"));
+                    return true;
+                }
+                sender.sendMessage(Messages.msg("hologram.usage"));
+                return true;
+            }
             if (sub.equals("team")) {
                 if (!sender.hasPermission("thewalls.walls.team") && !sender.isOp()) {
                     sender.sendMessage(Messages.msg("admin.no_permission"));

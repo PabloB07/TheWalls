@@ -143,6 +143,9 @@ public class Config {
                 data.set("theWalls.autoExecute.speedOfBorderClose", 180);
                 data.set("theWalls.autoExecute.worldName", "world");
             }
+            if (!data.isSet("holograms.top.arena")) {
+                data.set("holograms.top.arena", "");
+            }
             if (!data.isSet("lobby.minPlayers")) {
                 data.set("lobby.minPlayers", 2);
             }
@@ -241,6 +244,9 @@ public class Config {
         }
         if (!Config.leaderboard.isSet(p.getPlayer().getUniqueId().toString() + ".losses")) {
             Config.leaderboard.set(p.getPlayer().getUniqueId().toString() + ".losses", 0);
+        }
+        if (!Config.leaderboard.isSet(p.getPlayer().getUniqueId().toString() + ".kills")) {
+            Config.leaderboard.set(p.getPlayer().getUniqueId().toString() + ".kills", 0);
         }
         Config.leaderboard.set(p.getPlayer().getUniqueId().toString() + ".username", p.getPlayer().getName());
 
@@ -423,6 +429,55 @@ public class Config {
         } catch (IOException ex) {
             Utils.getPlugin().getLogger().warning(ex.toString());
         }
+    }
+
+    public static void incrementArenaPlays(String arenaName) {
+        if (arenaName == null || data == null) return;
+        String key = "stats.arenas." + arenaName.toLowerCase() + ".plays";
+        int plays = data.getInt(key, 0) + 1;
+        data.set(key, plays);
+        try {
+            data.save(dataFile);
+        } catch (IOException ex) {
+            Utils.getPlugin().getLogger().warning(ex.toString());
+        }
+    }
+
+    public static java.util.Map<String, Integer> getArenaPlays() {
+        if (data == null) return java.util.Collections.emptyMap();
+        java.util.Map<String, Integer> map = new java.util.HashMap<>();
+        ConfigurationSection sec = data.getConfigurationSection("stats.arenas");
+        if (sec == null) return map;
+        for (String key : sec.getKeys(false)) {
+            map.put(key, sec.getInt(key + ".plays", 0));
+        }
+        return map;
+    }
+
+    public static void incrementKills(java.util.UUID uuid) {
+        if (uuid == null || leaderboard == null) return;
+        String key = uuid.toString() + ".kills";
+        int kills = leaderboard.getInt(key, 0) + 1;
+        leaderboard.set(key, kills);
+        try {
+            leaderboard.save(leaderboardFile);
+        } catch (IOException ex) {
+            Utils.getPlugin().getLogger().warning(ex.toString());
+        }
+    }
+
+    public static java.util.List<java.util.Map.Entry<String, Integer>> getTopKills(int limit) {
+        if (leaderboard == null) return java.util.Collections.emptyList();
+        java.util.Map<String, Integer> map = new java.util.HashMap<>();
+        for (String key : leaderboard.getKeys(false)) {
+            int kills = leaderboard.getInt(key + ".kills", 0);
+            String name = leaderboard.getString(key + ".username", key);
+            map.put(name, kills);
+        }
+        java.util.List<java.util.Map.Entry<String, Integer>> list = new java.util.ArrayList<>(map.entrySet());
+        list.sort((a, b) -> Integer.compare(b.getValue(), a.getValue()));
+        if (list.size() > limit) return list.subList(0, limit);
+        return list;
     }
 
     private static void migrateLobbiesFromConfig() {

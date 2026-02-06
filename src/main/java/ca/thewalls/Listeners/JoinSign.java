@@ -52,7 +52,7 @@ public class JoinSign implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onSignUse(PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (e.getAction() != Action.RIGHT_CLICK_BLOCK && e.getAction() != Action.LEFT_CLICK_BLOCK) return;
         Block block = e.getClickedBlock();
         if (block == null) return;
         if (!(block.getState() instanceof Sign)) return;

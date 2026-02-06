@@ -35,11 +35,16 @@ public class WallsCompleter implements TabCompleter {
             addIfPerm(sender, completions, "lobby", "thewalls.walls.lobby");
             addIfPerm(sender, completions, "sign", "thewalls.walls.sign");
             addIfPerm(sender, completions, "arena", "thewalls.walls.arena");
+            addIfPerm(sender, completions, "hologram", "thewalls.walls.hologram");
             return StringUtil.copyPartialMatches(args[0], completions, new ArrayList<>());
         }
 
         String sub = args[0].toLowerCase();
         if (args.length == 2) {
+            if (sub.equals("hologram")) {
+                addIfPerm(sender, completions, "top", "thewalls.walls.hologram");
+                return StringUtil.copyPartialMatches(args[1], completions, new ArrayList<>());
+            }
             if (sub.equals("start")) {
                 completions.addAll(walls.arenas.getArenas().keySet());
                 return StringUtil.copyPartialMatches(args[1], completions, new ArrayList<>());
@@ -76,6 +81,12 @@ public class WallsCompleter implements TabCompleter {
         }
 
         if (args.length == 3) {
+            if (sub.equals("hologram") && args[1].equalsIgnoreCase("top")) {
+                completions.add("set");
+                completions.add("remove");
+                completions.add("refresh");
+                return StringUtil.copyPartialMatches(args[2], completions, new ArrayList<>());
+            }
             if (sub.equals("forceteam")) {
                 completions.addAll(teamNames());
                 return StringUtil.copyPartialMatches(args[2], completions, new ArrayList<>());
@@ -97,6 +108,13 @@ public class WallsCompleter implements TabCompleter {
                     completions.addAll(walls.arenas.getArenas().keySet());
                 }
                 return StringUtil.copyPartialMatches(args[2], completions, new ArrayList<>());
+            }
+        }
+
+        if (args.length == 4) {
+            if (sub.equals("hologram") && args[1].equalsIgnoreCase("top") && args[2].equalsIgnoreCase("set")) {
+                completions.addAll(walls.arenas.getArenas().keySet());
+                return StringUtil.copyPartialMatches(args[3], completions, new ArrayList<>());
             }
         }
 

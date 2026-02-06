@@ -4,18 +4,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-public final class LobbyHolograms {
+public final class TopHolograms {
     private final TheWalls plugin;
     private Object manager;
     private boolean available;
     private boolean warned;
-    private final Map<String, Object> holograms = new HashMap<>();
-    private final java.util.Set<String> spawned = new java.util.HashSet<>();
+    private Object hologram;
+    private boolean spawned;
 
-    public LobbyHolograms(TheWalls plugin) {
+    public TopHolograms(TheWalls plugin) {
         this.plugin = plugin;
         setup();
     }
@@ -24,63 +25,61 @@ public final class LobbyHolograms {
         return available;
     }
 
-    public void refreshAll() {
-        if (!available || plugin.arenas == null) return;
-        for (Arena arena : plugin.arenas.getArenas().values()) {
-            updateArena(arena);
+    public void refresh() {
+        if (!available) return;
+        String arenaName = Config.data.getString("holograms.top.arena", null);
+        if (arenaName == null || arenaName.isEmpty()) {
+            remove();
+            return;
         }
-    }
-
-    public void updateArena(Arena arena) {
-        if (!available || arena == null) return;
-        Location lobby = arena.getLobby();
-        String id = getId(arena);
-        if (lobby == null) {
-            remove(id);
+        Arena arena = plugin.arenas.getArena(arenaName);
+        if (arena == null || arena.getLobby() == null) {
+            remove();
             return;
         }
 
-        Object hologram = holograms.get(id);
         if (hologram == null) {
-            hologram = createTextHologram(id);
+            hologram = createTextHologram(getId());
             if (hologram == null) return;
-            holograms.put(id, hologram);
         }
 
-        int minPlayers = Config.data.getInt("lobby.minPlayers", 2);
-        int countdown = arena.getLobbyCountdown();
-        String status = countdown >= 0
-                ? Messages.raw("hologram.starting", java.util.Map.of("seconds", String.valueOf(countdown)))
-                : Messages.raw("hologram.waiting");
-        String text = Messages.raw("hologram.lobby", java.util.Map.of(
-                "arena", arena.getName(),
-                "current", String.valueOf(arena.getPlayers().size()),
-                "min", String.valueOf(minPlayers),
-                "status", status
-        ));
-
-        Location display = lobby.clone().add(0.0, 2.2, 0.0);
+        Location display = arena.getLobby().clone().add(0.0, 2.6, 0.0);
+        String text = buildText();
         setMiniMessageText(hologram, text);
         setLocation(hologram, display);
-        if (!spawned.contains(id)) {
-            remove(id);
+        if (!spawned) {
+            remove();
             spawn(hologram, display);
-            spawned.add(id);
+            spawned = true;
         }
+    }
+
+    public void setArena(String arenaName) {
+        if (arenaName == null || arenaName.isEmpty()) return;
+        Config.data.set("holograms.top.arena", arenaName.toLowerCase());
+        try {
+            Config.data.save(Config.dataFile);
+        } catch (java.io.IOException ex) {
+            plugin.getLogger().warning(ex.toString());
+        }
+        refresh();
+    }
+
+    public void remove() {
+        if (manager == null) return;
+        tryInvoke(manager, "remove", getId(), true);
+        tryInvoke(manager, "remove", getId());
+        tryInvoke(manager, "delete", getId());
+        spawned = false;
     }
 
     public void shutdown() {
         if (!available) return;
-        for (String id : new java.util.ArrayList<>(holograms.keySet())) {
-            remove(id);
-        }
-        holograms.clear();
-        spawned.clear();
+        remove();
     }
 
-    public void removeArena(Arena arena) {
-        if (!available || arena == null) return;
-        remove(getId(arena));
+    private String getId() {
+        return "thewalls_top";
     }
 
     private void setup() {
@@ -103,10 +102,6 @@ public final class LobbyHolograms {
         }
     }
 
-    private String getId(Arena arena) {
-        return "thewalls_lobby_" + arena.getName().toLowerCase();
-    }
-
     private Object createTextHologram(String id) {
         try {
             Class<?> text = Class.forName("com.maximde.hologramlib.hologram.TextHologram");
@@ -115,6 +110,42 @@ public final class LobbyHolograms {
             warnOnce("Unable to create HologramLib TextHologram: " + ex.getClass().getSimpleName());
             return null;
         }
+    }
+
+    private String buildText() {
+        List<String> lines = new ArrayList<>();
+        lines.add(Messages.raw("hologram.top.title"));
+        lines.add(Messages.raw("hologram.top.arenas_header"));
+        List<Map.Entry<String, Integer>> arenas = new ArrayList<>(Config.getArenaPlays().entrySet());
+        arenas.sort((a, b) -> Integer.compare(b.getValue(), a.getValue()));
+        if (arenas.isEmpty()) {
+            lines.add(Messages.raw("hologram.top.empty"));
+        } else {
+            int limit = Math.min(3, arenas.size());
+            for (int i = 0; i < limit; i++) {
+                Map.Entry<String, Integer> entry = arenas.get(i);
+                lines.add(Messages.raw("hologram.top.arenas_item", Map.of(
+                        "pos", String.valueOf(i + 1),
+                        "arena", entry.getKey(),
+                        "plays", String.valueOf(entry.getValue())
+                )));
+            }
+        }
+        lines.add(Messages.raw("hologram.top.kills_header"));
+        List<Map.Entry<String, Integer>> kills = Config.getTopKills(3);
+        if (kills.isEmpty()) {
+            lines.add(Messages.raw("hologram.top.empty"));
+        } else {
+            for (int i = 0; i < kills.size(); i++) {
+                Map.Entry<String, Integer> entry = kills.get(i);
+                lines.add(Messages.raw("hologram.top.kills_item", Map.of(
+                        "pos", String.valueOf(i + 1),
+                        "player", entry.getKey(),
+                        "kills", String.valueOf(entry.getValue())
+                )));
+            }
+        }
+        return String.join("\n", lines);
     }
 
     private void setMiniMessageText(Object hologram, String text) {
@@ -136,15 +167,6 @@ public final class LobbyHolograms {
         if (tryInvoke(manager, "spawn", hologram, location, false)) return;
         if (tryInvoke(manager, "spawn", hologram, location)) return;
         tryInvoke(manager, "spawn", hologram);
-    }
-
-    private void remove(String id) {
-        if (manager == null || id == null) return;
-        tryInvoke(manager, "remove", id, true);
-        tryInvoke(manager, "remove", id);
-        tryInvoke(manager, "delete", id);
-        holograms.remove(id);
-        spawned.remove(id);
     }
 
     private boolean tryInvoke(Object target, String name, Object... args) {

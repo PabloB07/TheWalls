@@ -4,14 +4,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import ca.thewalls.Commands.*;
 import ca.thewalls.Listeners.*;
-import ca.thewalls.Walls.Game;
-import ca.thewalls.Walls.World;
 
 public final class TheWalls extends JavaPlugin {
 
     public ArenaManager arenas;
     public com.samjakob.spigui.SpiGUI spigui;
-    public LobbyHolograms lobbyHolograms;
+    public TopHolograms topHolograms;
 
     @Override
     public void onEnable() {
@@ -21,7 +19,7 @@ public final class TheWalls extends JavaPlugin {
         spigui = new com.samjakob.spigui.SpiGUI(this);
         arenas = new ArenaManager(this);
         // No default arena: all arenas are explicit and created via config/commands.
-        lobbyHolograms = new LobbyHolograms(this);
+        topHolograms = new TopHolograms(this);
 
         // Register commands
         this.getCommand("walls").setExecutor(new WallsInfo(this));
@@ -52,10 +50,10 @@ public final class TheWalls extends JavaPlugin {
             SignUpdater.updateAll(this);
         }, 40L, 40L);
 
-        // Hologram tick: keep lobby holograms synced
+        // Hologram tick: keep top hologram synced
         this.getServer().getScheduler().runTaskTimer(this, () -> {
-            if (lobbyHolograms == null || !lobbyHolograms.isAvailable()) return;
-            lobbyHolograms.refreshAll();
+            if (topHolograms == null || !topHolograms.isAvailable()) return;
+            topHolograms.refresh();
         }, 20L, 20L);
     }
 
@@ -68,8 +66,8 @@ public final class TheWalls extends JavaPlugin {
                 }
             }
         }
-        if (lobbyHolograms != null) {
-            lobbyHolograms.shutdown();
+        if (topHolograms != null) {
+            topHolograms.shutdown();
         }
     }
 

@@ -99,8 +99,8 @@ public class ArenaManager {
         Config.clearArenaSigns(key);
         Config.removeArenaLobby(key);
         Config.removeArenaName(key);
-        if (plugin.lobbyHolograms != null) {
-            plugin.lobbyHolograms.removeArena(arena);
+        if (plugin.topHolograms != null) {
+            plugin.topHolograms.refresh();
         }
         return true;
     }
@@ -139,12 +139,8 @@ public class ArenaManager {
         } else {
             arena.stopLobbyCountdown();
         }
-        if (plugin.lobbyHolograms != null) {
-            if (arena.getPlayers().isEmpty()) {
-                plugin.lobbyHolograms.removeArena(arena);
-            } else {
-                plugin.lobbyHolograms.updateArena(arena);
-            }
+        if (plugin.topHolograms != null) {
+            plugin.topHolograms.refresh();
         }
     }
 }

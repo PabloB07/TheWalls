@@ -24,8 +24,8 @@ public class WReload implements CommandExecutor {
 
         Config.initializeData();
         Messages.reload();
-        if (walls.lobbyHolograms != null) {
-            walls.lobbyHolograms.refreshAll();
+        if (walls.topHolograms != null) {
+            walls.topHolograms.refresh();
         }
         sender.sendMessage(Messages.msg("admin.reload_ok"));
         return true;
