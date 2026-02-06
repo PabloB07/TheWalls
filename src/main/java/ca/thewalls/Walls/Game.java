@@ -79,6 +79,7 @@ class Loop implements Runnable {
             game.ensureBoard(p);
             FastBoard board = game.getBoard(p);
             if (board == null) continue;
+            board.updateTitle(game.getGameTitle(p));
             List<Component> lines = game.buildScoreboardLines(p);
             board.updateLines(lines);
         }
@@ -159,9 +160,6 @@ public class Game {
             java.util.UUID uid = viewer.getUniqueId();
             myKills = Config.leaderboard.getInt(uid.toString() + ".kills", 0);
         }
-        lines.add(Messages.msg("scoreboard.game_title", java.util.Map.of(
-                "team", myTeamName
-        )));
 
         if (wallsFallen) {
             lines.add(Messages.msg("scoreboard.game_phase_fight"));
@@ -208,7 +206,6 @@ public class Game {
         int minPlayers = Config.data.getInt("lobby.minPlayers", 2);
         int countdown = this.arena.getLobbyCountdown();
         List<Component> lines = new ArrayList<>();
-        lines.add(getLobbyTitleFrame());
         lines.add(Messages.msg("scoreboard.lobby_arena", java.util.Map.of(
                 "arena", this.arena.getName()
         )));
@@ -226,6 +223,7 @@ public class Game {
             ensureBoard(p);
             FastBoard board = getBoard(p);
             if (board == null) continue;
+            board.updateTitle(getLobbyTitleFrame());
             board.updateLines(lines);
         }
     }
@@ -244,6 +242,12 @@ public class Game {
             return Messages.msg(keyOrRaw);
         }
         return Utils.componentFromString(keyOrRaw);
+    }
+
+    private Component getGameTitle(@Nullable Player viewer) {
+        Team myTeam = viewer == null ? null : Team.getPlayerTeam(viewer, teams);
+        String myTeamName = myTeam == null ? "<gray>None</gray>" : Utils.toMini(Utils.format(myTeam.teamColor + myTeam.teamName));
+        return Messages.msg("scoreboard.game_title", java.util.Map.of("team", myTeamName));
     }
 
     public void start(@Nullable Player starter) {

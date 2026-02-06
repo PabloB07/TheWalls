@@ -158,4 +158,42 @@ public class ArenaManager {
             plugin.topHolograms.refresh();
         }
     }
+
+    public void reloadFromConfig() {
+        java.util.Set<String> configured = new java.util.HashSet<>();
+        for (String name : Config.getArenaNames()) {
+            if (name == null) continue;
+            configured.add(name.toLowerCase());
+            createArena(name);
+        }
+
+        java.util.List<String> toRemove = new java.util.ArrayList<>();
+        for (Map.Entry<String, Arena> entry : arenas.entrySet()) {
+            String key = entry.getKey();
+            Arena arena = entry.getValue();
+            if (configured.contains(key)) {
+                arena.reloadFromConfig();
+                onPlayerCountChanged(arena);
+                arena.getGame().updateLobbyBoards();
+                continue;
+            }
+            if (arena.getGame().started || !getPlayers(arena).isEmpty()) {
+                continue;
+            }
+            toRemove.add(key);
+        }
+        for (String key : toRemove) {
+            arenas.remove(key);
+        }
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Arena arena = getArenaByPlayer(player);
+            if (arena == null) {
+                clearPlayer(player);
+                ca.thewalls.Listeners.LobbyItems.clear(player);
+                continue;
+            }
+            arena.getGame().ensureBoard(player);
+        }
+    }
 }

@@ -63,6 +63,10 @@ public class Arena {
         Config.removeArenaLobby(name);
     }
 
+    public void reloadFromConfig() {
+        this.lobby = Config.getArenaLobby(name);
+    }
+
     public void setTeamPreference(org.bukkit.entity.Player player, int teamId) {
         if (player == null) return;
         teamPrefs.put(player.getUniqueId(), teamId);
