@@ -19,10 +19,10 @@ public class TNTSpawn extends Event {
 
     @Override
     public void run() {
-        for (Player p : this.arena.getPlayers()) {
+        int maxTargets = Config.data.getInt("events.maxTargets", 1);
+        for (Player p : Utils.getEventTargets(this.arena, maxTargets)) {
             p.sendMessage(Messages.msg("events.tnt_warning"));
             p.playSound(p.getLocation(), Sound.ENTITY_TNT_PRIMED, 255, 1);
-            if (!Utils.isAlive(p)) continue;
             for (int i = 0; i < Config.data.getInt("events.tnt.amount"); i++) {
                 if (!arena.getGame().started) {
                     return;

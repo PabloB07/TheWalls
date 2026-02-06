@@ -17,11 +17,10 @@ public class BlindSnail extends Event {
 
     @Override
     public void run() {
-        for (Player p : this.arena.getPlayers()) {
+        int maxTargets = Config.data.getInt("events.maxTargets", 1);
+        for (Player p : Utils.getEventTargets(this.arena, maxTargets)) {
             p.sendMessage(Messages.msg("events.blind_snail"));
             p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_LAND, 255, 1);
-
-            if (!Utils.isAlive(p)) continue;
 
             p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Config.data.getInt("events.blindSnail.seconds") * 20, Config.data.getInt("events.blindSnail.blindStrength"), true));
             p.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, Config.data.getInt("events.blindSnail.seconds") * 20, Config.data.getInt("events.blindSnail.slowStrength"), true));

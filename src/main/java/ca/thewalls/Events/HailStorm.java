@@ -48,10 +48,10 @@ public class HailStorm extends Event {
 
     @Override
     public void run() {
-        for (Player p : this.arena.getPlayers()) {
+        int maxTargets = Config.data.getInt("events.maxTargets", 1);
+        for (Player p : Utils.getEventTargets(this.arena, maxTargets)) {
             p.playSound(p.getLocation(), Sound.ENTITY_ARROW_SHOOT, 255, 1);
             p.sendMessage(Messages.msg("events.hailstorm_in", java.util.Map.of("seconds", String.valueOf(Config.data.getInt("events.hailStorm.delay")))));
-            if (!Utils.isAlive(p)) continue;
             new HailStormHandler(p, this.arena);
         }
     }

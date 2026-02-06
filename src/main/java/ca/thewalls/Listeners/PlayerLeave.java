@@ -23,8 +23,8 @@ public class PlayerLeave implements Listener {
             this.walls.arenas.clearPlayer(e.getPlayer());
             return;
         }
-        this.walls.arenas.clearPlayer(e.getPlayer());
         if (!arena.getGame().started) {
+            this.walls.arenas.clearPlayer(e.getPlayer());
             this.walls.arenas.onPlayerCountChanged(arena);
             return;
         }

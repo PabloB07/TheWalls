@@ -32,20 +32,22 @@ public class Config {
             data = YamlConfiguration.loadConfiguration(dataFile);
             // fill config
             // events
-            if (!data.isSet("events.gregs.enabled")) {
-                data.set("events.gregs.enabled", true);
-                data.set("events.gregs.timer", 5);
-                data.set("events.gregs.power", 3);
-                data.set("events.gregs.speed", 3);
-                data.set("events.gregs.amount", 5);
-            }
-            if (!data.isSet("events.gregs.fireExplosion")) {
-                data.set("events.gregs.fireExplosion", true);
-            }
             if (!data.isSet("events.reveal.enabled")) {
                 data.set("events.reveal.enabled", true);
                 data.set("events.reveal.displayCords", true);
                 data.set("events.reveal.seconds", 10);
+            }
+            if (!data.isSet("events.minPlayers")) {
+                data.set("events.minPlayers", 2);
+            }
+            if (!data.isSet("events.safeSecondsAfterStart")) {
+                data.set("events.safeSecondsAfterStart", 30);
+            }
+            if (!data.isSet("events.safeSpawnRadius")) {
+                data.set("events.safeSpawnRadius", 16);
+            }
+            if (!data.isSet("events.maxTargets")) {
+                data.set("events.maxTargets", 1);
             }
             if (!data.isSet("events.blindSnail.enabled")) {
                 data.set("events.blindSnail.enabled", true);

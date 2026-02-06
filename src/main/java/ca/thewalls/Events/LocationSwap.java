@@ -18,18 +18,17 @@ public class LocationSwap extends Event {
 
     @Override
     public void run() {
+        java.util.List<Player> alive = Utils.getAlivePlayers(this.arena);
+        if (alive.size() < 2) return;
         ArrayList<Location> locations = new ArrayList<>();
-        // fill locations of players
-        for (Player p : this.arena.getPlayers()) {
-            if (!Utils.isAlive(p)) continue;
+        for (Player p : alive) {
             locations.add(p.getLocation());
         }
-        
         Collections.shuffle(locations);
 
         int i = 0;
-        for (Player p : this.arena.getPlayers()) {
-            if (!Utils.isAlive(p)) continue;
+        for (Player p : alive) {
+            if (i >= locations.size()) break;
             p.teleport(locations.get(i));
             p.sendMessage(Messages.msg("events.location_swap"));
             p.playSound(p.getLocation(), Sound.ENTITY_ENDER_EYE_LAUNCH, 255, 1);

@@ -1,0 +1,137 @@
+events:
+  reveal:
+    enabled: true
+    displayCords: true
+    seconds: 10
+  minPlayers: 2
+  safeSecondsAfterStart: 30
+  safeSpawnRadius: 16
+  maxTargets: 1
+  blindSnail:
+    enabled: true
+    seconds: 5
+    blindStrength: 10
+    slowStrength: 3
+  hailStorm:
+    enabled: true
+    delay: 5
+    height: 5
+    volleySize: 3
+    arrowDamage: 4
+  tnt:
+    enabled: true
+    amount: 5
+    followPlayer: true
+  locationSwap:
+    enabled: true
+  supplyChest:
+    enabled: true
+    allowedRegionPercentageOfSize: 0.2
+  sinkHole:
+    enabled: true
+    size: 1
+    seconds: 3
+    timeUntilReset: 10
+  bossMan:
+    enabled: true
+    prepTime: 3
+    dropRate: 0.35
+    protectionLevel: 3
+    resistance: 1
+    name: "Boss Man Jim"
+  itemCheck:
+    enabled: true
+    materials:
+      oak_log:
+        material: OAK_LOG
+        quantity: 16
+        time: 30
+      diamonds:
+        material: DIAMOND
+        quantity: 8
+        time: 120
+      cobblestone:
+        material: COBBLESTONE
+        quantity: 64
+        time: 60
+  bombingRun:
+    enabled: true
+    tntPower: 16
+    tntSpread: 2
+    alertTime: 5
+    detonationtime: 10
+
+players:
+  spawn:
+    steakAmount: 8
+
+teams:
+  zero:
+    name: "Red"
+    color: "<#ff3b3b>"
+  one:
+    name: "Blue"
+    color: "<#3b6cff>"
+  two:
+    name: "Yellow"
+    color: "<#ffd23b>"
+  three:
+    name: "Green"
+    color: "<#3bff6f>"
+  allowTie: false
+  checkWinEverySecond: true
+  clearProtectionBlocksAfterDrop: true
+
+world:
+  borderShrinkPercentageOfSize: 0.2
+  saving: true
+  saveAir: true
+  safetyBounds: 3
+
+theWalls:
+  legacyHud: false
+  respawnDuringPrepTime: false
+  respawnDuringInitialFighting: false
+  autoExecute:
+    center:
+      x: 0
+      z: 0
+    size: 100
+    eventCooldown: 60
+    prepTime: 600
+    timeUntilBorderClose: 600
+    speedOfBorderClose: 180
+    worldName: "world"
+
+holograms:
+  top:
+    location:
+      world: ""
+      x: 0
+      y: 0
+      z: 0
+      yaw: 0
+      pitch: 0
+    offsetY: 0.0
+
+lobby:
+  minPlayers: 2
+  countdownSeconds: 20
+  endCooldownSeconds: 10
+  items:
+    enabled: true
+    teamSelectorSlot: 0
+    leaveSlot: 8
+
+hub:
+  enabled: false
+  location:
+    world: ""
+    x: 0
+    y: 0
+    z: 0
+    yaw: 0
+    pitch: 0
+
+arenas:
+  list: []

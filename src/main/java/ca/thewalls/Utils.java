@@ -79,6 +79,49 @@ public class Utils {
         return p.getGameMode() != GameMode.SPECTATOR || p.getStatistic(Statistic.DEATHS) <= 0;
     }
 
+    public static java.util.List<Player> getAlivePlayers(Arena arena) {
+        java.util.List<Player> alive = new java.util.ArrayList<>();
+        if (arena == null) return alive;
+        for (Player p : arena.getPlayers()) {
+            if (Utils.isAlive(p)) {
+                alive.add(p);
+            }
+        }
+        return alive;
+    }
+
+    public static java.util.List<Player> getEventTargets(Arena arena, int maxTargets) {
+        java.util.List<Player> alive = getAlivePlayers(arena);
+        if (alive.isEmpty()) return alive;
+        int safeRadius = Config.data.getInt("events.safeSpawnRadius", 0);
+        if (safeRadius > 0) {
+            java.util.List<Player> filtered = new java.util.ArrayList<>();
+            for (Player p : alive) {
+                if (!isNearTeamSpawn(p, arena, safeRadius)) {
+                    filtered.add(p);
+                }
+            }
+            if (!filtered.isEmpty()) {
+                alive = filtered;
+            } else {
+                return java.util.Collections.emptyList();
+            }
+        }
+        java.util.Collections.shuffle(alive);
+        int limit = Math.max(1, maxTargets);
+        if (alive.size() <= limit) return alive;
+        return new java.util.ArrayList<>(alive.subList(0, limit));
+    }
+
+    private static boolean isNearTeamSpawn(Player p, Arena arena, double radius) {
+        if (p == null || arena == null) return false;
+        Team t = Team.getPlayerTeam(p, arena.getGame().teams);
+        if (t == null || t.teamSpawn == null) return false;
+        if (p.getWorld() == null || t.teamSpawn.getWorld() == null) return false;
+        if (!p.getWorld().equals(t.teamSpawn.getWorld())) return false;
+        return t.teamSpawn.distanceSquared(p.getLocation()) <= (radius * radius);
+    }
+
     public static Plugin getPlugin() {
         return Bukkit.getPluginManager().getPlugin("TheWalls");
     }

@@ -35,14 +35,21 @@ public class PlayerJoin implements Listener {
         }
         ca.thewalls.Arena arena = this.walls.getArenaByPlayer(e.getPlayer());
         if (arena == null) return;
-        if (arena.getLobby() != null) {
-            e.getPlayer().teleport(arena.getLobby());
+        if (!arena.getGame().started) {
+            if (arena.getLobby() != null) {
+                e.getPlayer().teleport(arena.getLobby());
+            }
+            this.walls.arenas.onPlayerCountChanged(arena);
+            LobbyItems.give(e.getPlayer(), arena);
+            arena.getGame().ensureBoard(e.getPlayer());
+            arena.getGame().updateLobbyBoards();
+            return;
         }
-        this.walls.arenas.onPlayerCountChanged(arena);
-        LobbyItems.give(e.getPlayer(), arena);
-        arena.getGame().ensureBoard(e.getPlayer());
-        arena.getGame().updateLobbyBoards();
-        if (!arena.getGame().started) return;
+
+        // Game already running: rejoin as spectator inside the arena world
+        if (arena.getWorld().world != null) {
+            e.getPlayer().teleport(arena.getWorld().world.getSpawnLocation());
+        }
         arena.getGame().ensureBoard(e.getPlayer());
         arena.getGame().enableTablistHeartsForPlayer(e.getPlayer());
         e.getPlayer().setGameMode(GameMode.SPECTATOR);

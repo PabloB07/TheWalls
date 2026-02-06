@@ -35,8 +35,6 @@ events:
   sinkhole_in: "&0&lSink Hole&r&c opening in {seconds}s!"
   hailstorm_in: "&1A &3&lHail of Arrows&r&1 is dropping in {seconds} seconds!"
   hailstorm_now: "&l&3Hail of Arrows incoming!"
-  gregs_start: "&2&lThe Gregs&r&2 are here to give you free food!"
-  greg_blessing: "&2Greg has spared you and has given you some &e&lGolden Apples!"
   location_reveal: "{team}{player}&r of the {team}{team_name} team&r is at &6{x}, {y}, {z}&r."
   bombing_run: "&c&lBOMBING RUN INCOMING!!!"
   bossman_spawn: "&c&l{name} is about to spawn! You have {seconds}s to prepare!"
@@ -89,7 +87,7 @@ hologram:
   refreshed: "<green>Top hologram refreshed.</green>"
 info:
   base: "<gradient:#ff8a00:#ffd000><bold>THE WALLS</bold></gradient> <gray>•</gray> <white>v{version}</white>"
-  hover: "<#00E5FF>Play The Walls on Paper 1.21</#00E5FF>\n<gray>Author:</gray> <#A855F7>CKAY9</#A855F7>\n<gray>Use:</gray> <#22C55E>/wstart</#22C55E> <gray>to begin</gray>"
+  hover: "<#00E5FF>Play The Walls on Paper 1.21</#00E5FF>\n<gray>Author:</gray> <#A855F7>CKAY9</#A855F7>\n<gray>Use:</gray> <#22C55E>/walls start</#22C55E> <gray>to begin</gray>"
 walls:
   only_player: "<red>Only players can use this command.</red>"
   join_usage: "<gray>Use:</gray> <green>/walls join <arena></green>"
@@ -98,7 +96,7 @@ walls:
   list_header: "<gold><bold>The Walls Arenas</bold></gold>"
   list_item: "<gray>-</gray> <yellow>{arena}</yellow>"
   no_lobby: "<red>No lobby set for arena:</red> <yellow>{arena}</yellow>"
-  lobby_usage: "<gray>Use:</gray> <green>/walls lobby set <arena></green> <gray>or</gray> <green>/walls lobby tp <arena></green>"
+  lobby_usage: "<gray>Use:</gray> <green>/walls lobby <set|tp|remove> <arena></green>"
   lobby_set: "<green>Lobby set for arena:</green> <yellow>{arena}</yellow>"
   lobby_tp: "<green>Teleported to lobby:</green> <yellow>{arena}</yellow>"
   lobby_removed: "<yellow>Lobby removed for arena:</yellow> <white>{arena}</white>"
@@ -116,7 +114,6 @@ hub:
   tp: "<green>Teleported to hub.</green>"
   disabled: "<yellow>Hub disabled.</yellow>"
   no_hub: "<red>No hub set.</red>"
-arena:
 menu:
   arena_title: "<gradient:#38bdf8:#a78bfa><bold>Select Arena</bold></gradient>"
   arena_item: "<yellow>{arena}</yellow>"

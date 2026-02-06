@@ -78,10 +78,10 @@ public class SinkHole extends Event {
 
     @Override
     public void run() {
-        for (Player p : this.arena.getPlayers()) {
+        int maxTargets = Config.data.getInt("events.maxTargets", 1);
+        for (Player p : Utils.getEventTargets(this.arena, maxTargets)) {
             p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_GUITAR, 255, 1);
             p.sendMessage(Messages.msg("events.sinkhole_in", java.util.Map.of("seconds", String.valueOf(Config.data.getInt("events.sinkHole.seconds")))));
-            if (!Utils.isAlive(p)) continue;
             new SinkHoleHandler(p, this.arena);
         }
     }

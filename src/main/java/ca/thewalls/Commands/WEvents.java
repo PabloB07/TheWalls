@@ -28,8 +28,6 @@ public class WEvents implements CommandExecutor {
             sender.sendMessage(Utils.format("&d  - Location Swap"));
         if (Config.data.getBoolean("events.supplyChest.enabled"))
             sender.sendMessage(Utils.format("&d  - Supply Chest"));
-        if (Config.data.getBoolean("events.gregs.enabled"))
-            sender.sendMessage(Utils.format("&d  - Gregs / Free Food"));
         if (Config.data.getBoolean("events.reveal.enabled"))
             sender.sendMessage(Utils.format("&d  - Location Reveal"));
         if (Config.data.getBoolean("events.sinkHole.enabled"))

@@ -49,9 +49,13 @@ class Loop implements Runnable {
         }
 
         if (game.wallsFallen && game.eventTimer <= 0 && game.events.size() >= 1) {
+            if (!game.canTriggerEvents()) {
+                game.eventTimer = 10;
+            } else {
             int rnd = new Random().nextInt(game.events.size());
             game.events.get(rnd).run();
             game.eventTimer = game.eventCooldown;
+            }
         }
 
         if (game.wallsFallen && game.borderCloseTimer <= 0 && !game.borderClosing) {
@@ -244,7 +248,7 @@ public class Game {
         return Utils.componentFromString(keyOrRaw);
     }
 
-    private Component getGameTitle(@Nullable Player viewer) {
+    Component getGameTitle(@Nullable Player viewer) {
         Team myTeam = viewer == null ? null : Team.getPlayerTeam(viewer, teams);
         String myTeamName = myTeam == null ? "<gray>None</gray>" : Utils.toMini(Utils.format(myTeam.teamColor + myTeam.teamName));
         return Messages.msg("scoreboard.game_title", java.util.Map.of("team", myTeamName));
@@ -257,6 +261,25 @@ public class Game {
                 starter.sendMessage(Messages.msg("game.no_players"));
             }
             return;
+        }
+
+        if (size <= 0) {
+            size = Config.data.getInt("theWalls.autoExecute.size", 100);
+        }
+        if (prepTime <= 0) {
+            prepTime = Config.data.getInt("theWalls.autoExecute.prepTime", 600);
+        }
+        if (borderCloseTime <= 0) {
+            borderCloseTime = Config.data.getInt("theWalls.autoExecute.timeUntilBorderClose", 600);
+        }
+        if (borderCloseSpeed <= 0) {
+            borderCloseSpeed = Config.data.getInt("theWalls.autoExecute.speedOfBorderClose", 180);
+        }
+        if (eventCooldown <= 0) {
+            eventCooldown = Config.data.getInt("theWalls.autoExecute.eventCooldown", 60);
+        }
+        if (eventCooldown < 10) {
+            eventCooldown = 10;
         }
 
         String configuredWorld = ca.thewalls.Config.getArenaGameWorld(this.arena.getName());
@@ -367,8 +390,6 @@ public class Game {
             new LocationSwap("Player Location Swap", this.arena);
         if (Config.data.getBoolean("events.supplyChest.enabled"))
             new SupplyChest("Supply Chest", this.arena);
-        if (Config.data.getBoolean("events.gregs.enabled"))
-            new FreeFood("Free Food / Chicken Explosion", this.arena);
         if (Config.data.getBoolean("events.reveal.enabled"))
             new LocationReveal("Location Reveal", this.arena);
         if (Config.data.getBoolean("events.sinkHole.enabled"))
@@ -473,6 +494,18 @@ public class Game {
             }
             this.arena.stopLobbyEndCooldown();
         }, endCooldown * 20L);
+    }
+
+    private boolean canTriggerEvents() {
+        if (!started || !wallsFallen) return false;
+        int minPlayers = Config.data.getInt("events.minPlayers", 2);
+        int alive = 0;
+        for (Player p : this.arena.getPlayers()) {
+            if (Utils.isAlive(p)) alive++;
+        }
+        if (alive < minPlayers) return false;
+        int safeSeconds = Config.data.getInt("events.safeSecondsAfterStart", 30);
+        return time >= safeSeconds;
     }
 
     public void enableTablistHeartsForPlayer(Player player) {

@@ -118,8 +118,8 @@ public class BossMan extends Event {
 
     @Override
     public void run() {
-        for (Player p : this.arena.getPlayers()) {
-            if (!Utils.isAlive(p)) continue;
+        int maxTargets = Config.data.getInt("events.maxTargets", 1);
+        for (Player p : Utils.getEventTargets(this.arena, maxTargets)) {
             new BossManHandler(p, this.arena);
         }
     }
