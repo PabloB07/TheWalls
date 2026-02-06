@@ -496,7 +496,7 @@ public class Game {
         }, endCooldown * 20L);
     }
 
-    private boolean canTriggerEvents() {
+    boolean canTriggerEvents() {
         if (!started || !wallsFallen) return false;
         int minPlayers = Config.data.getInt("events.minPlayers", 2);
         int alive = 0;
