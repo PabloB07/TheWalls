@@ -26,6 +26,13 @@ public class PlayerJoin implements Listener {
             this.walls.arenas.createArena(savedArena);
             this.walls.arenas.assignPlayer(e.getPlayer(), savedArena);
         }
+        if (savedArena == null) {
+            org.bukkit.Location hub = Config.getHub();
+            if (hub != null) {
+                e.getPlayer().teleport(hub);
+                return;
+            }
+        }
         ca.thewalls.Arena arena = this.walls.getArenaByPlayer(e.getPlayer());
         if (arena == null) return;
         if (arena.getLobby() != null) {

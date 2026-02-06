@@ -128,7 +128,64 @@ public class WallsInfo implements CommandExecutor {
                     sender.sendMessage(Messages.msg("walls.lobby_tp", java.util.Map.of("arena", arena.getName())));
                     return true;
                 }
+                if (action.equals("remove")) {
+                    if (args.length < 3) {
+                        sender.sendMessage(Messages.msg("walls.lobby_usage"));
+                        return true;
+                    }
+                    String arenaName = args[2];
+                    Arena arena = walls.arenas.getArena(arenaName);
+                    if (arena == null || arena.getLobby() == null) {
+                        sender.sendMessage(Messages.msg("walls.no_lobby", java.util.Map.of("arena", arenaName)));
+                        return true;
+                    }
+                    arena.clearLobby();
+                    sender.sendMessage(Messages.msg("walls.lobby_removed", java.util.Map.of("arena", arena.getName())));
+                    return true;
+                }
                 sender.sendMessage(Messages.msg("walls.lobby_usage"));
+                return true;
+            }
+            if (sub.equals("hub")) {
+                if (!sender.hasPermission("thewalls.walls.hub") && !sender.isOp()) {
+                    sender.sendMessage(Messages.msg("admin.no_permission"));
+                    return true;
+                }
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage(Messages.msg("walls.only_player"));
+                    return true;
+                }
+                if (args.length < 2) {
+                    sender.sendMessage(Messages.msg("hub.usage"));
+                    return true;
+                }
+                String action = args[1].toLowerCase();
+                if (action.equals("set")) {
+                    ca.thewalls.Config.setHub(((Player) sender).getLocation());
+                    sender.sendMessage(Messages.msg("hub.set"));
+                    return true;
+                }
+                if (action.equals("tp")) {
+                    org.bukkit.Location hub = ca.thewalls.Config.getHub();
+                    if (hub == null) {
+                        sender.sendMessage(Messages.msg("hub.no_hub"));
+                        return true;
+                    }
+                    ((Player) sender).teleport(hub);
+                    sender.sendMessage(Messages.msg("hub.tp"));
+                    return true;
+                }
+                if (action.equals("off")) {
+                    ca.thewalls.Config.data.set("hub.enabled", false);
+                    try {
+                        ca.thewalls.Config.data.save(ca.thewalls.Config.dataFile);
+                    } catch (java.io.IOException ex) {
+                        ca.thewalls.Utils.getPlugin().getLogger().warning(ex.toString());
+                    }
+                    sender.sendMessage(Messages.msg("hub.disabled"));
+                    return true;
+                }
+                sender.sendMessage(Messages.msg("hub.usage"));
                 return true;
             }
             if (sub.equals("sign")) {
@@ -227,28 +284,18 @@ public class WallsInfo implements CommandExecutor {
                 }
                 String action = args[2].toLowerCase();
                 if (action.equals("set")) {
-                    if (args.length < 4) {
-                        sender.sendMessage(Messages.msg("hologram.usage"));
-                        return true;
-                    }
-                    String arenaName = args[3];
-                    Arena arena = walls.arenas.getArena(arenaName);
-                    if (arena == null) {
-                        sender.sendMessage(Messages.msg("arena.not_found", java.util.Map.of("arena", arenaName)));
-                        return true;
-                    }
-                    if (arena.getLobby() == null) {
-                        sender.sendMessage(Messages.msg("walls.no_lobby", java.util.Map.of("arena", arenaName)));
+                    if (!(sender instanceof Player)) {
+                        sender.sendMessage(Messages.msg("walls.only_player"));
                         return true;
                     }
                     if (walls.topHolograms != null) {
-                        walls.topHolograms.setArena(arenaName);
+                        walls.topHolograms.setLocation(((Player) sender).getLocation());
                     }
-                    sender.sendMessage(Messages.msg("hologram.set", java.util.Map.of("arena", arenaName)));
+                    sender.sendMessage(Messages.msg("hologram.set"));
                     return true;
                 }
                 if (action.equals("remove")) {
-                    ca.thewalls.Config.data.set("holograms.top.arena", null);
+                    ca.thewalls.Config.data.set("holograms.top.location.world", "");
                     try {
                         ca.thewalls.Config.data.save(ca.thewalls.Config.dataFile);
                     } catch (java.io.IOException ex) {

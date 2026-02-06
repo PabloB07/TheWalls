@@ -9,7 +9,7 @@ commands:
   walls:
     description: The Walls main command
     aliases: [w]
-    usage: /walls <start|end|forceteam|leaderboard|events|reload|list|join|leave|team|lobby|sign|arena>
+    usage: /walls <start|end|forceteam|leaderboard|events|reload|list|join|leave|team|lobby|hub|sign|arena>
 permissions:
   thewalls.start:
     default: op
@@ -40,4 +40,6 @@ permissions:
   thewalls.walls.arena:
     default: op
   thewalls.walls.hologram:
+    default: op
+  thewalls.walls.hub:
     default: op

@@ -76,11 +76,18 @@ public class ArenaManager {
     public void leavePlayer(Player player) {
         if (player == null) return;
         Arena arena = getArenaByPlayer(player);
+        org.bukkit.Location hub = Config.getHub();
+        if (hub != null) {
+            player.teleport(hub);
+        } else if (arena != null && arena.getLobby() != null) {
+            player.teleport(arena.getLobby());
+        }
         clearPlayer(player);
         if (arena != null) {
             ca.thewalls.Listeners.LobbyItems.clear(player);
             onPlayerCountChanged(arena);
         }
+        Config.setPlayerArena(player.getUniqueId(), null);
     }
 
     public boolean deleteArena(String name) {

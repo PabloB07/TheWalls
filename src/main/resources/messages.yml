@@ -63,8 +63,8 @@ hologram:
     kills_header: "<yellow>Top Kills</yellow>"
     kills_item: "<gray>{pos}.</gray> <white>{player}</white> <red>{kills}</red>"
     empty: "<gray>No data yet</gray>"
-  usage: "<gray>Use:</gray> <green>/walls hologram top <set|remove|refresh> [arena]</green>"
-  set: "<green>Top hologram arena set to:</green> <yellow>{arena}</yellow>"
+  usage: "<gray>Use:</gray> <green>/walls hologram top <set|remove|refresh></green>"
+  set: "<green>Top hologram location set.</green>"
   removed: "<green>Top hologram removed.</green>"
   refreshed: "<green>Top hologram refreshed.</green>"
 info:
@@ -81,6 +81,7 @@ walls:
   lobby_usage: "<gray>Use:</gray> <green>/walls lobby set <arena></green> <gray>or</gray> <green>/walls lobby tp <arena></green>"
   lobby_set: "<green>Lobby set for arena:</green> <yellow>{arena}</yellow>"
   lobby_tp: "<green>Teleported to lobby:</green> <yellow>{arena}</yellow>"
+  lobby_removed: "<yellow>Lobby removed for arena:</yellow> <white>{arena}</white>"
   team_usage: "<gray>Use:</gray> <green>/walls team <red|blue|yellow|green></green>"
   team_invalid: "<red>Invalid team.</red>"
   team_set: "<green>Team preference set to:</green> <yellow>{team}</yellow>"
@@ -88,6 +89,12 @@ walls:
   sign_usage: "<gray>Use:</gray> <green>/walls sign add <arena></green>"
   sign_invalid: "<red>Look at a sign within 5 blocks.</red>"
   sign_added: "<green>Sign registered for arena:</green> <yellow>{arena}</yellow>"
+hub:
+  usage: "<gray>Use:</gray> <green>/walls hub <set|tp|off></green>"
+  set: "<green>Hub set.</green>"
+  tp: "<green>Teleported to hub.</green>"
+  disabled: "<yellow>Hub disabled.</yellow>"
+  no_hub: "<red>No hub set.</red>"
 arena:
 menu:
   arena_title: "<gold><bold>Select Arena</bold></gold>"

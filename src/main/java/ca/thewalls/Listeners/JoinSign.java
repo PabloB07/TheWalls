@@ -77,6 +77,7 @@ public class JoinSign implements Listener {
         sign.setEditable(false);
         sign.setWaxed(true);
         sign.update();
+        walls.arenas.createArena(arenaName);
         walls.arenas.joinPlayer(player, arenaName);
         player.sendMessage(Messages.msg("walls.joined", java.util.Map.of("arena", arenaName)));
         if (walls.arenas.getArena(arenaName) != null && walls.arenas.getArena(arenaName).getLobby() == null) {

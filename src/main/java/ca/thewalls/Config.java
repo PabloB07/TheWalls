@@ -143,8 +143,16 @@ public class Config {
                 data.set("theWalls.autoExecute.speedOfBorderClose", 180);
                 data.set("theWalls.autoExecute.worldName", "world");
             }
-            if (!data.isSet("holograms.top.arena")) {
-                data.set("holograms.top.arena", "");
+            if (!data.isSet("holograms.top.location.world")) {
+                data.set("holograms.top.location.world", "");
+                data.set("holograms.top.location.x", 0);
+                data.set("holograms.top.location.y", 0);
+                data.set("holograms.top.location.z", 0);
+                data.set("holograms.top.location.yaw", 0);
+                data.set("holograms.top.location.pitch", 0);
+            }
+            if (!data.isSet("holograms.top.offsetY")) {
+                data.set("holograms.top.offsetY", 0.0);
             }
             if (!data.isSet("lobby.minPlayers")) {
                 data.set("lobby.minPlayers", 2);
@@ -156,6 +164,17 @@ public class Config {
                 data.set("lobby.items.enabled", true);
                 data.set("lobby.items.teamSelectorSlot", 0);
                 data.set("lobby.items.leaveSlot", 8);
+            }
+            if (!data.isSet("hub.enabled")) {
+                data.set("hub.enabled", false);
+            }
+            if (!data.isSet("hub.location.world")) {
+                data.set("hub.location.world", "");
+                data.set("hub.location.x", 0);
+                data.set("hub.location.y", 0);
+                data.set("hub.location.z", 0);
+                data.set("hub.location.yaw", 0);
+                data.set("hub.location.pitch", 0);
             }
             if (!data.isSet("events.bossMan.enabled")) {
                 data.set("events.bossMan.enabled", true);
@@ -229,6 +248,7 @@ public class Config {
             }
             lobbies = YamlConfiguration.loadConfiguration(lobbiesFile);
             migrateLobbiesFromConfig();
+            migrateTopHologramFromArena();
 
             for (Player p : Bukkit.getOnlinePlayers()) {
                 createLeaderboardPlayer(p);
@@ -289,9 +309,69 @@ public class Config {
         return new Location(world, x, y, z, yaw, pitch);
     }
 
+    public static Location getHub() {
+        if (data == null) return null;
+        if (!data.getBoolean("hub.enabled", false)) return null;
+        String worldName = data.getString("hub.location.world", "");
+        if (worldName == null || worldName.isEmpty()) return null;
+        World world = Bukkit.getWorld(worldName);
+        if (world == null) return null;
+        double x = data.getDouble("hub.location.x");
+        double y = data.getDouble("hub.location.y");
+        double z = data.getDouble("hub.location.z");
+        float yaw = (float) data.getDouble("hub.location.yaw");
+        float pitch = (float) data.getDouble("hub.location.pitch");
+        return new Location(world, x, y, z, yaw, pitch);
+    }
+
+    public static void setHub(Location loc) {
+        if (loc == null || data == null) return;
+        data.set("hub.location.world", loc.getWorld().getName());
+        data.set("hub.location.x", loc.getX());
+        data.set("hub.location.y", loc.getY());
+        data.set("hub.location.z", loc.getZ());
+        data.set("hub.location.yaw", loc.getYaw());
+        data.set("hub.location.pitch", loc.getPitch());
+        data.set("hub.enabled", true);
+        try {
+            data.save(dataFile);
+        } catch (IOException ex) {
+            Utils.getPlugin().getLogger().warning(ex.toString());
+        }
+    }
+
     public static String getArenaGameWorld(String arenaName) {
         if (arenaName == null || data == null) return null;
         return data.getString("arenas." + arenaName.toLowerCase() + ".gameWorld", null);
+    }
+
+    public static Location getTopHologramLocation() {
+        if (data == null) return null;
+        String worldName = data.getString("holograms.top.location.world", "");
+        if (worldName == null || worldName.isEmpty()) return null;
+        World world = Bukkit.getWorld(worldName);
+        if (world == null) return null;
+        double x = data.getDouble("holograms.top.location.x");
+        double y = data.getDouble("holograms.top.location.y");
+        double z = data.getDouble("holograms.top.location.z");
+        float yaw = (float) data.getDouble("holograms.top.location.yaw");
+        float pitch = (float) data.getDouble("holograms.top.location.pitch");
+        return new Location(world, x, y, z, yaw, pitch);
+    }
+
+    public static void setTopHologramLocation(Location loc) {
+        if (loc == null || data == null) return;
+        data.set("holograms.top.location.world", loc.getWorld().getName());
+        data.set("holograms.top.location.x", loc.getX());
+        data.set("holograms.top.location.y", loc.getY());
+        data.set("holograms.top.location.z", loc.getZ());
+        data.set("holograms.top.location.yaw", loc.getYaw());
+        data.set("holograms.top.location.pitch", loc.getPitch());
+        try {
+            data.save(dataFile);
+        } catch (IOException ex) {
+            Utils.getPlugin().getLogger().warning(ex.toString());
+        }
     }
 
     public static void removeArenaLobby(String arenaName) {
@@ -500,6 +580,23 @@ public class Config {
         if (!changed) return;
         try {
             lobbies.save(lobbiesFile);
+        } catch (IOException ex) {
+            Utils.getPlugin().getLogger().warning(ex.toString());
+        }
+    }
+
+    private static void migrateTopHologramFromArena() {
+        if (data == null || lobbies == null) return;
+        String worldName = data.getString("holograms.top.location.world", "");
+        if (worldName != null && !worldName.isEmpty()) return;
+        String arenaName = data.getString("holograms.top.arena", "");
+        if (arenaName == null || arenaName.isEmpty()) return;
+        Location lobby = getArenaLobby(arenaName);
+        if (lobby == null) return;
+        setTopHologramLocation(lobby);
+        data.set("holograms.top.arena", null);
+        try {
+            data.save(dataFile);
         } catch (IOException ex) {
             Utils.getPlugin().getLogger().warning(ex.toString());
         }
