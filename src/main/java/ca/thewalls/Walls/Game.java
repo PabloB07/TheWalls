@@ -214,6 +214,7 @@ public class Game {
     public void updateLobbyBoards() {
         if (started) return;
         int minPlayers = Config.data.getInt("lobby.minPlayers", 2);
+        int maxPlayers = Config.getArenaMaxPlayers(this.arena.getName());
         int countdown = this.arena.getLobbyCountdown();
         List<Component> lines = new ArrayList<>();
         lines.add(Messages.msg("scoreboard.lobby_arena", java.util.Map.of(
@@ -222,6 +223,19 @@ public class Game {
         lines.add(Messages.msg("scoreboard.lobby_players", java.util.Map.of(
                 "current", String.valueOf(this.arena.getPlayers().size()),
                 "min", String.valueOf(minPlayers)
+        )));
+        String statusKey;
+        if (maxPlayers > 0 && this.arena.getPlayers().size() >= maxPlayers) {
+            statusKey = "scoreboard.lobby_status_full";
+        } else if (countdown >= 0) {
+            statusKey = "scoreboard.lobby_status_starting";
+        } else if (this.arena.getPlayers().size() >= minPlayers) {
+            statusKey = "scoreboard.lobby_status_ready";
+        } else {
+            statusKey = "scoreboard.lobby_status_waiting";
+        }
+        lines.add(Messages.msg("scoreboard.lobby_status", java.util.Map.of(
+                "status", Messages.raw(statusKey)
         )));
         if (countdown >= 0) {
             lines.add(Messages.msg("scoreboard.lobby_starting", java.util.Map.of("seconds", String.valueOf(countdown))));
@@ -290,8 +304,30 @@ public class Game {
             eventCooldown = 10;
         }
 
+        String resetStrategy = ca.thewalls.Config.getResetStrategy();
+        if (resetStrategy.equalsIgnoreCase("asp")) {
+            String templateWorld = ca.thewalls.Config.getAspTemplateWorld(this.arena.getName());
+            if (templateWorld != null && !templateWorld.isEmpty()) {
+                String instancePrefix = ca.thewalls.Config.getAspInstancePrefix() + this.arena.getName().toLowerCase() + "_";
+                ca.thewalls.AspWorlds.loadFromTemplateAsync(templateWorld, instancePrefix, (aspWorld, instanceName) -> {
+                    if (aspWorld != null) {
+                        this.arena.getWorld().world = aspWorld;
+                        this.arena.getWorld().aspInstanceName = instanceName;
+                    } else {
+                        Utils.getPlugin().getLogger().warning("ASP world load failed, falling back to configured world.");
+                    }
+                    continueStart(starter);
+                });
+                return;
+            }
+        }
+
+        continueStart(starter);
+    }
+
+    private void continueStart(@Nullable Player starter) {
         String configuredWorld = ca.thewalls.Config.getArenaGameWorld(this.arena.getName());
-        if (configuredWorld != null) {
+        if (this.arena.getWorld().world == null && configuredWorld != null) {
             this.arena.getWorld().world = Bukkit.getWorld(configuredWorld);
             if (this.arena.getWorld().world == null) {
                 for (Player p : this.arena.getPlayers()) {
@@ -305,7 +341,7 @@ public class Game {
             this.arena.getWorld().positionOne[1] = loc.getBlockZ() + size;
             this.arena.getWorld().positionTwo[0] = loc.getBlockX() - size;
             this.arena.getWorld().positionTwo[1] = loc.getBlockZ() - size;
-        } else if (starter == null) {
+        } else if (this.arena.getWorld().world == null && starter == null) {
             this.arena.getWorld().world = Bukkit.getWorld(Objects.requireNonNull(Config.data.getString("theWalls.autoExecute.worldName")));
             assert this.arena.getWorld().world != null;
             Location loc = new Location(this.arena.getWorld().world, Config.data.getDouble("theWalls.autoExecute.center.x"), 0, Config.data.getDouble("theWalls.autoExecute.center.z"));
@@ -314,7 +350,7 @@ public class Game {
             this.arena.getWorld().positionOne[1] = loc.getBlockZ() + size;
             this.arena.getWorld().positionTwo[0] = loc.getBlockX() - size;
             this.arena.getWorld().positionTwo[1] = loc.getBlockZ() - size;
-        } else {
+        } else if (this.arena.getWorld().world == null) {
             this.arena.getWorld().world = starter.getWorld();
             this.arena.getWorld().world.getWorldBorder().setCenter(starter.getLocation());
             this.arena.getWorld().positionOne[0] = starter.getLocation().getBlockX() + size;
@@ -432,11 +468,6 @@ public class Game {
 
         Bukkit.getScheduler().cancelTask(gameLoopID);
         disableTablistHeartsForPlayers(this.arena.getPlayers());
-        if (Utils.getPlugin().isEnabled()) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Utils.getPlugin(), this.arena.getWorld()::reset, 20*7);
-        } else {
-            this.arena.getWorld().reset();
-        }
 
         if (!forced) {
             for (Team t : teams) {
@@ -501,6 +532,11 @@ public class Game {
                 }
             }
             this.arena.stopLobbyEndCooldown();
+            if (Utils.getPlugin().isEnabled()) {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Utils.getPlugin(), this.arena.getWorld()::reset, 20L);
+            } else {
+                this.arena.getWorld().reset();
+            }
         }, endCooldown * 20L);
     }
 

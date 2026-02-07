@@ -8,6 +8,7 @@ import ca.thewalls.Config;
 import ca.thewalls.Messages;
 import ca.thewalls.TheWalls;
 import ca.thewalls.Listeners.SignUpdater;
+import ca.thewalls.AspWorlds;
 
 public class WReload implements CommandExecutor {
     public TheWalls walls;
@@ -31,6 +32,16 @@ public class WReload implements CommandExecutor {
         SignUpdater.updateAll(walls);
         if (walls.topHolograms != null) {
             walls.topHolograms.refresh();
+        }
+        if (Config.getResetStrategy().equalsIgnoreCase("asp")) {
+            AspWorlds.init();
+            for (ca.thewalls.Arena arena : walls.arenas.getArenas().values()) {
+                String template = Config.getAspTemplateWorld(arena.getName());
+                if (template != null && !template.isEmpty()) {
+                    String prefix = Config.getAspInstancePrefix() + arena.getName().toLowerCase() + "_";
+                    AspWorlds.ensurePoolAsync(template, prefix, Config.getAspPoolSize());
+                }
+            }
         }
         sender.sendMessage(Messages.msg("admin.reload_ok"));
         return true;

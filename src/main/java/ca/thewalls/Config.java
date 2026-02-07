@@ -117,6 +117,24 @@ public class Config {
             if (!data.isSet("world.borderShrinkPercentageOfSize")) {
                 data.set("world.borderShrinkPercentageOfSize", 0.2);
             }
+            if (!data.isSet("world.reset.strategy")) {
+                data.set("world.reset.strategy", "classic");
+            }
+            if (!data.isSet("world.reset.asp.templateWorld")) {
+                data.set("world.reset.asp.templateWorld", "");
+            }
+            if (!data.isSet("world.reset.asp.instancePrefix")) {
+                data.set("world.reset.asp.instancePrefix", "tw_");
+            }
+            if (!data.isSet("world.reset.asp.deleteOnUnload")) {
+                data.set("world.reset.asp.deleteOnUnload", true);
+            }
+            if (!data.isSet("world.reset.asp.loaderDir")) {
+                data.set("world.reset.asp.loaderDir", "slime_worlds");
+            }
+            if (!data.isSet("world.reset.asp.poolSize")) {
+                data.set("world.reset.asp.poolSize", 1);
+            }
             if (!data.isSet("world.saving")) {
                 data.set("world.saving", true);
             }
@@ -158,6 +176,9 @@ public class Config {
             }
             if (!data.isSet("lobby.minPlayers")) {
                 data.set("lobby.minPlayers", 2);
+            }
+            if (!data.isSet("lobby.maxPlayers")) {
+                data.set("lobby.maxPlayers", -1);
             }
             if (!data.isSet("lobby.countdownSeconds")) {
                 data.set("lobby.countdownSeconds", 20);
@@ -227,6 +248,9 @@ public class Config {
             }
             if (!data.isSet("arenas.list")) {
                 data.set("arenas.list", new java.util.ArrayList<String>());
+            }
+            if (!data.isSet("arenas.settings")) {
+                data.set("arenas.settings", new java.util.HashMap<String, Object>());
             }
 
             data.save(dataFile);
@@ -407,6 +431,51 @@ public class Config {
     public static String getPlayerArena(java.util.UUID uuid) {
         if (uuid == null) return null;
         return data.getString("players." + uuid + ".arena", null);
+    }
+
+    public static int getArenaMaxPlayers(String arenaName) {
+        if (arenaName == null || data == null) return data.getInt("lobby.maxPlayers", -1);
+        String key = "arenas.settings." + arenaName.toLowerCase() + ".maxPlayers";
+        if (data.isSet(key)) {
+            return data.getInt(key, -1);
+        }
+        return data.getInt("lobby.maxPlayers", -1);
+    }
+
+    public static String getResetStrategy() {
+        if (data == null) return "classic";
+        return data.getString("world.reset.strategy", "classic");
+    }
+
+    public static String getAspTemplateWorld(String arenaName) {
+        if (data == null) return "";
+        if (arenaName != null) {
+            String key = "arenas.settings." + arenaName.toLowerCase() + ".aspTemplateWorld";
+            if (data.isSet(key)) {
+                return data.getString(key, "");
+            }
+        }
+        return data.getString("world.reset.asp.templateWorld", "");
+    }
+
+    public static String getAspInstancePrefix() {
+        if (data == null) return "tw_";
+        return data.getString("world.reset.asp.instancePrefix", "tw_");
+    }
+
+    public static boolean isAspDeleteOnUnload() {
+        if (data == null) return true;
+        return data.getBoolean("world.reset.asp.deleteOnUnload", true);
+    }
+
+    public static String getAspLoaderDir() {
+        if (data == null) return "slime_worlds";
+        return data.getString("world.reset.asp.loaderDir", "slime_worlds");
+    }
+
+    public static int getAspPoolSize() {
+        if (data == null) return 1;
+        return data.getInt("world.reset.asp.poolSize", 1);
     }
 
     public static void setPlayerTeamPref(java.util.UUID uuid, String arenaName, Integer teamId) {

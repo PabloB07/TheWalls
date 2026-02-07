@@ -30,6 +30,7 @@ public class World {
     public ArrayList<TempBlock> originalBlocks = new ArrayList<>();
     public ArrayList<TempBlock> originalWallBlocks = new ArrayList<>();
     public ArrayList<Location> spawnProtectionBlocks = new ArrayList<>();
+    public String aspInstanceName;
   
     public World(Arena arena) {
         this.arena = arena;
@@ -37,6 +38,7 @@ public class World {
     
     // This method does take a while if the map size if >50;
     public void save() {
+        if (Config.getResetStrategy().equalsIgnoreCase("asp")) return;
         for (Entity ent : world.getEntities()) {
             if (ent.getType() == EntityType.ITEM) {
                 ent.remove();
@@ -78,6 +80,15 @@ public class World {
 
     // Replace all the blocks in the world with the originals
     public void reset() {
+        if (Config.getResetStrategy().equalsIgnoreCase("asp")) {
+            ca.thewalls.AspWorlds.unloadInstance(world, aspInstanceName, Config.isAspDeleteOnUnload());
+            world = null;
+            aspInstanceName = null;
+            originalWallBlocks.clear();
+            originalBlocks.clear();
+            spawnProtectionBlocks.clear();
+            return;
+        }
         world.getWorldBorder().setCenter(0, 0);
         world.getWorldBorder().setSize(29999980);
         world.getWorldBorder().setDamageAmount(0);
