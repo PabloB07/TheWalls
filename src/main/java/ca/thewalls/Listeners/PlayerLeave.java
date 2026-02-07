@@ -31,13 +31,19 @@ public class PlayerLeave implements Listener {
         arena.getGame().removeBoard(e.getPlayer());
         arena.getGame().disableTablistHeartsForPlayer(e.getPlayer());
         Team t = Team.getPlayerTeam(e.getPlayer(), arena.getGame().teams);
-        if (t == null) return;
-        e.getPlayer().displayName(Component.text(e.getPlayer().getName()));
-        e.getPlayer().playerListName(Component.text(e.getPlayer().getName()));
-        t.members.remove(e.getPlayer());
-        if (t.members.size() == 0) {
-            arena.getGame().aliveTeams.remove(t);
-            arena.getGame().teams.remove(t);
+        if (!ca.thewalls.Utils.isAlive(e.getPlayer()) || e.getPlayer().getGameMode() == org.bukkit.GameMode.SPECTATOR) {
+            this.walls.arenas.clearPlayer(e.getPlayer());
+            if (t != null) {
+                e.getPlayer().displayName(Component.text(e.getPlayer().getName()));
+                e.getPlayer().playerListName(Component.text(e.getPlayer().getName()));
+                t.members.remove(e.getPlayer());
+                if (t.members.isEmpty()) {
+                    arena.getGame().aliveTeams.remove(t);
+                    arena.getGame().teams.remove(t);
+                }
+            }
+            this.walls.arenas.onPlayerCountChanged(arena);
+            return;
         }
         this.walls.arenas.onPlayerCountChanged(arena);
     }

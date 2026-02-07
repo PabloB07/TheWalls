@@ -34,7 +34,7 @@ public class WForceTeam implements CommandExecutor {
         try {
             Player target = Bukkit.getPlayer(args[0]);
             if (target == null) {
-                sender.sendMessage(Utils.format("&cCouldn't find player with the name of " + args[0] + "!"));
+                sender.sendMessage(Utils.componentFromString("&cCouldn't find player with the name of " + args[0] + "!"));
                 return false;
             }
             ca.thewalls.Arena arena = this.walls.getArenaByPlayer(target);
@@ -55,11 +55,11 @@ public class WForceTeam implements CommandExecutor {
                 return false;
             }
             if (!arena.getGame().started) {
-                sender.sendMessage(Utils.format("&cThere is no game currently going on!"));
+                sender.sendMessage(Utils.componentFromString("&cThere is no game currently going on!"));
                 return false;
             }
             if (arena.getGame().borderClosing) {
-                sender.sendMessage(Utils.format("&cThis command cannot be performed when the borders are closing!"));
+                sender.sendMessage(Utils.componentFromString("&cThis command cannot be performed when the borders are closing!"));
                 return false;
             }
             String newTeam = args[1];
@@ -77,7 +77,7 @@ public class WForceTeam implements CommandExecutor {
 
                     temp.members.add(target);
                     target.teleport(temp.teamSpawn);
-                    target.sendMessage(Utils.format(temp.teamColor + "You have been swapped to " + temp.teamName + " team!"));
+                    target.sendMessage(Utils.componentFromString(temp.teamColor + "You have been swapped to " + temp.teamName + " team!"));
 
                     if (prev != null) {
                         prev.members.remove(target);
@@ -109,7 +109,7 @@ public class WForceTeam implements CommandExecutor {
                 Team newT = new Team(teamID, false, arena);
                 newT.members.add(target);
                 target.teleport(newT.teamSpawn);
-                target.sendMessage(Utils.format(newT.teamColor + "You have been swapped to " + newT.teamName + " team!"));
+                target.sendMessage(Utils.componentFromString(newT.teamColor + "You have been swapped to " + newT.teamName + " team!"));
 
                 if (prev != null) {
                     prev.members.remove(target);
@@ -122,14 +122,14 @@ public class WForceTeam implements CommandExecutor {
 
             Team finalTeam = Team.getPlayerTeam(target, arena.getGame().teams);
             if (finalTeam != null) {
-                target.displayName(Utils.format(finalTeam.teamColor + "[" + finalTeam.teamName + "] " + target.getName()));
-                target.playerListName(Utils.format(finalTeam.teamColor + "[" + finalTeam.teamName + "] " + target.getName()));
+                target.displayName(Utils.componentFromString(finalTeam.teamColor + "[" + finalTeam.teamName + "] " + target.getName()));
+                target.playerListName(Utils.componentFromString(finalTeam.teamColor + "[" + finalTeam.teamName + "] " + target.getName()));
                 target.getInventory().clear();
                 target.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, Config.data.getInt("players.spawn.steakAmount")));
                 target.setGameMode(GameMode.SURVIVAL);
             }
         } catch (Exception e) {
-            sender.sendMessage(Utils.format("&cArguments provided aren't valid!"));
+            sender.sendMessage(Utils.componentFromString("&cArguments provided aren't valid!"));
             Utils.getPlugin().getLogger().warning(e.toString());
         }
 

@@ -16,7 +16,7 @@ public class Team {
     public ArrayList<Player> members = new ArrayList<>();
     public int team; // 0 = red, 1 = blue, 2 = yellow, 3 = green
     public String teamName = "TBD";
-    public String teamColor = "&f";
+    public String teamColor = "<white>";
     public Location teamSpawn;
     public boolean alive = false;
     public Arena arena;
@@ -28,7 +28,7 @@ public class Team {
         switch (team) {
             case 0:
                 teamName = Config.data.getString("teams.zero.name");
-                teamColor = Utils.colorToLegacy(Config.data.getString("teams.zero.color"));
+                teamColor = Utils.normalizeColor(Config.data.getString("teams.zero.color"));
                 int x0 = this.arena.getWorld().positionOne[0] - (this.arena.getGame().size / 2);
                 int z0 = this.arena.getWorld().positionOne[1] - (this.arena.getGame().size / 2);
                 int y0 = this.arena.getWorld().world.getHighestBlockYAt(x0, z0);
@@ -36,7 +36,7 @@ public class Team {
                 break;
             case 1:
                 teamName = Config.data.getString("teams.one.name");
-                teamColor = Utils.colorToLegacy(Config.data.getString("teams.one.color"));
+                teamColor = Utils.normalizeColor(Config.data.getString("teams.one.color"));
                 int x1 = this.arena.getWorld().positionTwo[0] + (this.arena.getGame().size / 2);
                 int z1 = this.arena.getWorld().positionTwo[1] + (this.arena.getGame().size / 2);
                 int y1 = this.arena.getWorld().world.getHighestBlockYAt(x1, z1);
@@ -44,7 +44,7 @@ public class Team {
                 break;
             case 2:
                 teamName = Config.data.getString("teams.two.name");
-                teamColor = Utils.colorToLegacy(Config.data.getString("teams.two.color"));
+                teamColor = Utils.normalizeColor(Config.data.getString("teams.two.color"));
                 int x2 = (int) (this.arena.getWorld().positionOne[0] - (this.arena.getGame().size / 2));
                 int z2 = (int) (this.arena.getWorld().positionOne[1] - (this.arena.getGame().size * 1.5));
                 int y2 = this.arena.getWorld().world.getHighestBlockYAt(x2, z2);
@@ -52,7 +52,7 @@ public class Team {
                 break;
             case 3:
                 teamName = Config.data.getString("teams.three.name");
-                teamColor = Utils.colorToLegacy(Config.data.getString("teams.three.color"));
+                teamColor = Utils.normalizeColor(Config.data.getString("teams.three.color"));
                 int x3 = (int) (this.arena.getWorld().positionTwo[0] + (this.arena.getGame().size / 2));
                 int z3 = (int) (this.arena.getWorld().positionTwo[1] + (this.arena.getGame().size * 1.5));
                 int y3 = this.arena.getWorld().world.getHighestBlockYAt(x3, z3);
@@ -97,8 +97,8 @@ public class Team {
         ply.playSound(ply.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 255, 1);
 
         // Game Stuff
-        ply.displayName(Utils.format(teamColor + "[" + teamName + "] " + ply.getName()));
-        ply.playerListName(Utils.format(teamColor + "[" + teamName + "] " + ply.getName()));
+        ply.displayName(Utils.componentFromString(teamColor + "[" + teamName + "] " + ply.getName()));
+        ply.playerListName(Utils.componentFromString(teamColor + "[" + teamName + "] " + ply.getName()));
         ply.setGameMode(GameMode.SURVIVAL);
         ply.setStatistic(Statistic.DEATHS, 0);
         ply.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, Config.data.getInt("players.spawn.steakAmount")));

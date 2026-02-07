@@ -80,6 +80,10 @@ class Loop implements Runnable {
                 }
             }
 
+            if (!Utils.isAlive(p) || p.getGameMode() == GameMode.SPECTATOR) {
+                game.removeBoard(p);
+                continue;
+            }
             game.ensureBoard(p);
             FastBoard board = game.getBoard(p);
             if (board == null) continue;
@@ -158,7 +162,9 @@ public class Game {
     List<Component> buildScoreboardLines(Player viewer) {
         List<Component> lines = new ArrayList<>();
         Team myTeam = viewer == null ? null : Team.getPlayerTeam(viewer, teams);
-        String myTeamName = myTeam == null ? "<gray>None</gray>" : Utils.toMini(Utils.format(myTeam.teamColor + myTeam.teamName));
+        String myTeamName = myTeam == null
+                ? "<gray>None</gray>"
+                : Utils.toMini(Utils.componentFromString(myTeam.teamColor + myTeam.teamName));
         int myKills = 0;
         if (viewer != null) {
             java.util.UUID uid = viewer.getUniqueId();
@@ -189,7 +195,7 @@ public class Game {
 
         lines.add(Messages.msg("scoreboard.game_teams"));
         for (Team t : teams) {
-            String teamName = Utils.toMini(Utils.format(t.teamColor + t.teamName));
+            String teamName = Utils.toMini(Utils.componentFromString(t.teamColor + t.teamName));
             if (t.alive) {
                 lines.add(Messages.msg("scoreboard.game_team_alive", java.util.Map.of(
                         "team", teamName,
@@ -250,7 +256,9 @@ public class Game {
 
     Component getGameTitle(@Nullable Player viewer) {
         Team myTeam = viewer == null ? null : Team.getPlayerTeam(viewer, teams);
-        String myTeamName = myTeam == null ? "<gray>None</gray>" : Utils.toMini(Utils.format(myTeam.teamColor + myTeam.teamName));
+        String myTeamName = myTeam == null
+                ? "<gray>None</gray>"
+                : Utils.toMini(Utils.componentFromString(myTeam.teamColor + myTeam.teamName));
         return Messages.msg("scoreboard.game_title", java.util.Map.of("team", myTeamName));
     }
 
@@ -457,7 +465,7 @@ public class Game {
             if (!forced && winningTeam != null) {
                 Utils.sendTitle(
                         p,
-                        Messages.raw("title.win_title", java.util.Map.of("team", winningTeam.teamColor + "&l" + winningTeam.teamName)),
+                        Messages.raw("title.win_title", java.util.Map.of("team", winningTeam.teamColor + "<bold>" + winningTeam.teamName + "</bold>")),
                         Messages.raw("title.win_subtitle", java.util.Map.of("team", winningTeam.teamColor)),
                         10, 80, 20
                 );

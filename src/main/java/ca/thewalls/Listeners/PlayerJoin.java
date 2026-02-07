@@ -46,13 +46,29 @@ public class PlayerJoin implements Listener {
             return;
         }
 
-        // Game already running: rejoin as spectator inside the arena world
-        if (arena.getWorld().world != null) {
+        // Game already running: rejoin only if player is still alive
+        ca.thewalls.Walls.Team team = ca.thewalls.Walls.Team.getPlayerTeam(e.getPlayer(), arena.getGame().teams);
+        boolean alive = team != null && e.getPlayer().getStatistic(org.bukkit.Statistic.DEATHS) <= 0;
+        if (!alive) {
+            this.walls.arenas.clearPlayer(e.getPlayer());
+            org.bukkit.Location hub = Config.getHub();
+            if (hub != null) {
+                e.getPlayer().teleport(hub);
+            } else if (arena.getLobby() != null) {
+                e.getPlayer().teleport(arena.getLobby());
+            }
+            return;
+        }
+        if (team != null && team.teamSpawn != null) {
+            team.teamSpawn.setY(arena.getWorld().world.getHighestBlockYAt(team.teamSpawn.getBlockX(), team.teamSpawn.getBlockZ()));
+            e.getPlayer().teleport(team.teamSpawn);
+        } else if (arena.getWorld().world != null) {
             e.getPlayer().teleport(arena.getWorld().world.getSpawnLocation());
         }
+        e.getPlayer().setGameMode(GameMode.SURVIVAL);
+        e.getPlayer().displayName(ca.thewalls.Utils.componentFromString(team.teamColor + "[" + team.teamName + "] " + e.getPlayer().getName()));
+        e.getPlayer().playerListName(ca.thewalls.Utils.componentFromString(team.teamColor + "[" + team.teamName + "] " + e.getPlayer().getName()));
         arena.getGame().ensureBoard(e.getPlayer());
         arena.getGame().enableTablistHeartsForPlayer(e.getPlayer());
-        e.getPlayer().setGameMode(GameMode.SPECTATOR);
-        e.getPlayer().sendMessage(Messages.msg("join.spectator"));
     }
 }

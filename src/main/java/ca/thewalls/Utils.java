@@ -75,6 +75,38 @@ public class Utils {
         return color;
     }
 
+    public static String normalizeColor(String color) {
+        if (color == null) return "";
+        String c = color.trim();
+        if (c.isEmpty()) return c;
+        if (c.indexOf('<') >= 0 && c.indexOf('>') >= 0) {
+            return c;
+        }
+        if (c.length() >= 2 && (c.charAt(0) == '&' || c.charAt(0) == '§')) {
+            char code = Character.toLowerCase(c.charAt(1));
+            switch (code) {
+                case '0': return "<black>";
+                case '1': return "<dark_blue>";
+                case '2': return "<dark_green>";
+                case '3': return "<dark_aqua>";
+                case '4': return "<dark_red>";
+                case '5': return "<dark_purple>";
+                case '6': return "<gold>";
+                case '7': return "<gray>";
+                case '8': return "<dark_gray>";
+                case '9': return "<blue>";
+                case 'a': return "<green>";
+                case 'b': return "<aqua>";
+                case 'c': return "<red>";
+                case 'd': return "<light_purple>";
+                case 'e': return "<yellow>";
+                case 'f': return "<white>";
+                default: return c;
+            }
+        }
+        return c;
+    }
+
     public static boolean isAlive(Player p) {
         return p.getGameMode() != GameMode.SPECTATOR || p.getStatistic(Statistic.DEATHS) <= 0;
     }
