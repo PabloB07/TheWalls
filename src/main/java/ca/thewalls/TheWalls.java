@@ -41,6 +41,7 @@ public final class TheWalls extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new PlayerLeave(this), this);
         this.getServer().getPluginManager().registerEvents(new PlayerAttack(this), this);
         this.getServer().getPluginManager().registerEvents(new PlayerJoin(this), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerRespawn(this), this);
         this.getServer().getPluginManager().registerEvents(new PlayerDeath(this), this);
         this.getServer().getPluginManager().registerEvents(new EntityDeath(this), this);
         this.getServer().getPluginManager().registerEvents(new EntityDamage(this), this);

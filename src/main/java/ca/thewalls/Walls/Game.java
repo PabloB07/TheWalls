@@ -133,6 +133,7 @@ public class Game {
     public int time = 0;
     private final Map<UUID, FastBoard> boards = new HashMap<>();
     private final Map<UUID, org.bukkit.scoreboard.Scoreboard> tablistRestore = new HashMap<>();
+    private final Map<UUID, Location> lastDeathLocations = new HashMap<>();
 
     public void ensureBoard(Player player) {
         if (boards.containsKey(player.getUniqueId())) return;
@@ -150,6 +151,21 @@ public class Game {
 
     public FastBoard getBoard(Player player) {
         return boards.get(player.getUniqueId());
+    }
+
+    public void setLastDeathLocation(Player player, Location location) {
+        if (player == null || location == null) return;
+        lastDeathLocations.put(player.getUniqueId(), location.clone());
+    }
+
+    public Location getLastDeathLocation(Player player) {
+        if (player == null) return null;
+        return lastDeathLocations.get(player.getUniqueId());
+    }
+
+    public void clearLastDeathLocation(Player player) {
+        if (player == null) return;
+        lastDeathLocations.remove(player.getUniqueId());
     }
 
     private void clearBoards() {
@@ -213,6 +229,7 @@ public class Game {
 
     public void updateLobbyBoards() {
         if (started) return;
+        if (this.arena.getLobbyEndCooldown() >= 0) return;
         int minPlayers = Config.data.getInt("lobby.minPlayers", 2);
         int maxPlayers = Config.getArenaMaxPlayers(this.arena.getName());
         int countdown = this.arena.getLobbyCountdown();
@@ -504,8 +521,16 @@ public class Game {
             p.sendMessage(Messages.msg("game.end"));
             p.displayName(Component.text(p.getName()));
             p.getInventory().clear();
+            p.getInventory().setArmorContents(null);
+            p.setFireTicks(0);
+            p.setFoodLevel(20);
+            p.setSaturation(20);
+            p.setLevel(0);
+            p.setExp(0);
+            p.getActivePotionEffects().forEach(effect -> p.removePotionEffect(effect.getType()));
             p.playerListName(Component.text(p.getName()));
             p.setGameMode(GameMode.SURVIVAL);
+            clearLastDeathLocation(p);
             int wins = Config.leaderboard.getInt(p.getUniqueId().toString() + ".wins");
             int losses = Config.leaderboard.getInt(p.getUniqueId().toString() + ".losses");
             p.sendMessage(Messages.msg("game.stats", java.util.Map.of(

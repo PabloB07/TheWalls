@@ -26,6 +26,8 @@ join:
 death:
   eliminated: "&c{player} has been eliminated from The Walls!"
   eliminated_team: "{team}<red>{player} has been eliminated from The Walls!</red>"
+  spectator_title: "<red><bold>You died</bold></red>"
+  spectator_subtitle: "<gray>You are now a spectator</gray>"
 
 events:
   tnt_warning: "&c&lYikes! Watch out for the TNT..."

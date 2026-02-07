@@ -29,7 +29,9 @@ public class PlayerDeath implements Listener {
         e.deathMessage(Component.empty());
 
         Player ply = e.getEntity();
+        arena.getGame().setLastDeathLocation(ply, ply.getLocation());
         ply.setGameMode(GameMode.SPECTATOR);
+        ca.thewalls.Utils.sendTitle(ply, Messages.raw("death.spectator_title"), Messages.raw("death.spectator_subtitle"), 10, 60, 10);
         Team temp = Team.getPlayerTeam(ply, arena.getGame().teams);
         if (temp == null) {
             for (Player p : arena.getPlayers()) {
