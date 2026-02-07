@@ -31,7 +31,7 @@ public final class AspWorlds {
         if (dir == null || dir.isEmpty()) {
             dir = "slime_worlds";
         }
-        loader = new FileLoader(dir);
+        loader = new FileLoader(new File(dir));
     }
 
     public static boolean isAvailable() {
