@@ -107,6 +107,62 @@ public class Utils {
         return c;
     }
 
+    public static org.bukkit.Color parseHexColor(String hex, org.bukkit.Color fallback) {
+        if (hex == null) return fallback;
+        String value = hex.trim();
+        if (value.startsWith("#")) value = value.substring(1);
+        if (value.length() != 6) return fallback;
+        try {
+            int rgb = Integer.parseInt(value, 16);
+            int r = (rgb >> 16) & 0xFF;
+            int g = (rgb >> 8) & 0xFF;
+            int b = rgb & 0xFF;
+            return org.bukkit.Color.fromRGB(r, g, b);
+        } catch (NumberFormatException ex) {
+            return fallback;
+        }
+    }
+
+    public static org.bukkit.Color colorFromString(String color, org.bukkit.Color fallback) {
+        if (color == null) return fallback;
+        String c = color.trim();
+        if (c.isEmpty()) return fallback;
+        int hexIndex = c.indexOf("<#");
+        if (hexIndex >= 0) {
+            int end = c.indexOf(">", hexIndex);
+            if (end > hexIndex + 2) {
+                String hex = c.substring(hexIndex + 2, end);
+                return parseHexColor(hex, fallback);
+            }
+        }
+        if (c.startsWith("#")) {
+            return parseHexColor(c, fallback);
+        }
+        if (c.length() >= 2 && (c.charAt(0) == '&' || c.charAt(0) == '§')) {
+            char code = Character.toLowerCase(c.charAt(1));
+            switch (code) {
+                case 'c': return org.bukkit.Color.fromRGB(255, 85, 85);
+                case '9': return org.bukkit.Color.fromRGB(85, 85, 255);
+                case 'a': return org.bukkit.Color.fromRGB(85, 255, 85);
+                case 'e': return org.bukkit.Color.fromRGB(255, 255, 85);
+                case '6': return org.bukkit.Color.fromRGB(255, 170, 0);
+                case 'b': return org.bukkit.Color.fromRGB(85, 255, 255);
+                case 'd': return org.bukkit.Color.fromRGB(255, 85, 255);
+                case 'f': return org.bukkit.Color.fromRGB(255, 255, 255);
+                case '0': return org.bukkit.Color.fromRGB(0, 0, 0);
+                case '1': return org.bukkit.Color.fromRGB(0, 0, 170);
+                case '2': return org.bukkit.Color.fromRGB(0, 170, 0);
+                case '3': return org.bukkit.Color.fromRGB(0, 170, 170);
+                case '4': return org.bukkit.Color.fromRGB(170, 0, 0);
+                case '5': return org.bukkit.Color.fromRGB(170, 0, 170);
+                case '7': return org.bukkit.Color.fromRGB(170, 170, 170);
+                case '8': return org.bukkit.Color.fromRGB(85, 85, 85);
+                default: return fallback;
+            }
+        }
+        return fallback;
+    }
+
     public static boolean isAlive(Player p) {
         return p.getGameMode() != GameMode.SPECTATOR || p.getStatistic(Statistic.DEATHS) <= 0;
     }

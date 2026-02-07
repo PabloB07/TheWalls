@@ -37,6 +37,24 @@ public class Config {
                 data.set("events.reveal.displayCords", true);
                 data.set("events.reveal.seconds", 10);
             }
+            if (!data.isSet("events.blood.enabled")) {
+                data.set("events.blood.enabled", true);
+            }
+            if (!data.isSet("events.blood.color")) {
+                data.set("events.blood.color", "#8b0000");
+            }
+            if (!data.isSet("events.blood.useTeamColor")) {
+                data.set("events.blood.useTeamColor", true);
+            }
+            if (!data.isSet("events.blood.amount")) {
+                data.set("events.blood.amount", 12);
+            }
+            if (!data.isSet("events.blood.spread")) {
+                data.set("events.blood.spread", 0.3);
+            }
+            if (!data.isSet("events.blood.size")) {
+                data.set("events.blood.size", 1.0);
+            }
             if (!data.isSet("events.minPlayers")) {
                 data.set("events.minPlayers", 2);
             }

@@ -3,6 +3,13 @@ events:
     enabled: true
     displayCords: true
     seconds: 10
+  blood:
+    enabled: true
+    color: "#8b0000"
+    useTeamColor: true
+    amount: 12
+    spread: 0.3
+    size: 1.0
   minPlayers: 2
   safeSecondsAfterStart: 30
   safeSpawnRadius: 16
