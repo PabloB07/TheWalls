@@ -83,7 +83,7 @@ public class PlayerAttack implements Listener {
         }
         Particle.DustOptions dust = new Particle.DustOptions(color, Math.max(0.5f, size));
         receiver.getWorld().spawnParticle(
-                Particle.REDSTONE,
+                Particle.DUST,
                 receiver.getLocation().add(0, 1.0, 0),
                 Math.max(1, count),
                 spread, spread * 0.6, spread,
