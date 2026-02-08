@@ -107,6 +107,21 @@ public class Utils {
         return c;
     }
 
+    public static String menuTitle(String key, String fallback) {
+        String raw = Messages.raw(key);
+        if (raw == null || raw.equals(key) || raw.isEmpty()) {
+            raw = fallback == null ? "Menu" : fallback;
+        }
+        String legacy = toLegacy(componentFromString(raw));
+        if (legacy.length() <= 32) return legacy;
+        // Fallback to plain text truncated to 32
+        String plain = legacy.replaceAll("§.", "");
+        if (plain.length() > 32) {
+            plain = plain.substring(0, 32);
+        }
+        return plain;
+    }
+
     public static org.bukkit.Color parseHexColor(String hex, org.bukkit.Color fallback) {
         if (hex == null) return fallback;
         String value = hex.trim();

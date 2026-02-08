@@ -19,7 +19,7 @@ public class PerkConfirmMenu {
     private PerkConfirmMenu() {}
 
     public static void open(TheWalls plugin, Player player, String perkId, double cost) {
-        SGMenu menu = plugin.spigui.create("thewalls-perk-confirm", 1, Utils.toLegacy(Messages.msg("menu.confirm_title")));
+        SGMenu menu = plugin.spigui.create("thewalls-perk-confirm", 1, Utils.menuTitle("menu.confirm_title", "Confirm"));
 
         String resolvedPerk = perkId;
         if (resolvedPerk == null || resolvedPerk.isEmpty()) {

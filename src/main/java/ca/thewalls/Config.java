@@ -17,6 +17,10 @@ public class Config {
     public static YamlConfiguration leaderboard;
     public static File lobbiesFile;
     public static YamlConfiguration lobbies;
+    public static File perksFile;
+    public static YamlConfiguration perks;
+    public static File cratesFile;
+    public static YamlConfiguration crates;
 
     public static void initializeData() {
         try {
@@ -297,6 +301,18 @@ public class Config {
             migrateLobbiesFromConfig();
             migrateTopHologramFromArena();
 
+            perksFile = new File(Utils.getPlugin().getDataFolder(), "perks.yml");
+            if (!perksFile.exists()) {
+                Utils.getPlugin().saveResource("perks.yml", false);
+            }
+            perks = YamlConfiguration.loadConfiguration(perksFile);
+
+            cratesFile = new File(Utils.getPlugin().getDataFolder(), "crates.yml");
+            if (!cratesFile.exists()) {
+                Utils.getPlugin().saveResource("crates.yml", false);
+            }
+            crates = YamlConfiguration.loadConfiguration(cratesFile);
+
             for (Player p : Bukkit.getOnlinePlayers()) {
                 createLeaderboardPlayer(p);
             }
@@ -539,6 +555,15 @@ public class Config {
     public static String getCopyTemplateDir() {
         if (data == null) return "worlds/templates";
         return data.getString("world.reset.copy.templateDir", "worlds/templates");
+    }
+
+    public static void reloadPerksAndCrates() {
+        if (perksFile != null) {
+            perks = YamlConfiguration.loadConfiguration(perksFile);
+        }
+        if (cratesFile != null) {
+            crates = YamlConfiguration.loadConfiguration(cratesFile);
+        }
     }
 
     public static void setPlayerTeamPref(java.util.UUID uuid, String arenaName, Integer teamId) {

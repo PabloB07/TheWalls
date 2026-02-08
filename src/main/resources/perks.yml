@@ -1,0 +1,56 @@
+perks:
+  list:
+    speed1:
+      name: "<#22c55e><bold>Speed I</bold></#22c55e>"
+      description: "<gray>Permanent Speed I in game</gray>"
+      level: 1
+      effects:
+        - type: SPEED
+          duration: 999999
+          amplifier: 0
+    haste1:
+      name: "<#f97316><bold>Haste I</bold></#f97316>"
+      description: "<gray>Permanent Haste I in game</gray>"
+      level: 1
+      effects:
+        - type: HASTE
+          duration: 999999
+          amplifier: 0
+    tank1:
+      name: "<#ef4444><bold>Tank I</bold></#ef4444>"
+      description: "<gray>Permanent Resistance I in game</gray>"
+      level: 2
+      effects:
+        - type: DAMAGE_RESISTANCE
+          duration: 999999
+          amplifier: 0
+    runner1:
+      name: "<#38bdf8><bold>Runner I</bold></#38bdf8>"
+      description: "<gray>Speed I + Jump Boost I</gray>"
+      level: 2
+      effects:
+        - type: SPEED
+          duration: 999999
+          amplifier: 0
+        - type: JUMP_BOOST
+          duration: 999999
+          amplifier: 0
+    miner1:
+      name: "<#a3e635><bold>Miner I</bold></#a3e635>"
+      description: "<gray>Haste I + Night Vision</gray>"
+      level: 2
+      effects:
+        - type: HASTE
+          duration: 999999
+          amplifier: 0
+        - type: NIGHT_VISION
+          duration: 999999
+          amplifier: 0
+    berserk1:
+      name: "<#f43f5e><bold>Berserk I</bold></#f43f5e>"
+      description: "<gray>Strength I (risky)</gray>"
+      level: 3
+      effects:
+        - type: STRENGTH
+          duration: 999999
+          amplifier: 0

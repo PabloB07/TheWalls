@@ -1,0 +1,26 @@
+crates:
+  enabled: true
+  currencySymbol: "$"
+  cost: 250
+  levelCosts:
+    "1": 250
+    "2": 450
+    "3": 800
+  display:
+    name: "<gradient:#a78bfa:#22d3ee><bold>Lucky Crate</bold></gradient>"
+    lore:
+      - "<gray>Open to unlock a random perk</gray>"
+      - "<dark_gray>Higher tier perks cost more</dark_gray>"
+  rewards:
+    - perk: speed1
+      chance: 22
+    - perk: haste1
+      chance: 20
+    - perk: tank1
+      chance: 16
+    - perk: runner1
+      chance: 14
+    - perk: miner1
+      chance: 14
+    - perk: berserk1
+      chance: 14

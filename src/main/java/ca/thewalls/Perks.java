@@ -14,32 +14,32 @@ public final class Perks {
     private static final java.util.Map<java.util.UUID, String> PENDING = new java.util.concurrent.ConcurrentHashMap<>();
 
     public static List<String> getPerkIds() {
-        if (Config.data == null) return java.util.Collections.emptyList();
-        ConfigurationSection sec = Config.data.getConfigurationSection("perks.list");
+        if (Config.perks == null) return java.util.Collections.emptyList();
+        ConfigurationSection sec = Config.perks.getConfigurationSection("perks.list");
         if (sec == null) return java.util.Collections.emptyList();
         return new ArrayList<>(sec.getKeys(false));
     }
 
     public static String getName(String perkId) {
-        if (perkId == null || Config.data == null) return perkId;
-        return Config.data.getString("perks.list." + perkId + ".name", perkId);
+        if (perkId == null || Config.perks == null) return perkId;
+        return Config.perks.getString("perks.list." + perkId + ".name", perkId);
     }
 
     public static String getDescription(String perkId) {
-        if (perkId == null || Config.data == null) return "";
-        return Config.data.getString("perks.list." + perkId + ".description", "");
+        if (perkId == null || Config.perks == null) return "";
+        return Config.perks.getString("perks.list." + perkId + ".description", "");
     }
 
     public static int getLevel(String perkId) {
-        if (perkId == null || Config.data == null) return 1;
-        return Config.data.getInt("perks.list." + perkId + ".level", 1);
+        if (perkId == null || Config.perks == null) return 1;
+        return Config.perks.getInt("perks.list." + perkId + ".level", 1);
     }
 
     public static void applyPerks(Player player) {
         if (player == null) return;
         List<String> unlocked = Config.getPlayerPerks(player.getUniqueId());
         for (String perkId : unlocked) {
-            ConfigurationSection sec = Config.data.getConfigurationSection("perks.list." + perkId);
+            ConfigurationSection sec = Config.perks == null ? null : Config.perks.getConfigurationSection("perks.list." + perkId);
             if (sec == null) continue;
             List<Map<?, ?>> effects = sec.getMapList("effects");
             for (Map<?, ?> map : effects) {
@@ -52,8 +52,8 @@ public final class Perks {
     }
 
     public static String rollRandomPerk() {
-        if (Config.data == null) return null;
-        List<Map<?, ?>> rewards = Config.data.getMapList("crates.rewards");
+        if (Config.crates == null) return null;
+        List<Map<?, ?>> rewards = Config.crates.getMapList("crates.rewards");
         if (rewards == null || rewards.isEmpty()) return null;
         int total = 0;
         for (Map<?, ?> r : rewards) {
@@ -98,9 +98,9 @@ public final class Perks {
     }
 
     public static int getPerkCost(String perkId) {
-        if (perkId == null || Config.data == null) return Config.data.getInt("crates.cost", 0);
-        List<Map<?, ?>> rewards = Config.data.getMapList("crates.rewards");
-        if (rewards == null) return Config.data.getInt("crates.cost", 0);
+        if (perkId == null || Config.crates == null) return Config.crates.getInt("crates.cost", 0);
+        List<Map<?, ?>> rewards = Config.crates.getMapList("crates.rewards");
+        if (rewards == null) return Config.crates.getInt("crates.cost", 0);
         for (Map<?, ?> r : rewards) {
             Object perkObj = r.get("perk");
             if (perkObj == null) continue;
@@ -111,19 +111,19 @@ public final class Perks {
                 }
             }
         }
-        int direct = Config.data.getInt("perks.list." + perkId + ".cost", -1);
+        int direct = Config.perks == null ? -1 : Config.perks.getInt("perks.list." + perkId + ".cost", -1);
         if (direct >= 0) return direct;
         int level = getLevel(perkId);
         String levelKey = "crates.levelCosts." + level;
-        if (Config.data.isSet(levelKey)) {
-            return Config.data.getInt(levelKey, Config.data.getInt("crates.cost", 0));
+        if (Config.crates != null && Config.crates.isSet(levelKey)) {
+            return Config.crates.getInt(levelKey, Config.crates.getInt("crates.cost", 0));
         }
-        return Config.data.getInt("crates.cost", 0);
+        return Config.crates.getInt("crates.cost", 0);
     }
 
     public static int[] getCostRange() {
-        int base = Config.data == null ? 0 : Config.data.getInt("crates.cost", 0);
-        List<Map<?, ?>> rewards = Config.data == null ? null : Config.data.getMapList("crates.rewards");
+        int base = Config.crates == null ? 0 : Config.crates.getInt("crates.cost", 0);
+        List<Map<?, ?>> rewards = Config.crates == null ? null : Config.crates.getMapList("crates.rewards");
         if (rewards == null || rewards.isEmpty()) {
             return new int[] { base, base };
         }
@@ -145,8 +145,8 @@ public final class Perks {
     }
 
     public static String getCurrencySymbol() {
-        if (Config.data == null) return "$";
-        return Config.data.getString("crates.currencySymbol", "$");
+        if (Config.crates == null) return "$";
+        return Config.crates.getString("crates.currencySymbol", "$");
     }
 
     private static PotionEffect effectFromMap(Map<?, ?> map) {

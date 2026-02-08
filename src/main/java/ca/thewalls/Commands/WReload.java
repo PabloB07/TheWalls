@@ -25,6 +25,7 @@ public class WReload implements CommandExecutor {
 
         Config.initializeData();
         Messages.reload();
+        Config.reloadPerksAndCrates();
         if (walls.arenas != null) {
             walls.arenas.reloadFromConfig();
         }

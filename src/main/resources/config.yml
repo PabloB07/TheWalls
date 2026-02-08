@@ -159,22 +159,23 @@ arenas:
       templateWorld: "mapa1"
 
 kits:
-  default: "warrior"
+  default: "vanguard"
   list:
-    warrior:
+    vanguard:
       display:
-        name: "<#f59e0b><bold>Warrior</bold></#f59e0b>"
+        name: "<#f59e0b><bold>Vanguard</bold></#f59e0b>"
         lore:
-          - "<gray>Balanced melee kit</gray>"
+          - "<gray>Frontline bruiser</gray>"
       items:
         - material: IRON_SWORD
           amount: 1
-          name: "<white>Warrior Sword</white>"
-          lore:
-            - "<gray>Reliable blade</gray>"
+          name: "<#f59e0b>Vanguard Blade</#f59e0b>"
           enchants:
             SHARPNESS: 1
-        - material: BREAD
+            UNBREAKING: 2
+        - material: SHIELD
+          amount: 1
+        - material: COOKED_BEEF
           amount: 8
       armor:
         helmet: IRON_HELMET
@@ -185,59 +186,73 @@ kits:
         - type: DAMAGE_RESISTANCE
           duration: 999999
           amplifier: 0
-    archer:
+    rift:
       display:
-        name: "<#3b82f6><bold>Archer</bold></#3b82f6>"
+        name: "<#3b82f6><bold>Rift Archer</bold></#3b82f6>"
         lore:
-          - "<gray>Ranged kit</gray>"
+          - "<gray>High pressure at range</gray>"
       items:
         - material: BOW
           amount: 1
           enchants:
-            POWER: 1
+            POWER: 2
+            UNBREAKING: 2
         - material: ARROW
-          amount: 32
+          amount: 48
+        - material: ENDER_PEARL
+          amount: 1
       armor:
         helmet: LEATHER_HELMET
         chestplate: LEATHER_CHESTPLATE
         leggings: LEATHER_LEGGINGS
         boots: LEATHER_BOOTS
-
-perks:
-  list:
-    speed1:
-      name: "<#22c55e>Speed I</#22c55e>"
-      description: "<gray>Permanent Speed I in game</gray>"
-      level: 1
-      effects:
-        - type: SPEED
-          duration: 999999
-          amplifier: 0
-    haste1:
-      name: "<#f97316>Haste I</#f97316>"
-      description: "<gray>Permanent Haste I in game</gray>"
-      level: 1
+    miner:
+      display:
+        name: "<#a3e635><bold>Deep Miner</bold></#a3e635>"
+        lore:
+          - "<gray>Fast ores and escapes</gray>"
+      items:
+        - material: IRON_PICKAXE
+          amount: 1
+          enchants:
+            EFFICIENCY: 2
+            UNBREAKING: 2
+        - material: TORCH
+          amount: 16
+        - material: COOKED_BEEF
+          amount: 6
+      armor:
+        helmet: CHAINMAIL_HELMET
+        chestplate: CHAINMAIL_CHESTPLATE
+        leggings: CHAINMAIL_LEGGINGS
+        boots: CHAINMAIL_BOOTS
       effects:
         - type: HASTE
           duration: 999999
           amplifier: 0
-
-crates:
-  enabled: true
-  currencySymbol: "$"
-  cost: 250
-  levelCosts:
-    "1": 250
-    "2": 400
-    "3": 650
-  rewards:
-    - perk: speed1
-      chance: 50
-      cost: 250
-    - perk: haste1
-      chance: 50
-      cost: 350
-  display:
+    assassin:
+      display:
+        name: "<#f43f5e><bold>Assassin</bold></#f43f5e>"
+        lore:
+          - "<gray>Quick picks, glass cannon</gray>"
+      items:
+        - material: IRON_SWORD
+          amount: 1
+          enchants:
+            SHARPNESS: 2
+        - material: GOLDEN_APPLE
+          amount: 2
+        - material: COOKED_BEEF
+          amount: 4
+      armor:
+        helmet: LEATHER_HELMET
+        chestplate: LEATHER_CHESTPLATE
+        leggings: LEATHER_LEGGINGS
+        boots: LEATHER_BOOTS
+      effects:
+        - type: SPEED
+          duration: 999999
+          amplifier: 0
     name: "<gradient:#a78bfa:#22d3ee><bold>Lucky Crate</bold></gradient>"
     lore:
       - "<gray>Open to unlock a random perk</gray>"

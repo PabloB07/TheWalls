@@ -25,7 +25,7 @@ public class PerkMenu {
             double balance = ca.thewalls.EconomyService.getBalance(player);
             balanceText = Perks.getCurrencySymbol() + ca.thewalls.EconomyService.format(balance);
         }
-        String title = Utils.toLegacy(Messages.msg("menu.perk_title"));
+        String title = Utils.menuTitle("menu.perk_title", "Perks");
         SGMenu menu = plugin.spigui.create("thewalls-perks", size, title);
 
         int slot = 0;
@@ -51,10 +51,10 @@ public class PerkMenu {
         }
 
         // Crate button
-        if (Config.data.getBoolean("crates.enabled", true)) {
+        if (Config.crates != null && Config.crates.getBoolean("crates.enabled", true)) {
             ItemBuilder crate = new ItemBuilder(Material.ENDER_CHEST)
-                    .name(Utils.toLegacy(Utils.componentFromString(Config.data.getString("crates.display.name", "Crate"))));
-            List<String> lore = Config.data.getStringList("crates.display.lore");
+                    .name(Utils.toLegacy(Utils.componentFromString(Config.crates.getString("crates.display.name", "Crate"))));
+            List<String> lore = Config.crates.getStringList("crates.display.lore");
             if (!lore.isEmpty()) {
                 List<String> formatted = new ArrayList<>();
                 for (String line : lore) {

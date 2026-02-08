@@ -15,7 +15,7 @@ public class TeamSelectMenu {
     private TeamSelectMenu() {}
 
     public static void open(TheWalls plugin, Player player, Arena arena) {
-        SGMenu menu = plugin.spigui.create("thewalls-team", 1, Utils.toLegacy(Messages.msg("menu.team_title")));
+        SGMenu menu = plugin.spigui.create("thewalls-team", 1, Utils.menuTitle("menu.team_title", "Teams"));
 
         menu.setButton(1, teamButton(plugin, player, arena, 0, Material.RED_WOOL, "menu.team_red"));
         menu.setButton(3, teamButton(plugin, player, arena, 1, Material.BLUE_WOOL, "menu.team_blue"));
