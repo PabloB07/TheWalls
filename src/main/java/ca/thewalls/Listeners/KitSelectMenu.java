@@ -38,6 +38,10 @@ public class KitSelectMenu {
                     event.setCancelled(true);
                     ca.thewalls.Config.setPlayerKit(player.getUniqueId(), kitId);
                     player.sendMessage(Messages.msg("walls.kit_selected", java.util.Map.of("kit", name)));
+                    ca.thewalls.Arena arena = plugin.getArenaByPlayer(player);
+                    if (arena != null && !arena.getGame().started) {
+                        ca.thewalls.Kits.applyKitInLobby(player, kitId);
+                    }
                     player.closeInventory();
                 });
             menu.setButton(slot, button);

@@ -16,30 +16,30 @@ public final class Kits {
     private Kits() {}
 
     public static List<String> getKitIds() {
-        if (Config.data == null) return java.util.Collections.emptyList();
-        ConfigurationSection sec = Config.data.getConfigurationSection("kits.list");
+        if (Config.kits == null) return java.util.Collections.emptyList();
+        ConfigurationSection sec = Config.kits.getConfigurationSection("kits.list");
         if (sec == null) return java.util.Collections.emptyList();
         return new ArrayList<>(sec.getKeys(false));
     }
 
     public static String getDefaultKit() {
-        if (Config.data == null) return null;
-        return Config.data.getString("kits.default", null);
+        if (Config.kits == null) return null;
+        return Config.kits.getString("kits.default", null);
     }
 
     public static String getDisplayName(String kitId) {
-        if (kitId == null || Config.data == null) return kitId;
-        return Config.data.getString("kits.list." + kitId + ".display.name", kitId);
+        if (kitId == null || Config.kits == null) return kitId;
+        return Config.kits.getString("kits.list." + kitId + ".display.name", kitId);
     }
 
     public static List<String> getLore(String kitId) {
-        if (kitId == null || Config.data == null) return java.util.Collections.emptyList();
-        return Config.data.getStringList("kits.list." + kitId + ".display.lore");
+        if (kitId == null || Config.kits == null) return java.util.Collections.emptyList();
+        return Config.kits.getStringList("kits.list." + kitId + ".display.lore");
     }
 
     public static void applyKit(Player player, String kitId) {
         if (player == null || kitId == null) return;
-        ConfigurationSection kit = Config.data.getConfigurationSection("kits.list." + kitId);
+        ConfigurationSection kit = Config.kits == null ? null : Config.kits.getConfigurationSection("kits.list." + kitId);
         if (kit == null) return;
 
         // Items
@@ -67,6 +67,60 @@ public final class Kits {
             if (effect != null) {
                 player.addPotionEffect(effect);
             }
+        }
+    }
+
+    public static void applyKitInLobby(Player player, String kitId) {
+        if (player == null) return;
+        // Clear lobby inventory to show kit preview
+        player.getInventory().clear();
+        player.getInventory().setArmorContents(null);
+        if (kitId == null || kitId.isEmpty()) return;
+        applyKit(player, kitId);
+        player.updateInventory();
+    }
+
+    public static void validateAll() {
+        if (Config.kits == null) return;
+        ConfigurationSection sec = Config.kits.getConfigurationSection("kits.list");
+        if (sec == null) return;
+        for (String kitId : sec.getKeys(false)) {
+            ConfigurationSection kit = sec.getConfigurationSection(kitId);
+            if (kit == null) continue;
+            boolean ok = true;
+            List<Map<?, ?>> items = kit.getMapList("items");
+            for (Map<?, ?> map : items) {
+                String matName = map.containsKey("material") ? String.valueOf(map.get("material")) : "";
+                if (Material.matchMaterial(matName) == null) {
+                    Utils.getPlugin().getLogger().warning("[Kits] Invalid material '" + matName + "' in kit '" + kitId + "'.");
+                    ok = false;
+                }
+            }
+            ConfigurationSection armor = kit.getConfigurationSection("armor");
+            if (armor != null) {
+                validateArmor(kitId, "helmet", armor.getString("helmet"));
+                validateArmor(kitId, "chestplate", armor.getString("chestplate"));
+                validateArmor(kitId, "leggings", armor.getString("leggings"));
+                validateArmor(kitId, "boots", armor.getString("boots"));
+            }
+            List<Map<?, ?>> effects = kit.getMapList("effects");
+            for (Map<?, ?> map : effects) {
+                String typeName = map.containsKey("type") ? String.valueOf(map.get("type")) : "";
+                if (PotionEffectType.getByName(typeName) == null) {
+                    Utils.getPlugin().getLogger().warning("[Kits] Invalid effect '" + typeName + "' in kit '" + kitId + "'.");
+                    ok = false;
+                }
+            }
+            if (!ok) {
+                Utils.getPlugin().getLogger().warning("[Kits] Kit '" + kitId + "' has invalid entries.");
+            }
+        }
+    }
+
+    private static void validateArmor(String kitId, String slot, String matName) {
+        if (matName == null || matName.isEmpty()) return;
+        if (Material.matchMaterial(matName) == null) {
+            Utils.getPlugin().getLogger().warning("[Kits] Invalid armor '" + matName + "' (" + slot + ") in kit '" + kitId + "'.");
         }
     }
 

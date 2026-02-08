@@ -102,7 +102,6 @@ world:
   safetyBounds: 3
 
 theWalls:
-  legacyHud: false
   respawnDuringPrepTime: false
   respawnDuringInitialFighting: false
   autoExecute:
@@ -158,101 +157,6 @@ arenas:
       maxPlayers: -1
       templateWorld: "mapa1"
 
-kits:
-  default: "vanguard"
-  list:
-    vanguard:
-      display:
-        name: "<#f59e0b><bold>Vanguard</bold></#f59e0b>"
-        lore:
-          - "<gray>Frontline bruiser</gray>"
-      items:
-        - material: IRON_SWORD
-          amount: 1
-          name: "<#f59e0b>Vanguard Blade</#f59e0b>"
-          enchants:
-            SHARPNESS: 1
-            UNBREAKING: 2
-        - material: SHIELD
-          amount: 1
-        - material: COOKED_BEEF
-          amount: 8
-      armor:
-        helmet: IRON_HELMET
-        chestplate: IRON_CHESTPLATE
-        leggings: IRON_LEGGINGS
-        boots: IRON_BOOTS
-      effects:
-        - type: DAMAGE_RESISTANCE
-          duration: 999999
-          amplifier: 0
-    rift:
-      display:
-        name: "<#3b82f6><bold>Rift Archer</bold></#3b82f6>"
-        lore:
-          - "<gray>High pressure at range</gray>"
-      items:
-        - material: BOW
-          amount: 1
-          enchants:
-            POWER: 2
-            UNBREAKING: 2
-        - material: ARROW
-          amount: 48
-        - material: ENDER_PEARL
-          amount: 1
-      armor:
-        helmet: LEATHER_HELMET
-        chestplate: LEATHER_CHESTPLATE
-        leggings: LEATHER_LEGGINGS
-        boots: LEATHER_BOOTS
-    miner:
-      display:
-        name: "<#a3e635><bold>Deep Miner</bold></#a3e635>"
-        lore:
-          - "<gray>Fast ores and escapes</gray>"
-      items:
-        - material: IRON_PICKAXE
-          amount: 1
-          enchants:
-            EFFICIENCY: 2
-            UNBREAKING: 2
-        - material: TORCH
-          amount: 16
-        - material: COOKED_BEEF
-          amount: 6
-      armor:
-        helmet: CHAINMAIL_HELMET
-        chestplate: CHAINMAIL_CHESTPLATE
-        leggings: CHAINMAIL_LEGGINGS
-        boots: CHAINMAIL_BOOTS
-      effects:
-        - type: HASTE
-          duration: 999999
-          amplifier: 0
-    assassin:
-      display:
-        name: "<#f43f5e><bold>Assassin</bold></#f43f5e>"
-        lore:
-          - "<gray>Quick picks, glass cannon</gray>"
-      items:
-        - material: IRON_SWORD
-          amount: 1
-          enchants:
-            SHARPNESS: 2
-        - material: GOLDEN_APPLE
-          amount: 2
-        - material: COOKED_BEEF
-          amount: 4
-      armor:
-        helmet: LEATHER_HELMET
-        chestplate: LEATHER_CHESTPLATE
-        leggings: LEATHER_LEGGINGS
-        boots: LEATHER_BOOTS
-      effects:
-        - type: SPEED
-          duration: 999999
-          amplifier: 0
     name: "<gradient:#a78bfa:#22d3ee><bold>Lucky Crate</bold></gradient>"
     lore:
       - "<gray>Open to unlock a random perk</gray>"

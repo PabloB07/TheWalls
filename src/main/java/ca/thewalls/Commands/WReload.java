@@ -26,8 +26,21 @@ public class WReload implements CommandExecutor {
         Config.initializeData();
         Messages.reload();
         Config.reloadPerksAndCrates();
+        ca.thewalls.Kits.validateAll();
         if (walls.arenas != null) {
             walls.arenas.reloadFromConfig();
+            for (ca.thewalls.Arena arena : walls.arenas.getArenas().values()) {
+                if (arena.getGame().started) continue;
+                for (org.bukkit.entity.Player p : arena.getPlayers()) {
+                    String kitId = ca.thewalls.Config.getPlayerKit(p.getUniqueId());
+                    if (kitId == null || kitId.isEmpty()) {
+                        kitId = ca.thewalls.Kits.getDefaultKit();
+                    }
+                    if (kitId != null && !kitId.isEmpty()) {
+                        ca.thewalls.Kits.applyKitInLobby(p, kitId);
+                    }
+                }
+            }
         }
         SignUpdater.updateAll(walls);
         if (walls.topHolograms != null) {

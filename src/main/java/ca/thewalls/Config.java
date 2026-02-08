@@ -21,6 +21,8 @@ public class Config {
     public static YamlConfiguration perks;
     public static File cratesFile;
     public static YamlConfiguration crates;
+    public static File kitsFile;
+    public static YamlConfiguration kits;
 
     public static void initializeData() {
         try {
@@ -159,9 +161,6 @@ public class Config {
             }
             if (!data.isSet("world.safetyBounds")) {
                 data.set("world.safetyBounds", 3);
-            }
-            if (!data.isSet("theWalls.legacyHud")) {
-                data.set("theWalls.legacyHud", false);
             }
             if (!data.isSet("theWalls.respawnDuringPrepTime")) {
                 data.set("theWalls.respawnDuringPrepTime", false);
@@ -312,6 +311,12 @@ public class Config {
                 Utils.getPlugin().saveResource("crates.yml", false);
             }
             crates = YamlConfiguration.loadConfiguration(cratesFile);
+
+            kitsFile = new File(Utils.getPlugin().getDataFolder(), "kits.yml");
+            if (!kitsFile.exists()) {
+                Utils.getPlugin().saveResource("kits.yml", false);
+            }
+            kits = YamlConfiguration.loadConfiguration(kitsFile);
 
             for (Player p : Bukkit.getOnlinePlayers()) {
                 createLeaderboardPlayer(p);
@@ -563,6 +568,9 @@ public class Config {
         }
         if (cratesFile != null) {
             crates = YamlConfiguration.loadConfiguration(cratesFile);
+        }
+        if (kitsFile != null) {
+            kits = YamlConfiguration.loadConfiguration(kitsFile);
         }
     }
 

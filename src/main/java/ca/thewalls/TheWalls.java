@@ -17,6 +17,7 @@ public final class TheWalls extends JavaPlugin {
         Config.initializeData();
         Messages.initialize(this);
         Config.reloadPerksAndCrates();
+        ca.thewalls.Kits.validateAll();
         // No special init needed for copy-based reset
         spigui = new com.samjakob.spigui.SpiGUI(this);
         arenas = new ArenaManager(this);
