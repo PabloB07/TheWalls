@@ -322,16 +322,17 @@ public class Game {
         }
 
         String resetStrategy = ca.thewalls.Config.getResetStrategy();
-        if (resetStrategy.equalsIgnoreCase("asp")) {
-            String templateWorld = ca.thewalls.Config.getAspTemplateWorld(this.arena.getName());
+        if (resetStrategy.equalsIgnoreCase("copy")) {
+            String templateWorld = ca.thewalls.Config.getCopyTemplateWorld(this.arena.getName());
             if (templateWorld != null && !templateWorld.isEmpty()) {
-                String instancePrefix = ca.thewalls.Config.getAspInstancePrefix() + this.arena.getName().toLowerCase() + "_";
-                ca.thewalls.AspWorlds.loadFromTemplateAsync(templateWorld, instancePrefix, (aspWorld, instanceName) -> {
-                    if (aspWorld != null) {
-                        this.arena.getWorld().world = aspWorld;
-                        this.arena.getWorld().aspInstanceName = instanceName;
+                String instancePrefix = ca.thewalls.Config.getCopyInstancePrefix() + this.arena.getName().toLowerCase() + "_";
+                String instanceName = instancePrefix + System.currentTimeMillis();
+                ca.thewalls.CopyWorlds.loadFromTemplateAsync(templateWorld, instanceName, (copyWorld) -> {
+                    if (copyWorld != null) {
+                        this.arena.getWorld().world = copyWorld;
+                        this.arena.getWorld().instanceName = instanceName;
                     } else {
-                        Utils.getPlugin().getLogger().warning("ASP world load failed, falling back to configured world.");
+                        Utils.getPlugin().getLogger().warning("World copy failed, falling back to configured world.");
                     }
                     continueStart(starter);
                 });

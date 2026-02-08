@@ -138,20 +138,14 @@ public class Config {
             if (!data.isSet("world.reset.strategy")) {
                 data.set("world.reset.strategy", "classic");
             }
-            if (!data.isSet("world.reset.asp.templateWorld")) {
-                data.set("world.reset.asp.templateWorld", "");
+            if (!data.isSet("world.reset.copy.templateDir")) {
+                data.set("world.reset.copy.templateDir", "worlds/templates");
             }
-            if (!data.isSet("world.reset.asp.instancePrefix")) {
-                data.set("world.reset.asp.instancePrefix", "tw_");
+            if (!data.isSet("world.reset.copy.instancePrefix")) {
+                data.set("world.reset.copy.instancePrefix", "tw_");
             }
-            if (!data.isSet("world.reset.asp.deleteOnUnload")) {
-                data.set("world.reset.asp.deleteOnUnload", true);
-            }
-            if (!data.isSet("world.reset.asp.loaderDir")) {
-                data.set("world.reset.asp.loaderDir", "slime_worlds");
-            }
-            if (!data.isSet("world.reset.asp.poolSize")) {
-                data.set("world.reset.asp.poolSize", 1);
+            if (!data.isSet("world.reset.copy.deleteOnUnload")) {
+                data.set("world.reset.copy.deleteOnUnload", true);
             }
             if (!data.isSet("world.saving")) {
                 data.set("world.saving", true);
@@ -465,35 +459,30 @@ public class Config {
         return data.getString("world.reset.strategy", "classic");
     }
 
-    public static String getAspTemplateWorld(String arenaName) {
+    public static String getCopyTemplateWorld(String arenaName) {
         if (data == null) return "";
         if (arenaName != null) {
-            String key = "arenas.settings." + arenaName.toLowerCase() + ".aspTemplateWorld";
+            String key = "arenas.settings." + arenaName.toLowerCase() + ".templateWorld";
             if (data.isSet(key)) {
                 return data.getString(key, "");
             }
         }
-        return data.getString("world.reset.asp.templateWorld", "");
+        return data.getString("world.reset.copy.templateWorld", "");
     }
 
-    public static String getAspInstancePrefix() {
+    public static String getCopyInstancePrefix() {
         if (data == null) return "tw_";
-        return data.getString("world.reset.asp.instancePrefix", "tw_");
+        return data.getString("world.reset.copy.instancePrefix", "tw_");
     }
 
-    public static boolean isAspDeleteOnUnload() {
+    public static boolean isCopyDeleteOnUnload() {
         if (data == null) return true;
-        return data.getBoolean("world.reset.asp.deleteOnUnload", true);
+        return data.getBoolean("world.reset.copy.deleteOnUnload", true);
     }
 
-    public static String getAspLoaderDir() {
-        if (data == null) return "slime_worlds";
-        return data.getString("world.reset.asp.loaderDir", "slime_worlds");
-    }
-
-    public static int getAspPoolSize() {
-        if (data == null) return 1;
-        return data.getInt("world.reset.asp.poolSize", 1);
+    public static String getCopyTemplateDir() {
+        if (data == null) return "worlds/templates";
+        return data.getString("world.reset.copy.templateDir", "worlds/templates");
     }
 
     public static void setPlayerTeamPref(java.util.UUID uuid, String arenaName, Integer teamId) {

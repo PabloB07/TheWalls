@@ -85,14 +85,6 @@
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
         <repository>
-            <id>is-releases</id>
-            <url>https://repo.infernalsuite.com/repository/maven-releases/</url>
-        </repository>
-        <repository>
-            <id>is-snapshots</id>
-            <url>https://repo.infernalsuite.com/repository/maven-snapshots/</url>
-        </repository>
-        <repository>
             <id>tcoded-releases</id>
             <url>https://repo.tcoded.com/releases</url>
         </repository>
@@ -133,17 +125,6 @@
             <artifactId>HologramLib</artifactId>
             <version>1.8.3.2</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.infernalsuite.asp</groupId>
-            <artifactId>api</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.infernalsuite.asp</groupId>
-            <artifactId>file-loader</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

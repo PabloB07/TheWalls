@@ -93,12 +93,10 @@ world:
   borderShrinkPercentageOfSize: 0.2
   reset:
     strategy: classic
-    asp:
-      templateWorld: ""
+    copy:
+      templateDir: "worlds/templates"
       instancePrefix: "tw_"
       deleteOnUnload: true
-      loaderDir: "slime_worlds"
-      poolSize: 1
   saving: true
   saveAir: true
   safetyBounds: 3
@@ -154,4 +152,4 @@ arenas:
   settings:
     example:
       maxPlayers: -1
-      aspTemplateWorld: "mapa1"
+      templateWorld: "mapa1"

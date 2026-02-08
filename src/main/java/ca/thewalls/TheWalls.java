@@ -16,16 +16,7 @@ public final class TheWalls extends JavaPlugin {
         // Setup/Check for config file
         Config.initializeData();
         Messages.initialize(this);
-        if (Config.getResetStrategy().equalsIgnoreCase("asp")) {
-            AspWorlds.init();
-            for (Arena arena : arenas.getArenas().values()) {
-                String template = Config.getAspTemplateWorld(arena.getName());
-                if (template != null && !template.isEmpty()) {
-                    String prefix = Config.getAspInstancePrefix() + arena.getName().toLowerCase() + "_";
-                    AspWorlds.ensurePoolAsync(template, prefix, Config.getAspPoolSize());
-                }
-            }
-        }
+        // No special init needed for copy-based reset
         spigui = new com.samjakob.spigui.SpiGUI(this);
         arenas = new ArenaManager(this);
         // No default arena: all arenas are explicit and created via config/commands.
