@@ -20,6 +20,7 @@ public final class TheWalls extends JavaPlugin {
         spigui = new com.samjakob.spigui.SpiGUI(this);
         arenas = new ArenaManager(this);
         // No default arena: all arenas are explicit and created via config/commands.
+        EconomyHook.setup();
 
         // Health in tablist is enabled only during active games.
         topHolograms = new TopHolograms(this);
@@ -34,6 +35,7 @@ public final class TheWalls extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new PlayerJoin(this), this);
         this.getServer().getPluginManager().registerEvents(new PlayerRespawn(this), this);
         this.getServer().getPluginManager().registerEvents(new PlayerDeath(this), this);
+        this.getServer().getPluginManager().registerEvents(new PerkConfirmClose(), this);
         this.getServer().getPluginManager().registerEvents(new EntityDeath(this), this);
         this.getServer().getPluginManager().registerEvents(new EntityDamage(this), this);
         this.getServer().getPluginManager().registerEvents(new JoinSign(this), this);

@@ -101,6 +101,14 @@ public class Team {
         ply.playerListName(Utils.componentFromString(teamColor + "[" + teamName + "] " + ply.getName()));
         ply.setGameMode(GameMode.SURVIVAL);
         ply.setStatistic(Statistic.DEATHS, 0);
+        String kitId = ca.thewalls.Config.getPlayerKit(ply.getUniqueId());
+        if (kitId == null || kitId.isEmpty()) {
+            kitId = ca.thewalls.Kits.getDefaultKit();
+        }
+        if (kitId != null && !kitId.isEmpty()) {
+            ca.thewalls.Kits.applyKit(ply, kitId);
+        }
+        ca.thewalls.Perks.applyPerks(ply);
         ply.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, Config.data.getInt("players.spawn.steakAmount")));
 
         // Calc teamspawn in case of change

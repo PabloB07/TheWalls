@@ -4,12 +4,12 @@ main: ca.thewalls.TheWalls
 api-version: 1.21
 authors: [ CKAY9 ]
 description: Play The Walls in any Minecraft world
-softdepend: [HologramLib, PacketEvents]
+softdepend: [HologramLib, PacketEvents, Vault, Essentials]
 commands:
   walls:
     description: The Walls main command
     aliases: [w]
-    usage: /walls <start|end|forceteam|leaderboard|events|reload|list|join|leave|team|lobby|hub|sign|arena>
+    usage: /walls <start|end|forceteam|leaderboard|events|reload|list|join|leave|team|kits|perks|lobby|hub|sign|arena>
 permissions:
   thewalls.start:
     default: op
@@ -30,6 +30,10 @@ permissions:
   thewalls.walls.leave:
     default: true
   thewalls.walls.team:
+    default: true
+  thewalls.walls.kits:
+    default: true
+  thewalls.walls.perks:
     default: true
   thewalls.walls.lobby:
     default: op

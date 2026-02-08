@@ -32,6 +32,8 @@ public class WallsCompleter implements TabCompleter {
             addIfPerm(sender, completions, "join", "thewalls.walls.join");
             addIfPerm(sender, completions, "leave", "thewalls.walls.leave");
             addIfPerm(sender, completions, "team", "thewalls.walls.team");
+            addIfPerm(sender, completions, "kits", "thewalls.walls.kits");
+            addIfPerm(sender, completions, "perks", "thewalls.walls.perks");
             addIfPerm(sender, completions, "lobby", "thewalls.walls.lobby");
             addIfPerm(sender, completions, "hub", "thewalls.walls.hub");
             addIfPerm(sender, completions, "sign", "thewalls.walls.sign");

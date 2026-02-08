@@ -445,6 +445,56 @@ public class Config {
         return data.getString("players." + uuid + ".arena", null);
     }
 
+    public static String getPlayerKit(java.util.UUID uuid) {
+        if (uuid == null || data == null) return null;
+        return data.getString("players." + uuid + ".kit", null);
+    }
+
+    public static void setPlayerKit(java.util.UUID uuid, String kitId) {
+        if (uuid == null || data == null) return;
+        if (kitId == null || kitId.isEmpty()) {
+            data.set("players." + uuid + ".kit", null);
+        } else {
+            data.set("players." + uuid + ".kit", kitId.toLowerCase());
+        }
+        try {
+            data.save(dataFile);
+        } catch (IOException ex) {
+            Utils.getPlugin().getLogger().warning(ex.toString());
+        }
+    }
+
+    public static java.util.List<String> getPlayerPerks(java.util.UUID uuid) {
+        if (uuid == null || data == null) return java.util.Collections.emptyList();
+        return data.getStringList("players." + uuid + ".perks");
+    }
+
+    public static boolean hasPerk(java.util.UUID uuid, String perkId) {
+        if (uuid == null || perkId == null) return false;
+        java.util.List<String> perks = getPlayerPerks(uuid);
+        for (String p : perks) {
+            if (p.equalsIgnoreCase(perkId)) return true;
+        }
+        return false;
+    }
+
+    public static void unlockPerk(java.util.UUID uuid, String perkId) {
+        if (uuid == null || perkId == null) return;
+        java.util.List<String> perks = new java.util.ArrayList<>(getPlayerPerks(uuid));
+        for (String p : perks) {
+            if (p.equalsIgnoreCase(perkId)) {
+                return;
+            }
+        }
+        perks.add(perkId.toLowerCase());
+        data.set("players." + uuid + ".perks", perks);
+        try {
+            data.save(dataFile);
+        } catch (IOException ex) {
+            Utils.getPlugin().getLogger().warning(ex.toString());
+        }
+    }
+
     public static int getArenaMaxPlayers(String arenaName) {
         if (arenaName == null || data == null) return data.getInt("lobby.maxPlayers", -1);
         String key = "arenas.settings." + arenaName.toLowerCase() + ".maxPlayers";

@@ -39,6 +39,34 @@ public class WallsInfo implements CommandExecutor {
             if (sub.equals("events")) {
                 return new WEvents(walls).onCommand(sender, command, label, slice(args, 1));
             }
+            if (sub.equals("kits")) {
+                if (!sender.hasPermission("thewalls.walls.kits") && !sender.isOp()) {
+                    sender.sendMessage(Messages.msg("admin.no_permission"));
+                    return true;
+                }
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage(Messages.msg("walls.only_player"));
+                    return true;
+                }
+                ca.thewalls.Listeners.KitSelectMenu.open(walls, (Player) sender);
+                return true;
+            }
+            if (sub.equals("perks")) {
+                if (!sender.hasPermission("thewalls.walls.perks") && !sender.isOp()) {
+                    sender.sendMessage(Messages.msg("admin.no_permission"));
+                    return true;
+                }
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage(Messages.msg("walls.only_player"));
+                    return true;
+                }
+                if (!ca.thewalls.Config.data.getBoolean("crates.enabled", true)) {
+                    sender.sendMessage(Messages.msg("walls.crate_disabled"));
+                    return true;
+                }
+                ca.thewalls.Listeners.PerkMenu.open(walls, (Player) sender);
+                return true;
+            }
             if (sub.equals("reload")) {
                 return new WReload(walls).onCommand(sender, command, label, slice(args, 1));
             }

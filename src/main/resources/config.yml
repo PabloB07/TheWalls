@@ -153,3 +153,92 @@ arenas:
     example:
       maxPlayers: -1
       templateWorld: "mapa1"
+
+kits:
+  default: "warrior"
+  list:
+    warrior:
+      display:
+        name: "<#f59e0b><bold>Warrior</bold></#f59e0b>"
+        lore:
+          - "<gray>Balanced melee kit</gray>"
+      items:
+        - material: IRON_SWORD
+          amount: 1
+          name: "<white>Warrior Sword</white>"
+          lore:
+            - "<gray>Reliable blade</gray>"
+          enchants:
+            SHARPNESS: 1
+        - material: BREAD
+          amount: 8
+      armor:
+        helmet: IRON_HELMET
+        chestplate: IRON_CHESTPLATE
+        leggings: IRON_LEGGINGS
+        boots: IRON_BOOTS
+      effects:
+        - type: DAMAGE_RESISTANCE
+          duration: 999999
+          amplifier: 0
+    archer:
+      display:
+        name: "<#3b82f6><bold>Archer</bold></#3b82f6>"
+        lore:
+          - "<gray>Ranged kit</gray>"
+      items:
+        - material: BOW
+          amount: 1
+          enchants:
+            POWER: 1
+        - material: ARROW
+          amount: 32
+      armor:
+        helmet: LEATHER_HELMET
+        chestplate: LEATHER_CHESTPLATE
+        leggings: LEATHER_LEGGINGS
+        boots: LEATHER_BOOTS
+
+perks:
+  list:
+    speed1:
+      name: "<#22c55e>Speed I</#22c55e>"
+      description: "<gray>Permanent Speed I in game</gray>"
+      level: 1
+      effects:
+        - type: SPEED
+          duration: 999999
+          amplifier: 0
+    haste1:
+      name: "<#f97316>Haste I</#f97316>"
+      description: "<gray>Permanent Haste I in game</gray>"
+      level: 1
+      effects:
+        - type: HASTE
+          duration: 999999
+          amplifier: 0
+
+crates:
+  enabled: true
+  currencySymbol: "$"
+  cost: 250
+  levelCosts:
+    "1": 250
+    "2": 400
+    "3": 650
+  rewards:
+    - perk: speed1
+      chance: 50
+      cost: 250
+    - perk: haste1
+      chance: 50
+      cost: 350
+  display:
+    name: "<gradient:#a78bfa:#22d3ee><bold>Lucky Crate</bold></gradient>"
+    lore:
+      - "<gray>Open to unlock a random perk</gray>"
+  rewards:
+    - perk: speed1
+      chance: 50
+    - perk: haste1
+      chance: 50
