@@ -34,6 +34,8 @@ public class PerkConfirmMenu {
         }
         int perkCost = Perks.getPerkCost(resolvedPerk);
         double finalCost = perkCost > 0 ? perkCost : cost;
+        final String perkFinal = resolvedPerk;
+        final double costFinal = finalCost;
 
         String name = Perks.getName(resolvedPerk);
         String desc = Perks.getDescription(resolvedPerk);
@@ -43,7 +45,7 @@ public class PerkConfirmMenu {
         if (desc != null && !desc.isEmpty()) {
             lore.add(Utils.toLegacy(Utils.componentFromString(desc)));
         }
-        lore.add(Utils.toLegacy(Messages.msg("menu.crate_cost", java.util.Map.of("amount", Perks.getCurrencySymbol() + finalCost))));
+        lore.add(Utils.toLegacy(Messages.msg("menu.crate_cost", java.util.Map.of("amount", Perks.getCurrencySymbol() + costFinal))));
         perkItem = perkItem.lore(lore);
         menu.setButton(4, new SGButton(perkItem.build()).withListener(event -> event.setCancelled(true)));
 
@@ -56,26 +58,26 @@ public class PerkConfirmMenu {
                 player.closeInventory();
                 return;
             }
-            if (Config.hasPerk(player.getUniqueId(), resolvedPerk)) {
+            if (Config.hasPerk(player.getUniqueId(), perkFinal)) {
                 player.sendMessage(Messages.msg("walls.perk_already"));
                 player.closeInventory();
                 Perks.clearPendingPerk(player.getUniqueId());
                 return;
             }
-            if (finalCost > 0.0) {
+            if (costFinal > 0.0) {
                 double balance = EconomyHook.getEconomy().getBalance(player);
-                if (balance < finalCost) {
+                if (balance < costFinal) {
                     player.sendMessage(Messages.msg("walls.not_enough_money"));
                     player.closeInventory();
                     Perks.clearPendingPerk(player.getUniqueId());
                     return;
                 }
-                EconomyHook.getEconomy().withdrawPlayer(player, finalCost);
-                String amount = Perks.getCurrencySymbol() + EconomyHook.getEconomy().format(finalCost);
+                EconomyHook.getEconomy().withdrawPlayer(player, costFinal);
+                String amount = Perks.getCurrencySymbol() + EconomyHook.getEconomy().format(costFinal);
                 player.sendMessage(Messages.msg("walls.money_taken", java.util.Map.of("amount", amount)));
             }
-            Config.unlockPerk(player.getUniqueId(), resolvedPerk);
-            player.sendMessage(Messages.msg("walls.perk_unlocked", java.util.Map.of("perk", Perks.getName(resolvedPerk))));
+            Config.unlockPerk(player.getUniqueId(), perkFinal);
+            player.sendMessage(Messages.msg("walls.perk_unlocked", java.util.Map.of("perk", Perks.getName(perkFinal))));
             Perks.clearPendingPerk(player.getUniqueId());
             player.closeInventory();
         }));
