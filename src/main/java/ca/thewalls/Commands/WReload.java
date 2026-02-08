@@ -26,6 +26,7 @@ public class WReload implements CommandExecutor {
         Config.initializeData();
         Messages.reload();
         Config.reloadPerksAndCrates();
+        ca.thewalls.EconomyService.setup();
         ca.thewalls.Kits.validateAll();
         if (walls.arenas != null) {
             walls.arenas.reloadFromConfig();
@@ -33,12 +34,16 @@ public class WReload implements CommandExecutor {
                 if (arena.getGame().started) continue;
                 for (org.bukkit.entity.Player p : arena.getPlayers()) {
                     String kitId = ca.thewalls.Config.getPlayerKit(p.getUniqueId());
-                    if (kitId == null || kitId.isEmpty()) {
+                    if (kitId == null || kitId.isEmpty() || !ca.thewalls.Kits.isValidKit(kitId)) {
                         kitId = ca.thewalls.Kits.getDefaultKit();
+                        if (kitId != null && !kitId.isEmpty()) {
+                            ca.thewalls.Config.setPlayerKit(p.getUniqueId(), kitId);
+                        }
                     }
-                    if (kitId != null && !kitId.isEmpty()) {
+                    if (kitId != null && !kitId.isEmpty() && ca.thewalls.Kits.isValidKit(kitId)) {
                         ca.thewalls.Kits.applyKitInLobby(p, kitId);
                     }
+                    ca.thewalls.Listeners.LobbyItems.give(p, arena);
                 }
             }
         }

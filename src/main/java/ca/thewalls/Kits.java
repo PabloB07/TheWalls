@@ -27,6 +27,11 @@ public final class Kits {
         return Config.kits.getString("kits.default", null);
     }
 
+    public static boolean isValidKit(String kitId) {
+        if (kitId == null || Config.kits == null) return false;
+        return Config.kits.isConfigurationSection("kits.list." + kitId);
+    }
+
     public static String getDisplayName(String kitId) {
         if (kitId == null || Config.kits == null) return kitId;
         return Config.kits.getString("kits.list." + kitId + ".display.name", kitId);
@@ -84,6 +89,10 @@ public final class Kits {
         if (Config.kits == null) return;
         ConfigurationSection sec = Config.kits.getConfigurationSection("kits.list");
         if (sec == null) return;
+        String defaultKit = getDefaultKit();
+        if (defaultKit != null && !defaultKit.isEmpty() && !isValidKit(defaultKit)) {
+            Utils.getPlugin().getLogger().warning("[Kits] Default kit '" + defaultKit + "' does not exist in kits.yml.");
+        }
         for (String kitId : sec.getKeys(false)) {
             ConfigurationSection kit = sec.getConfigurationSection(kitId);
             if (kit == null) continue;

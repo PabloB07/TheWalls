@@ -41,6 +41,7 @@ public class KitSelectMenu {
                     ca.thewalls.Arena arena = plugin.getArenaByPlayer(player);
                     if (arena != null && !arena.getGame().started) {
                         ca.thewalls.Kits.applyKitInLobby(player, kitId);
+                        ca.thewalls.Listeners.LobbyItems.give(player, arena);
                     }
                     player.closeInventory();
                 });
