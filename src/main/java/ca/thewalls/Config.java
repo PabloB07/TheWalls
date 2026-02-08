@@ -214,6 +214,12 @@ public class Config {
                 data.set("hub.location.yaw", 0);
                 data.set("hub.location.pitch", 0);
             }
+            if (!data.isSet("economy.provider")) {
+                data.set("economy.provider", "vault");
+            }
+            if (!data.isSet("economy.currency")) {
+                data.set("economy.currency", "VAULT");
+            }
             if (!data.isSet("events.bossMan.enabled")) {
                 data.set("events.bossMan.enabled", true);
                 data.set("events.bossMan.prepTime", 3);

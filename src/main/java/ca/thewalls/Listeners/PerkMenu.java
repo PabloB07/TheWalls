@@ -21,9 +21,9 @@ public class PerkMenu {
         List<String> perks = Perks.getPerkIds();
         int size = Math.max(1, ((perks.size() - 1) / 9) + 1);
         String balanceText = "";
-        if (ca.thewalls.EconomyHook.isAvailable()) {
-            double balance = ca.thewalls.EconomyHook.getEconomy().getBalance(player);
-            balanceText = Perks.getCurrencySymbol() + ca.thewalls.EconomyHook.getEconomy().format(balance);
+        if (ca.thewalls.EconomyService.isAvailable()) {
+            double balance = ca.thewalls.EconomyService.getBalance(player);
+            balanceText = Perks.getCurrencySymbol() + ca.thewalls.EconomyService.format(balance);
         }
         String title = Utils.toLegacy(Messages.msg("menu.perk_title"));
         SGMenu menu = plugin.spigui.create("thewalls-perks", size, title);
@@ -79,7 +79,7 @@ public class PerkMenu {
             }
             SGButton crateButton = new SGButton(crate.build()).withListener(event -> {
                 event.setCancelled(true);
-                if (!ca.thewalls.EconomyHook.isAvailable()) {
+                if (!ca.thewalls.EconomyService.isAvailable()) {
                     player.sendMessage(Messages.msg("walls.economy_missing"));
                     return;
                 }

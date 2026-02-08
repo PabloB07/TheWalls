@@ -147,6 +147,10 @@ hub:
     yaw: 0
     pitch: 0
 
+economy:
+  provider: "vault"
+  currency: "VAULT"
+
 arenas:
   list: []
   settings:

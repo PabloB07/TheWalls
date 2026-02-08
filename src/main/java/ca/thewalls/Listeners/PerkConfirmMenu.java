@@ -53,7 +53,7 @@ public class PerkConfirmMenu {
                 .name(Utils.toLegacy(Messages.msg("menu.confirm_accept")));
         menu.setButton(2, new SGButton(accept.build()).withListener(event -> {
             event.setCancelled(true);
-            if (!EconomyHook.isAvailable()) {
+            if (!ca.thewalls.EconomyService.isAvailable()) {
                 player.sendMessage(Messages.msg("walls.economy_missing"));
                 player.closeInventory();
                 return;
@@ -65,15 +65,15 @@ public class PerkConfirmMenu {
                 return;
             }
             if (costFinal > 0.0) {
-                double balance = EconomyHook.getEconomy().getBalance(player);
+                double balance = ca.thewalls.EconomyService.getBalance(player);
                 if (balance < costFinal) {
                     player.sendMessage(Messages.msg("walls.not_enough_money"));
                     player.closeInventory();
                     Perks.clearPendingPerk(player.getUniqueId());
                     return;
                 }
-                EconomyHook.getEconomy().withdrawPlayer(player, costFinal);
-                String amount = Perks.getCurrencySymbol() + EconomyHook.getEconomy().format(costFinal);
+                ca.thewalls.EconomyService.withdraw(player, costFinal);
+                String amount = Perks.getCurrencySymbol() + ca.thewalls.EconomyService.format(costFinal);
                 player.sendMessage(Messages.msg("walls.money_taken", java.util.Map.of("amount", amount)));
             }
             Config.unlockPerk(player.getUniqueId(), perkFinal);
