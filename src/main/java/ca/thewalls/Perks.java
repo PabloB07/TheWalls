@@ -151,7 +151,7 @@ public final class Perks {
 
     private static PotionEffect effectFromMap(Map<?, ?> map) {
         if (map == null) return null;
-        String typeName = String.valueOf(map.getOrDefault("type", ""));
+        String typeName = map.containsKey("type") ? String.valueOf(map.get("type")) : "";
         PotionEffectType type = PotionEffectType.getByName(typeName);
         if (type == null) return null;
         int duration = 20 * 30;

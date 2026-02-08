@@ -79,7 +79,7 @@ public final class Kits {
 
     private static ItemStack itemFromMap(Map<?, ?> map) {
         if (map == null) return null;
-        String matName = String.valueOf(map.getOrDefault("material", ""));
+        String matName = map.containsKey("material") ? String.valueOf(map.get("material")) : "";
         Material mat = Material.matchMaterial(matName);
         if (mat == null) return null;
         int amount = 1;
@@ -121,7 +121,7 @@ public final class Kits {
 
     private static PotionEffect effectFromMap(Map<?, ?> map) {
         if (map == null) return null;
-        String typeName = String.valueOf(map.getOrDefault("type", ""));
+        String typeName = map.containsKey("type") ? String.valueOf(map.get("type")) : "";
         PotionEffectType type = PotionEffectType.getByName(typeName);
         if (type == null) return null;
         int duration = 20 * 30;
