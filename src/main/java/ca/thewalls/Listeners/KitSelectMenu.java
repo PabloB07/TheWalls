@@ -17,11 +17,29 @@ public class KitSelectMenu {
 
     public static void open(TheWalls plugin, Player player) {
         List<String> kits = Kits.getKitIds();
-        int size = Math.max(1, ((kits.size() - 1) / 9) + 1);
-        SGMenu menu = plugin.spigui.create("thewalls-kits", size, Utils.menuTitle("menu.kit_title", null));
+        int fallbackRows = Math.max(2, ((kits.size() - 1) / 9) + 1);
+        int rows = Math.max(2, Utils.guiRows("kits", fallbackRows));
+        SGMenu menu = plugin.spigui.create("thewalls-kits", rows, Utils.menuTitle("kit", null));
+
+        int maxSlots = rows * 9;
+        if (ca.thewalls.Config.data.getBoolean("gui.toolbar.enabled", true) && rows > 1) {
+            maxSlots = (rows - 1) * 9;
+        }
+        java.util.Set<Integer> reserved = new java.util.HashSet<>();
+        for (int i = 0; i < 9 && i < maxSlots; i++) reserved.add(i);
+        int infoSlot = Utils.guiSlot("gui.slots.kits.info", 4);
+        if (infoSlot >= 0 && infoSlot < maxSlots) {
+            menu.setButton(infoSlot, new SGButton(
+                    Utils.guiItem("gui.items.kit_info", Material.BOOK, null).build()
+            ).withListener(event -> event.setCancelled(true)));
+            reserved.add(infoSlot);
+        }
+        Utils.applyGuiToolbar(menu, player, null);
 
         int slot = 0;
         for (String kitId : kits) {
+            while (reserved.contains(slot) && slot < maxSlots) slot++;
+            if (slot >= maxSlots) break;
             String name = Kits.getDisplayName(kitId);
             ItemBuilder builder = new ItemBuilder(Material.CHEST)
                     .name(Utils.toLegacy(Utils.componentFromString(name)));
@@ -49,6 +67,7 @@ public class KitSelectMenu {
             slot++;
         }
 
+        Utils.applyGuiFiller(menu);
         player.openInventory(menu.getInventory());
     }
 }

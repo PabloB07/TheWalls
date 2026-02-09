@@ -163,7 +163,6 @@ hub:
   disabled: "<yellow>Hub disabled.</yellow>"
   no_hub: "<red>No hub set.</red>"
 menu:
-  default_title: "<gray><bold>Menu</bold></gray>"
   cosmetics_title: "<gradient:#f59e0b:#f97316><bold>Cosmetics</bold></gradient>"
   cosmetics_trails: "<aqua><bold>Trails</bold></aqua>"
   cosmetics_killeffects: "<red><bold>Kill Effects</bold></red>"

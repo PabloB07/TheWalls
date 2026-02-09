@@ -30,35 +30,43 @@ public class CosmeticsMenu {
     }
 
     public static void openMain(TheWalls plugin, Player player) {
-        SGMenu menu = plugin.spigui.create("thewalls-cosmetics", 1, Utils.menuTitle("menu.cosmetics_title", null));
+        int rows = Utils.guiRows("cosmetics", 3);
+        SGMenu menu = plugin.spigui.create("thewalls-cosmetics", rows, Utils.menuTitle("cosmetics", null));
 
         if (ca.thewalls.EconomyService.isAvailable()) {
             double balance = ca.thewalls.EconomyService.getBalance(player);
             String balanceText = ca.thewalls.EconomyService.format(balance);
-            SGButton balanceBtn = new SGButton(new ItemBuilder(Material.GOLD_NUGGET)
-                    .name(Utils.toLegacy(Messages.msg("menu.balance", java.util.Map.of("amount", balanceText))))
-                    .build()
-            ).withListener(event -> event.setCancelled(true));
-            menu.setButton(0, balanceBtn);
+            int balanceSlot = Utils.guiSlot("gui.slots.cosmetics.balance", 0);
+            if (balanceSlot >= 0 && balanceSlot < rows * 9) {
+                SGButton balanceBtn = new SGButton(
+                        Utils.guiItem("gui.items.balance", Material.GOLD_NUGGET, java.util.Map.of("amount", balanceText)).build()
+                ).withListener(event -> event.setCancelled(true));
+                menu.setButton(balanceSlot, balanceBtn);
+            }
         }
 
-        SGButton trails = new SGButton(new ItemBuilder(Material.FIREWORK_STAR)
-                .name(Utils.toLegacy(Utils.componentFromString(Messages.raw("menu.cosmetics_trails"))))
-                .build()
+        SGButton trails = new SGButton(
+                Utils.guiItem("gui.items.cosmetics_trails", Material.FIREWORK_STAR, null).build()
         ).withListener(event -> {
             event.setCancelled(true);
             openTrails(plugin, player);
         });
-        SGButton kills = new SGButton(new ItemBuilder(Material.NETHERITE_SWORD)
-                .name(Utils.toLegacy(Utils.componentFromString(Messages.raw("menu.cosmetics_killeffects"))))
-                .build()
+        SGButton kills = new SGButton(
+                Utils.guiItem("gui.items.cosmetics_killeffects", Material.NETHERITE_SWORD, null).build()
         ).withListener(event -> {
             event.setCancelled(true);
             openKillEffects(plugin, player);
         });
 
-        menu.setButton(2, trails);
-        menu.setButton(4, kills);
+        menu.setButton(Utils.guiSlot("gui.slots.cosmetics.trails", 2), trails);
+        menu.setButton(Utils.guiSlot("gui.slots.cosmetics.killeffects", 6), kills);
+        int infoSlot = Utils.guiSlot("gui.slots.cosmetics.info", 4);
+        if (infoSlot >= 0 && infoSlot < rows * 9) {
+            menu.setButton(infoSlot, new SGButton(
+                    Utils.guiItem("gui.items.cosmetics_info", Material.NAME_TAG, null).build()
+            ).withListener(event -> event.setCancelled(true)));
+        }
+        Utils.applyGuiFiller(menu);
         player.openInventory(menu.getInventory());
     }
 
@@ -68,10 +76,25 @@ public class CosmeticsMenu {
         boolean filters = Config.data.getBoolean("cosmetics.filters.enabled", true);
         int baseSize = Math.max(1, ((ids.size() - 1) / 9) + 1);
         int size = filters ? Math.max(2, baseSize + 1) : baseSize;
-        SGMenu menu = plugin.spigui.create("thewalls-trails", size, Utils.menuTitle("menu.trails_title", null));
+        int rows = Math.max(2, Utils.guiRows("trails", size));
+        SGMenu menu = plugin.spigui.create("thewalls-trails", rows, Utils.menuTitle("trails", null));
+        int maxSlots = rows * 9;
+        if (ca.thewalls.Config.data.getBoolean("gui.toolbar.enabled", true) && rows > 1) {
+            maxSlots = (rows - 1) * 9;
+        }
+        java.util.Set<Integer> reserved = new java.util.HashSet<>();
+        for (int i = 0; i < 9 && i < maxSlots; i++) reserved.add(i);
         if (filters) {
             renderFilterRow(menu, player, () -> openTrails(plugin, player));
         }
+        int infoSlot = Utils.guiSlot("gui.slots.trails.info", 4);
+        if (infoSlot >= 0 && infoSlot < maxSlots) {
+            menu.setButton(infoSlot, new SGButton(
+                    Utils.guiItem("gui.items.trails_info", Material.END_ROD, null).build()
+            ).withListener(event -> event.setCancelled(true)));
+            reserved.add(infoSlot);
+        }
+        Utils.applyGuiToolbar(menu, player, () -> openMain(plugin, player));
 
         boolean sortEnabled = Config.data.getBoolean("cosmetics.sort.enabled", true);
         List<String> filtered = new ArrayList<>();
@@ -102,6 +125,8 @@ public class CosmeticsMenu {
 
         int slot = 0;
         for (String id : filtered) {
+            while (reserved.contains(slot) && slot < maxSlots) slot++;
+            if (slot >= maxSlots) break;
             ConfigurationSection entry = sec.getConfigurationSection(id);
             String name = entry == null ? id : entry.getString("display.name", id);
             List<String> lore = entry == null ? java.util.Collections.emptyList() : entry.getStringList("display.lore");
@@ -173,6 +198,7 @@ public class CosmeticsMenu {
             });
             menu.setButton(slot++, button);
         }
+        Utils.applyGuiFiller(menu);
         player.openInventory(menu.getInventory());
     }
 
@@ -182,10 +208,25 @@ public class CosmeticsMenu {
         boolean filters = Config.data.getBoolean("cosmetics.filters.enabled", true);
         int baseSize = Math.max(1, ((ids.size() - 1) / 9) + 1);
         int size = filters ? Math.max(2, baseSize + 1) : baseSize;
-        SGMenu menu = plugin.spigui.create("thewalls-killeffects", size, Utils.menuTitle("menu.killeffects_title", null));
+        int rows = Math.max(2, Utils.guiRows("killeffects", size));
+        SGMenu menu = plugin.spigui.create("thewalls-killeffects", rows, Utils.menuTitle("killeffects", null));
+        int maxSlots = rows * 9;
+        if (ca.thewalls.Config.data.getBoolean("gui.toolbar.enabled", true) && rows > 1) {
+            maxSlots = (rows - 1) * 9;
+        }
+        java.util.Set<Integer> reserved = new java.util.HashSet<>();
+        for (int i = 0; i < 9 && i < maxSlots; i++) reserved.add(i);
         if (filters) {
             renderFilterRow(menu, player, () -> openKillEffects(plugin, player));
         }
+        int infoSlot = Utils.guiSlot("gui.slots.killeffects.info", 4);
+        if (infoSlot >= 0 && infoSlot < maxSlots) {
+            menu.setButton(infoSlot, new SGButton(
+                    Utils.guiItem("gui.items.killeffects_info", Material.NETHERITE_SWORD, null).build()
+            ).withListener(event -> event.setCancelled(true)));
+            reserved.add(infoSlot);
+        }
+        Utils.applyGuiToolbar(menu, player, () -> openMain(plugin, player));
 
         boolean sortEnabled = Config.data.getBoolean("cosmetics.sort.enabled", true);
         List<String> filtered = new ArrayList<>();
@@ -216,6 +257,8 @@ public class CosmeticsMenu {
 
         int slot = 0;
         for (String id : filtered) {
+            while (reserved.contains(slot) && slot < maxSlots) slot++;
+            if (slot >= maxSlots) break;
             ConfigurationSection entry = sec.getConfigurationSection(id);
             String name = entry == null ? id : entry.getString("display.name", id);
             List<String> lore = entry == null ? java.util.Collections.emptyList() : entry.getStringList("display.lore");
@@ -287,6 +330,7 @@ public class CosmeticsMenu {
             });
             menu.setButton(slot++, button);
         }
+        Utils.applyGuiFiller(menu);
         player.openInventory(menu.getInventory());
     }
 

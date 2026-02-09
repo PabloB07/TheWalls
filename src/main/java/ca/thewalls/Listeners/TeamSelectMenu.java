@@ -15,19 +15,22 @@ public class TeamSelectMenu {
     private TeamSelectMenu() {}
 
     public static void open(TheWalls plugin, Player player, Arena arena) {
-        SGMenu menu = plugin.spigui.create("thewalls-team", 1, Utils.menuTitle("menu.team_title", null));
+        int rows = Utils.guiRows("team", 3);
+        SGMenu menu = plugin.spigui.create("thewalls-team", rows, Utils.menuTitle("team", null));
 
-        menu.setButton(1, teamButton(plugin, player, arena, 0, Material.RED_WOOL, "menu.team_red"));
-        menu.setButton(3, teamButton(plugin, player, arena, 1, Material.BLUE_WOOL, "menu.team_blue"));
-        menu.setButton(5, teamButton(plugin, player, arena, 2, Material.YELLOW_WOOL, "menu.team_yellow"));
-        menu.setButton(7, teamButton(plugin, player, arena, 3, Material.GREEN_WOOL, "menu.team_green"));
+        menu.setButton(Utils.guiSlot("gui.slots.team.red", 10), teamButton(plugin, player, arena, 0, "gui.items.team_red", "menu.team_red"));
+        menu.setButton(Utils.guiSlot("gui.slots.team.blue", 12), teamButton(plugin, player, arena, 1, "gui.items.team_blue", "menu.team_blue"));
+        menu.setButton(Utils.guiSlot("gui.slots.team.yellow", 14), teamButton(plugin, player, arena, 2, "gui.items.team_yellow", "menu.team_yellow"));
+        menu.setButton(Utils.guiSlot("gui.slots.team.green", 16), teamButton(plugin, player, arena, 3, "gui.items.team_green", "menu.team_green"));
 
+        Utils.applyGuiFiller(menu);
         player.openInventory(menu.getInventory());
     }
 
-    private static SGButton teamButton(TheWalls plugin, Player player, Arena arena, int teamId, Material mat, String nameKey) {
+    private static SGButton teamButton(TheWalls plugin, Player player, Arena arena, int teamId, String itemPath, String nameKey) {
         java.util.List<String> lore = Messages.list("menu.team_lore");
-        ItemBuilder builder = new ItemBuilder(mat).name(Utils.toLegacy(Messages.msg(nameKey)));
+        ItemBuilder builder = Utils.guiItem(itemPath, Material.WHITE_WOOL, null)
+                .name(Utils.toLegacy(Messages.msg(nameKey)));
         if (!lore.isEmpty()) {
             java.util.List<String> formatted = new java.util.ArrayList<>();
             for (String line : lore) {

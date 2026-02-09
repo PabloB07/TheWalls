@@ -19,7 +19,8 @@ public class PerkConfirmMenu {
     private PerkConfirmMenu() {}
 
     public static void open(TheWalls plugin, Player player, String perkId, double cost) {
-        SGMenu menu = plugin.spigui.create("thewalls-perk-confirm", 1, Utils.menuTitle("menu.confirm_title", null));
+        int rows = Utils.guiRows("confirm", 3);
+        SGMenu menu = plugin.spigui.create("thewalls-perk-confirm", rows, Utils.menuTitle("confirm", null));
 
         String resolvedPerk = perkId;
         if (resolvedPerk == null || resolvedPerk.isEmpty()) {
@@ -47,11 +48,15 @@ public class PerkConfirmMenu {
         }
         lore.add(Utils.toLegacy(Messages.msg("menu.crate_cost", java.util.Map.of("amount", Perks.getCurrencySymbol() + costFinal))));
         perkItem = perkItem.lore(lore);
-        menu.setButton(4, new SGButton(perkItem.build()).withListener(event -> event.setCancelled(true)));
+        int previewSlot = Utils.guiSlot("gui.slots.confirm.preview", 13);
+        if (previewSlot >= 0 && previewSlot < rows * 9) {
+            menu.setButton(previewSlot, new SGButton(perkItem.build()).withListener(event -> event.setCancelled(true)));
+        }
 
-        ItemBuilder accept = new ItemBuilder(Material.LIME_CONCRETE)
+        ItemBuilder accept = Utils.guiItem("gui.items.confirm_accept", Material.LIME_CONCRETE, null)
                 .name(Utils.toLegacy(Messages.msg("menu.confirm_accept")));
-        menu.setButton(2, new SGButton(accept.build()).withListener(event -> {
+        int acceptSlot = Utils.guiSlot("gui.slots.confirm.accept", 11);
+        menu.setButton(acceptSlot, new SGButton(accept.build()).withListener(event -> {
             event.setCancelled(true);
             if (!ca.thewalls.EconomyService.isAvailable()) {
                 player.sendMessage(Messages.msg("walls.economy_missing"));
@@ -82,14 +87,16 @@ public class PerkConfirmMenu {
             player.closeInventory();
         }));
 
-        ItemBuilder cancel = new ItemBuilder(Material.RED_CONCRETE)
+        ItemBuilder cancel = Utils.guiItem("gui.items.confirm_cancel", Material.RED_CONCRETE, null)
                 .name(Utils.toLegacy(Messages.msg("menu.confirm_cancel")));
-        menu.setButton(6, new SGButton(cancel.build()).withListener(event -> {
+        int cancelSlot = Utils.guiSlot("gui.slots.confirm.cancel", 15);
+        menu.setButton(cancelSlot, new SGButton(cancel.build()).withListener(event -> {
             event.setCancelled(true);
             Perks.clearPendingPerk(player.getUniqueId());
             player.closeInventory();
         }));
 
+        Utils.applyGuiFiller(menu);
         player.openInventory(menu.getInventory());
     }
 }

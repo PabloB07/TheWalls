@@ -48,7 +48,9 @@ public final class TheWalls extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new LobbyItemsListener(this), this);
         this.getServer().getPluginManager().registerEvents(new ArenaProtection(this), this);
         this.getServer().getPluginManager().registerEvents(new PlayerTrail(this), this);
-        this.getServer().getPluginManager().registerEvents(new HeadDatabaseHook(this), this);
+        if (this.getServer().getPluginManager().getPlugin("HeadDatabase") != null) {
+            this.getServer().getPluginManager().registerEvents(new HeadDatabaseHook(this), this);
+        }
 
         // Lobby tick: update lobby boards
         this.getServer().getScheduler().runTaskTimer(this, () -> {

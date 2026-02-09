@@ -22,7 +22,8 @@ public class CrateConfirmMenu {
     private CrateConfirmMenu() {}
 
     public static void open(TheWalls plugin, Player player) {
-        SGMenu menu = plugin.spigui.create("thewalls-crate-confirm", 1, Utils.menuTitle("menu.confirm_title", null));
+        int rows = Utils.guiRows("crate_confirm", 3);
+        SGMenu menu = plugin.spigui.create("thewalls-crate-confirm", rows, Utils.menuTitle("crate_confirm", null));
 
         Crates.Reward reward = PENDING.get(player.getUniqueId());
         if (reward == null) {
@@ -48,11 +49,15 @@ public class CrateConfirmMenu {
         }
         lore.add(Utils.toLegacy(Messages.msg("menu.crate_cost", Map.of("amount", Crates.getCurrencySymbol() + reward.cost))));
         item = item.lore(lore);
-        menu.setButton(4, new SGButton(item.build()).withListener(event -> event.setCancelled(true)));
+        int previewSlot = Utils.guiSlot("gui.slots.crate_confirm.preview", 13);
+        if (previewSlot >= 0 && previewSlot < rows * 9) {
+            menu.setButton(previewSlot, new SGButton(item.build()).withListener(event -> event.setCancelled(true)));
+        }
 
-        ItemBuilder accept = new ItemBuilder(Material.LIME_CONCRETE)
+        ItemBuilder accept = Utils.guiItem("gui.items.confirm_accept", Material.LIME_CONCRETE, null)
                 .name(Utils.toLegacy(Messages.msg("menu.confirm_accept")));
-        menu.setButton(2, new SGButton(accept.build()).withListener(event -> {
+        int acceptSlot = Utils.guiSlot("gui.slots.crate_confirm.accept", 11);
+        menu.setButton(acceptSlot, new SGButton(accept.build()).withListener(event -> {
             event.setCancelled(true);
             Crates.Reward pending = PENDING.get(player.getUniqueId());
             if (pending == null) {
@@ -91,14 +96,16 @@ public class CrateConfirmMenu {
             player.closeInventory();
         }));
 
-        ItemBuilder cancel = new ItemBuilder(Material.RED_CONCRETE)
+        ItemBuilder cancel = Utils.guiItem("gui.items.confirm_cancel", Material.RED_CONCRETE, null)
                 .name(Utils.toLegacy(Messages.msg("menu.confirm_cancel")));
-        menu.setButton(6, new SGButton(cancel.build()).withListener(event -> {
+        int cancelSlot = Utils.guiSlot("gui.slots.crate_confirm.cancel", 15);
+        menu.setButton(cancelSlot, new SGButton(cancel.build()).withListener(event -> {
             event.setCancelled(true);
             PENDING.remove(player.getUniqueId());
             player.closeInventory();
         }));
 
+        Utils.applyGuiFiller(menu);
         player.openInventory(menu.getInventory());
     }
 }

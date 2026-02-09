@@ -19,17 +19,42 @@ public class PerkMenu {
 
     public static void open(TheWalls plugin, Player player) {
         List<String> perks = Perks.getPerkIds();
-        int size = Math.max(1, ((perks.size() - 1) / 9) + 1);
+        int fallbackRows = Math.max(2, ((perks.size() - 1) / 9) + 1);
+        int rows = Math.max(2, Utils.guiRows("perks", fallbackRows));
         String balanceText = "";
         if (ca.thewalls.EconomyService.isAvailable()) {
             double balance = ca.thewalls.EconomyService.getBalance(player);
             balanceText = Perks.getCurrencySymbol() + ca.thewalls.EconomyService.format(balance);
         }
-        String title = Utils.menuTitle("menu.perk_title", null);
-        SGMenu menu = plugin.spigui.create("thewalls-perks", size, title);
+        String title = Utils.menuTitle("perk", null);
+        SGMenu menu = plugin.spigui.create("thewalls-perks", rows, title);
+
+        int maxSlots = rows * 9;
+        if (ca.thewalls.Config.data.getBoolean("gui.toolbar.enabled", true) && rows > 1) {
+            maxSlots = (rows - 1) * 9;
+        }
+        java.util.Set<Integer> reserved = new java.util.HashSet<>();
+        for (int i = 0; i < 9 && i < maxSlots; i++) reserved.add(i);
+        int infoSlot = Utils.guiSlot("gui.slots.perks.info", 4);
+        if (infoSlot >= 0 && infoSlot < maxSlots) {
+            menu.setButton(infoSlot, new SGButton(
+                    Utils.guiItem("gui.items.perk_info", Material.ENCHANTED_BOOK, null).build()
+            ).withListener(event -> event.setCancelled(true)));
+            reserved.add(infoSlot);
+        }
+        int balanceSlot = Utils.guiSlot("gui.slots.perks.balance", 0);
+        if (!balanceText.isEmpty() && balanceSlot >= 0 && balanceSlot < maxSlots) {
+            menu.setButton(balanceSlot, new SGButton(
+                    Utils.guiItem("gui.items.balance", Material.GOLD_NUGGET, java.util.Map.of("amount", balanceText)).build()
+            ).withListener(event -> event.setCancelled(true)));
+            reserved.add(balanceSlot);
+        }
+        Utils.applyGuiToolbar(menu, player, null);
 
         int slot = 0;
         for (String perkId : perks) {
+            while (reserved.contains(slot) && slot < maxSlots) slot++;
+            if (slot >= maxSlots) break;
             String name = Perks.getName(perkId);
             String desc = Perks.getDescription(perkId);
             boolean unlocked = Config.hasPerk(player.getUniqueId(), perkId);
@@ -52,21 +77,7 @@ public class PerkMenu {
 
         // Crate button
         if (ca.thewalls.Crates.isEnabled()) {
-            ItemBuilder crate = new ItemBuilder(Material.ENDER_CHEST)
-                    .name(Utils.toLegacy(Utils.componentFromString(Config.crates.getString("crates.display.name", "Crate"))));
-            List<String> lore = Config.crates.getStringList("crates.display.lore");
-            if (!lore.isEmpty()) {
-                List<String> formatted = new ArrayList<>();
-                for (String line : lore) {
-                    formatted.add(Utils.toLegacy(Utils.componentFromString(line)));
-                }
-                crate = crate.lore(formatted);
-            }
-            if (!balanceText.isEmpty()) {
-                List<String> currentLore = new ArrayList<>(crate.build().getLore() == null ? java.util.Collections.emptyList() : crate.build().getLore());
-                currentLore.add(Utils.toLegacy(Messages.msg("menu.balance", java.util.Map.of("amount", balanceText))));
-                crate = crate.lore(currentLore);
-            }
+            ItemBuilder crate = Utils.guiItem("gui.items.perks_crate", Material.ENDER_CHEST, null);
             // show base cost in lore
             int[] range = ca.thewalls.Crates.getCostRange();
             if (range[0] > 0 || range[1] > 0) {
@@ -85,9 +96,14 @@ public class PerkMenu {
                 }
                 CrateConfirmMenu.open(plugin, player);
             });
-            menu.setButton(Math.min(size * 9 - 1, 8), crateButton);
+            int crateSlot = Utils.guiSlot("gui.slots.perks.crate", 8);
+            if (crateSlot >= 0 && crateSlot < maxSlots) {
+                menu.setButton(crateSlot, crateButton);
+                reserved.add(crateSlot);
+            }
         }
 
+        Utils.applyGuiFiller(menu);
         player.openInventory(menu.getInventory());
     }
 }

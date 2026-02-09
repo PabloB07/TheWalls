@@ -198,6 +198,136 @@ public class Config {
             if (!data.isSet("lobby.countdownSeconds")) {
                 data.set("lobby.countdownSeconds", 20);
             }
+            // gui
+            if (!data.isSet("gui.titles.default")) {
+                data.set("gui.titles.default", "<gray><bold>TheWalls</bold></gray>");
+                data.set("gui.titles.kit", "<gradient:#22d3ee:#a78bfa><bold>Kits</bold></gradient>");
+                data.set("gui.titles.perk", "<gradient:#a78bfa:#22d3ee><bold>Perks</bold></gradient>");
+                data.set("gui.titles.confirm", "<gradient:#22d3ee:#a78bfa><bold>Confirm</bold></gradient>");
+                data.set("gui.titles.crate_confirm", "<gradient:#f59e0b:#f97316><bold>Crate</bold></gradient>");
+                data.set("gui.titles.arena", "<gradient:#38bdf8:#a78bfa><bold>Select Arena</bold></gradient>");
+                data.set("gui.titles.team", "<gradient:#f472b6:#fb7185><bold>Select Team</bold></gradient>");
+                data.set("gui.titles.cosmetics", "<gradient:#f59e0b:#f97316><bold>Cosmetics</bold></gradient>");
+                data.set("gui.titles.trails", "<gradient:#06b6d4:#22d3ee><bold>Trails</bold></gradient>");
+                data.set("gui.titles.killeffects", "<gradient:#ef4444:#f97316><bold>Kill Effects</bold></gradient>");
+            }
+            if (!data.isSet("gui.rows.arenas")) {
+                data.set("gui.rows.arenas", 6);
+                data.set("gui.rows.kits", 6);
+                data.set("gui.rows.perks", 6);
+                data.set("gui.rows.cosmetics", 6);
+                data.set("gui.rows.trails", 6);
+                data.set("gui.rows.killeffects", 6);
+                data.set("gui.rows.team", 3);
+                data.set("gui.rows.confirm", 3);
+                data.set("gui.rows.crate_confirm", 3);
+            }
+            if (!data.isSet("gui.filler.enabled")) {
+                data.set("gui.filler.enabled", true);
+                data.set("gui.filler.material", "BLACK_STAINED_GLASS_PANE");
+                data.set("gui.filler.name", "<gray> </gray>");
+                data.set("gui.filler.lore", java.util.Collections.emptyList());
+            }
+            if (!data.isSet("gui.toolbar.enabled")) {
+                data.set("gui.toolbar.enabled", true);
+                data.set("gui.toolbar.prev.slot", 45);
+                data.set("gui.toolbar.prev.material", "ARROW");
+                data.set("gui.toolbar.prev.name", "<#94a3b8>Previous");
+                data.set("gui.toolbar.prev.lore", java.util.Collections.emptyList());
+                data.set("gui.toolbar.next.slot", 53);
+                data.set("gui.toolbar.next.material", "ARROW");
+                data.set("gui.toolbar.next.name", "<#94a3b8>Next");
+                data.set("gui.toolbar.next.lore", java.util.Collections.emptyList());
+                data.set("gui.toolbar.current.slot", 49);
+                data.set("gui.toolbar.current.material", "CLOCK");
+                data.set("gui.toolbar.current.name", "<#e2e8f0>Page <#38bdf8>{page}</#38bdf8>/<#38bdf8>{pages}</#38bdf8>");
+                data.set("gui.toolbar.current.lore", java.util.Collections.emptyList());
+                data.set("gui.toolbar.back.slot", 48);
+                data.set("gui.toolbar.back.material", "BARRIER");
+                data.set("gui.toolbar.back.name", "<#ef4444>Back");
+                data.set("gui.toolbar.back.lore", java.util.Collections.emptyList());
+                data.set("gui.toolbar.close.slot", 50);
+                data.set("gui.toolbar.close.material", "STRUCTURE_VOID");
+                data.set("gui.toolbar.close.name", "<#94a3b8>Close");
+                data.set("gui.toolbar.close.lore", java.util.Collections.emptyList());
+            }
+            if (!data.isSet("gui.slots.arenas.info")) {
+                data.set("gui.slots.arenas.info", 4);
+                data.set("gui.slots.arenas.refresh", 6);
+                data.set("gui.slots.kits.info", 4);
+                data.set("gui.slots.perks.info", 4);
+                data.set("gui.slots.perks.crate", 8);
+                data.set("gui.slots.perks.balance", 0);
+                data.set("gui.slots.cosmetics.info", 22);
+                data.set("gui.slots.cosmetics.balance", 0);
+                data.set("gui.slots.cosmetics.trails", 20);
+                data.set("gui.slots.cosmetics.killeffects", 24);
+                data.set("gui.slots.trails.info", 4);
+                data.set("gui.slots.killeffects.info", 4);
+                data.set("gui.slots.team.red", 10);
+                data.set("gui.slots.team.blue", 12);
+                data.set("gui.slots.team.yellow", 14);
+                data.set("gui.slots.team.green", 16);
+                data.set("gui.slots.confirm.accept", 11);
+                data.set("gui.slots.confirm.cancel", 15);
+                data.set("gui.slots.confirm.preview", 13);
+                data.set("gui.slots.crate_confirm.accept", 11);
+                data.set("gui.slots.crate_confirm.cancel", 15);
+                data.set("gui.slots.crate_confirm.preview", 13);
+            }
+            if (!data.isSet("gui.items.balance")) {
+                data.set("gui.items.balance.material", "GOLD_NUGGET");
+                data.set("gui.items.balance.name", "<#fbbf24>Balance: <#ffffff>{amount}");
+                data.set("gui.items.balance.lore", java.util.Collections.emptyList());
+                data.set("gui.items.kit_info.material", "BOOK");
+                data.set("gui.items.kit_info.name", "<#38bdf8>Choose Your Kit");
+                data.set("gui.items.kit_info.lore", java.util.List.of("<#94a3b8>Pick a kit before the game starts."));
+                data.set("gui.items.perk_info.material", "ENCHANTED_BOOK");
+                data.set("gui.items.perk_info.name", "<#a78bfa>Perks");
+                data.set("gui.items.perk_info.lore", java.util.List.of("<#94a3b8>Unlock perks permanently."));
+                data.set("gui.items.perks_crate.material", "ENDER_CHEST");
+                data.set("gui.items.perks_crate.name", "<#f59e0b>Open Crate");
+                data.set("gui.items.perks_crate.lore", java.util.List.of("<#94a3b8>Random perk or cosmetic."));
+                data.set("gui.items.cosmetics_info.material", "NAME_TAG");
+                data.set("gui.items.cosmetics_info.name", "<#f59e0b>Cosmetics");
+                data.set("gui.items.cosmetics_info.lore", java.util.List.of("<#94a3b8>Right-click to preview."));
+                data.set("gui.items.cosmetics_trails.material", "FIREWORK_STAR");
+                data.set("gui.items.cosmetics_trails.name", "<#38bdf8>Trails");
+                data.set("gui.items.cosmetics_trails.lore", java.util.List.of("<#94a3b8>Particles while moving."));
+                data.set("gui.items.cosmetics_killeffects.material", "NETHERITE_SWORD");
+                data.set("gui.items.cosmetics_killeffects.name", "<#ef4444>Kill Effects");
+                data.set("gui.items.cosmetics_killeffects.lore", java.util.List.of("<#94a3b8>Effects on kill."));
+                data.set("gui.items.arena_info.material", "COMPASS");
+                data.set("gui.items.arena_info.name", "<#38bdf8>Select Arena");
+                data.set("gui.items.arena_info.lore", java.util.Collections.emptyList());
+                data.set("gui.items.arena_refresh.material", "SPYGLASS");
+                data.set("gui.items.arena_refresh.name", "<#94a3b8>Refresh List");
+                data.set("gui.items.arena_refresh.lore", java.util.List.of("<#64748b>Click to update."));
+                data.set("gui.items.team_red.material", "RED_WOOL");
+                data.set("gui.items.team_red.name", "<#ff3b3b>Red Team");
+                data.set("gui.items.team_red.lore", java.util.List.of("<#94a3b8>Click to join."));
+                data.set("gui.items.team_blue.material", "BLUE_WOOL");
+                data.set("gui.items.team_blue.name", "<#3b6cff>Blue Team");
+                data.set("gui.items.team_blue.lore", java.util.List.of("<#94a3b8>Click to join."));
+                data.set("gui.items.team_yellow.material", "YELLOW_WOOL");
+                data.set("gui.items.team_yellow.name", "<#ffd23b>Yellow Team");
+                data.set("gui.items.team_yellow.lore", java.util.List.of("<#94a3b8>Click to join."));
+                data.set("gui.items.team_green.material", "GREEN_WOOL");
+                data.set("gui.items.team_green.name", "<#3bff6f>Green Team");
+                data.set("gui.items.team_green.lore", java.util.List.of("<#94a3b8>Click to join."));
+                data.set("gui.items.confirm_accept.material", "LIME_CONCRETE");
+                data.set("gui.items.confirm_accept.name", "<#22c55e>Confirm");
+                data.set("gui.items.confirm_accept.lore", java.util.Collections.emptyList());
+                data.set("gui.items.confirm_cancel.material", "RED_CONCRETE");
+                data.set("gui.items.confirm_cancel.name", "<#ef4444>Cancel");
+                data.set("gui.items.confirm_cancel.lore", java.util.Collections.emptyList());
+                data.set("gui.items.trails_info.material", "END_ROD");
+                data.set("gui.items.trails_info.name", "<#38bdf8>Trails");
+                data.set("gui.items.trails_info.lore", java.util.List.of("<#94a3b8>Right-click to preview."));
+                data.set("gui.items.killeffects_info.material", "NETHERITE_SWORD");
+                data.set("gui.items.killeffects_info.name", "<#ef4444>Kill Effects");
+                data.set("gui.items.killeffects_info.lore", java.util.List.of("<#94a3b8>Right-click to preview."));
+            }
             if (!data.isSet("lobby.endCooldownSeconds")) {
                 data.set("lobby.endCooldownSeconds", 10);
             }

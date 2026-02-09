@@ -420,6 +420,197 @@ economy:
   provider: "vault"
   currency: "VAULT"
 
+gui:
+  titles:
+    default: "<gradient:#0ea5e9:#22c55e><bold>TheWalls</bold></gradient>"
+    kit: "<gradient:#22d3ee:#a78bfa><bold>Kits</bold></gradient>"
+    kits: "<gradient:#22d3ee:#a78bfa><bold>Kits</bold></gradient>"
+    perk: "<gradient:#a78bfa:#22d3ee><bold>Perks</bold></gradient>"
+    perks: "<gradient:#a78bfa:#22d3ee><bold>Perks</bold></gradient>"
+    confirm: "<gradient:#22d3ee:#a78bfa><bold>Confirm Purchase</bold></gradient>"
+    crate_confirm: "<gradient:#f59e0b:#f97316><bold>Crate Roll</bold></gradient>"
+    arena: "<gradient:#38bdf8:#a78bfa><bold>Choose Arena</bold></gradient>"
+    team: "<gradient:#f472b6:#fb7185><bold>Pick Team</bold></gradient>"
+    cosmetics: "<gradient:#f59e0b:#f97316><bold>Cosmetics Hub</bold></gradient>"
+    crates: "<gradient:#f59e0b:#f97316><bold>Crates</bold></gradient>"
+    trails: "<gradient:#06b6d4:#22d3ee><bold>Trails</bold></gradient>"
+    killeffects: "<gradient:#ef4444:#f97316><bold>Kill Effects</bold></gradient>"
+  rows:
+    arenas: 6
+    kits: 6
+    perks: 6
+    cosmetics: 6
+    trails: 6
+    killeffects: 6
+    team: 3
+    confirm: 3
+    crate_confirm: 3
+  filler:
+    enabled: true
+    material: "GRAY_STAINED_GLASS_PANE"
+    name: "<#0f172a> </#0f172a>"
+    lore:
+      - "<#1f2937> "
+  toolbar:
+    enabled: true
+    prev:
+      slot: 45
+      material: "SPECTRAL_ARROW"
+      name: "<#cbd5f5>Previous"
+      lore:
+        - "<#64748b>Go back a page"
+    next:
+      slot: 53
+      material: "SPECTRAL_ARROW"
+      name: "<#cbd5f5>Next"
+      lore:
+        - "<#64748b>Go forward a page"
+    current:
+      slot: 49
+      material: "CLOCK"
+      name: "<#e2e8f0>Page <#38bdf8>{page}</#38bdf8>/<#38bdf8>{pages}</#38bdf8>"
+      lore:
+        - "<#64748b>Browse categories"
+    back:
+      slot: 48
+      material: "REPEATER"
+      name: "<#ef4444>Back"
+      lore:
+        - "<#64748b>Return to previous menu"
+    close:
+      slot: 50
+      material: "TRIPWIRE_HOOK"
+      name: "<#94a3b8>Close"
+      lore:
+        - "<#64748b>Exit menu"
+  slots:
+    arenas:
+      info: 4
+      refresh: 2
+    kits:
+      info: 2
+    perks:
+      info: 2
+      crate: 6
+      balance: 0
+    cosmetics:
+      info: 22
+      balance: 0
+      trails: 20
+      killeffects: 24
+    trails:
+      info: 2
+    killeffects:
+      info: 2
+    team:
+      red: 10
+      blue: 12
+      yellow: 14
+      green: 16
+    confirm:
+      accept: 11
+      cancel: 15
+      preview: 13
+    crate_confirm:
+      accept: 11
+      cancel: 15
+      preview: 13
+  items:
+    balance:
+      material: "SUNFLOWER"
+      name: "<#fbbf24>Balance</#fbbf24> <#ffffff>{amount}"
+      lore:
+        - "<#64748b>Spend to unlock perks"
+        - "<#64748b>and cosmetics"
+    kit_info:
+      material: "WRITABLE_BOOK"
+      name: "<#38bdf8>Choose Your Kit"
+      lore:
+        - "<#94a3b8>Pick a loadout to start."
+        - "<#94a3b8>Applied in lobby only."
+    perk_info:
+      material: "ENCHANTED_BOOK"
+      name: "<#a78bfa>Perks"
+      lore:
+        - "<#94a3b8>Unlock permanent boosts."
+        - "<#94a3b8>Use crates for a roll."
+    perks_crate:
+      material: "ENDER_CHEST"
+      name: "<#f59e0b>Open Crate"
+      lore:
+        - "<#94a3b8>Random perk or cosmetic"
+        - "<#64748b>Right-click to preview"
+    cosmetics_info:
+      material: "NAME_TAG"
+      name: "<#f59e0b>Cosmetics Hub"
+      lore:
+        - "<#94a3b8>Pick trails & kill effects"
+        - "<#64748b>Right-click to preview"
+    cosmetics_trails:
+      material: "FIREWORK_STAR"
+      name: "<#38bdf8>Trails"
+      lore:
+        - "<#94a3b8>Particles while moving"
+        - "<#64748b>Right-click to preview"
+    cosmetics_killeffects:
+      material: "NETHERITE_SWORD"
+      name: "<#ef4444>Kill Effects"
+      lore:
+        - "<#94a3b8>Effects on kill"
+        - "<#64748b>Right-click to preview"
+    arena_info:
+      material: "COMPASS"
+      name: "<#38bdf8>Select Arena"
+      lore:
+        - "<#94a3b8>Join a queue"
+    arena_refresh:
+      material: "RECOVERY_COMPASS"
+      name: "<#94a3b8>Refresh"
+      lore:
+        - "<#64748b>Update arena list"
+    team_red:
+      material: "RED_WOOL"
+      name: "<#ff3b3b>Red Team"
+      lore:
+        - "<#94a3b8>Click to join"
+    team_blue:
+      material: "BLUE_WOOL"
+      name: "<#3b6cff>Blue Team"
+      lore:
+        - "<#94a3b8>Click to join"
+    team_yellow:
+      material: "YELLOW_WOOL"
+      name: "<#ffd23b>Yellow Team"
+      lore:
+        - "<#94a3b8>Click to join"
+    team_green:
+      material: "GREEN_WOOL"
+      name: "<#3bff6f>Green Team"
+      lore:
+        - "<#94a3b8>Click to join"
+    confirm_accept:
+      material: "LIME_CONCRETE"
+      name: "<#22c55e>Confirm"
+      lore:
+        - "<#64748b>Spend and unlock"
+    confirm_cancel:
+      material: "RED_CONCRETE"
+      name: "<#ef4444>Cancel"
+      lore:
+        - "<#64748b>Go back"
+    trails_info:
+      material: "END_ROD"
+      name: "<#38bdf8>Trails"
+      lore:
+        - "<#94a3b8>Right-click to preview"
+        - "<#64748b>Sorted by rarity"
+    killeffects_info:
+      material: "NETHERITE_SWORD"
+      name: "<#ef4444>Kill Effects"
+      lore:
+        - "<#94a3b8>Right-click to preview"
+        - "<#64748b>Sorted by rarity"
+
 arenas:
   list: []
   settings:
