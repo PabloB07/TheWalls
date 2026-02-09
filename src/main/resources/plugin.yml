@@ -4,12 +4,12 @@ main: ca.thewalls.TheWalls
 api-version: 1.21
 authors: [ CKAY9 ]
 description: Play The Walls in any Minecraft world
-softdepend: [HologramLib, PacketEvents, Vault, Essentials]
+softdepend: [HologramLib, PacketEvents, Vault, Essentials, HeadDatabase]
 commands:
   walls:
     description: The Walls main command
     aliases: [w]
-    usage: /walls <start|end|forceteam|leaderboard|events|reload|list|join|leave|team|kits|perks|lobby|hub|sign|arena>
+    usage: /walls <start|end|forceteam|leaderboard|events|reload|list|join|leave|team|kits|perks|cosmetics|trail|killeffect|lobby|hub|sign|arena>
 permissions:
   thewalls.start:
     default: op
@@ -34,6 +34,26 @@ permissions:
   thewalls.walls.kits:
     default: true
   thewalls.walls.perks:
+    default: true
+  thewalls.walls.cosmetics:
+    default: true
+  thewalls.walls.trail:
+    default: true
+  thewalls.walls.killeffect:
+    default: true
+  thewalls.cosmetics.trail.red_dust:
+    default: true
+  thewalls.cosmetics.trail.blue_dust:
+    default: true
+  thewalls.cosmetics.trail.green_dust:
+    default: true
+  thewalls.cosmetics.trail.spark:
+    default: true
+  thewalls.cosmetics.killeffect.burst_red:
+    default: true
+  thewalls.cosmetics.killeffect.burst_gold:
+    default: true
+  thewalls.cosmetics.killeffect.shock:
     default: true
   thewalls.walls.lobby:
     default: op

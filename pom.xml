@@ -25,6 +25,8 @@
                 <version>3.11.0</version>
                 <configuration>
                     <release>${java.version}</release>
+                    <fork>true</fork>
+                    <useIncrementalCompilation>false</useIncrementalCompilation>
                 </configuration>
             </plugin>
             <plugin>
@@ -63,6 +65,10 @@
                                 <relocation>
                                     <pattern>com.samjakob.spigui</pattern>
                                     <shadedPattern>ca.thewalls.libs.spigui</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>hm.zelha.particlesfx</pattern>
+                                    <shadedPattern>ca.thewalls.libs.particlesfx</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -140,6 +146,17 @@
             <groupId>fr.traqueur.currencies</groupId>
             <artifactId>currenciesapi</artifactId>
             <version>1.0.11</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.hmzel</groupId>
+            <artifactId>particlesfx</artifactId>
+            <version>1.21.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.arcaniax</groupId>
+            <artifactId>HeadDatabase-API</artifactId>
+            <version>1.3.2</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

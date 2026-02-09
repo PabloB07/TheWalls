@@ -115,6 +115,276 @@ theWalls:
     speedOfBorderClose: 180
     worldName: "world"
 
+bounties:
+  enabled: true
+  minPlayers: 2
+  intervalSeconds: 120
+  rewardMin: 5
+  rewardMax: 15
+  showOnScoreboard: true
+  showBossBar: true
+  bossBarColor: "YELLOW"
+  bossBarStyle: "SOLID"
+
+antiabuse:
+  enabled: true
+  kills:
+    cooldownSeconds: 60
+
+reconnect:
+  enabled: true
+  graceSeconds: 45
+
+protections:
+  enabled: true
+  allowBuildInLobby: false
+  allowBuildInGame: true
+  allowInteractInLobby: false
+  allowInteractInGame: true
+  preventBlockExplosions: true
+  preventFireIgnite: true
+
+cosmetics:
+  previewSeconds: 3
+  filters:
+    enabled: true
+  sort:
+    enabled: true
+  trails:
+    enabled: true
+    default: "red_dust"
+    showInLobby: false
+    stepDistance: 0.6
+    list:
+      red_dust:
+        display:
+          name: "<#ff3b3b><bold>Red Dust</bold></#ff3b3b>"
+          lore:
+            - "<gray>Leaves a red trail</gray>"
+          rarity: "Common"
+          rarityColor: "<gray>"
+        permission: "thewalls.cosmetics.trail.red_dust"
+        cost: 0
+        shape: circle
+        radius: 0.5
+        points: 24
+        particle: DUST
+        color: "#ff3b3b"
+        count: 8
+        spread: 0.2
+        size: 1.0
+      blue_dust:
+        display:
+          name: "<#3b6cff><bold>Blue Dust</bold></#3b6cff>"
+          lore:
+            - "<gray>Cool blue trail</gray>"
+          rarity: "Uncommon"
+          rarityColor: "<green>"
+        permission: "thewalls.cosmetics.trail.blue_dust"
+        cost: 50
+        shape: circle_filled
+        radius: 0.55
+        points: 28
+        particle: DUST
+        color: "#3b6cff"
+        count: 8
+        spread: 0.2
+        size: 1.0
+      green_dust:
+        display:
+          name: "<#3bff6f><bold>Green Dust</bold></#3bff6f>"
+          lore:
+            - "<gray>Fresh green trail</gray>"
+          rarity: "Uncommon"
+          rarityColor: "<green>"
+        permission: "thewalls.cosmetics.trail.green_dust"
+        cost: 50
+        shape: circle
+        radius: 0.55
+        points: 28
+        particle: DUST
+        color: "#3bff6f"
+        count: 8
+        spread: 0.2
+        size: 1.0
+      spark:
+        display:
+          name: "<#f59e0b><bold>Sparks</bold></#f59e0b>"
+          lore:
+            - "<gray>Shiny spark trail</gray>"
+          rarity: "Rare"
+          rarityColor: "<aqua>"
+          material: PLAYER_HEAD
+          headDatabaseId: "7129"
+          headTextureUrl: "https://textures.minecraft.net/texture/6b8b7d3f5c1bda6b57ad2b2bb3d7e8b72b67e4f7f88f6c5e5d7a8f2b1c3d4e5f"
+        permission: "thewalls.cosmetics.trail.spark"
+        cost: 120
+        shape: star
+        radius: 0.8
+        points: 40
+        particle: END_ROD
+        count: 4
+        spread: 0.2
+        speed: 0.0
+      spiral_rose:
+        display:
+          name: "<#f472b6><bold>Spiral Rose</bold></#f472b6>"
+          lore:
+            - "<gray>Elegant spiral petals</gray>"
+          rarity: "Epic"
+          rarityColor: "<light_purple>"
+        permission: "thewalls.cosmetics.trail.spiral_rose"
+        cost: 180
+        shape: spiral
+        radius: 0.7
+        points: 48
+        spin: 0.35
+        particle: DUST
+        color: "#f472b6"
+        size: 1.1
+      donut_glow:
+        display:
+          name: "<#38bdf8><bold>Glow Donut</bold></#38bdf8>"
+          lore:
+            - "<gray>Floating halo</gray>"
+          rarity: "Legendary"
+          rarityColor: "<gold>"
+        permission: "thewalls.cosmetics.trail.donut_glow"
+        cost: 260
+        shape: donut
+        radius: 0.9
+        points: 60
+        particle: GLOW
+      heart_pulse:
+        display:
+          name: "<#ef4444><bold>Heart Pulse</bold></#ef4444>"
+          lore:
+            - "<gray>Warm heart trail</gray>"
+          rarity: "Rare"
+          rarityColor: "<aqua>"
+        permission: "thewalls.cosmetics.trail.heart_pulse"
+        cost: 140
+        shape: heart
+        radius: 0.9
+        points: 50
+        particle: DUST
+        color: "#ef4444"
+        size: 1.2
+      tornado_wind:
+        display:
+          name: "<#22d3ee><bold>Tornado</bold></#22d3ee>"
+          lore:
+            - "<gray>Spiraling wind</gray>"
+          rarity: "Legendary"
+          rarityColor: "<gold>"
+        permission: "thewalls.cosmetics.trail.tornado_wind"
+        cost: 320
+        shape: spiral
+        radius: 1.0
+        points: 70
+        spin: 0.5
+        particle: CLOUD
+  killEffects:
+    enabled: true
+    default: "burst_red"
+    list:
+      burst_red:
+        display:
+          name: "<#ff3b3b><bold>Red Burst</bold></#ff3b3b>"
+          lore:
+            - "<gray>Explosive red kill effect</gray>"
+          rarity: "Uncommon"
+          rarityColor: "<green>"
+        permission: "thewalls.cosmetics.killeffect.burst_red"
+        cost: 80
+        shape: sphere
+        radius: 1.2
+        points: 60
+        particle: DUST
+        color: "#ff3b3b"
+        count: 24
+        spread: 0.6
+        size: 1.5
+        sound: ENTITY_PLAYER_LEVELUP
+      burst_gold:
+        display:
+          name: "<#f59e0b><bold>Golden Burst</bold></#f59e0b>"
+          lore:
+            - "<gray>Golden celebration</gray>"
+          rarity: "Rare"
+          rarityColor: "<aqua>"
+        permission: "thewalls.cosmetics.killeffect.burst_gold"
+        cost: 150
+        shape: sphere
+        radius: 1.4
+        points: 70
+        particle: DUST
+        color: "#f59e0b"
+        count: 24
+        spread: 0.6
+        size: 1.5
+        sound: ENTITY_EXPERIENCE_ORB_PICKUP
+      shock:
+        display:
+          name: "<#38bdf8><bold>Shock</bold></#38bdf8>"
+          lore:
+            - "<gray>Electric shock</gray>"
+          rarity: "Epic"
+          rarityColor: "<light_purple>"
+        permission: "thewalls.cosmetics.killeffect.shock"
+        cost: 250
+        shape: line
+        height: 2.2
+        points: 40
+        particle: ELECTRIC_SPARK
+        count: 18
+        spread: 0.7
+        sound: ENTITY_ZOMBIE_VILLAGER_CURE
+      flower_bloom:
+        display:
+          name: "<#f59e0b><bold>Bloom</bold></#f59e0b>"
+          lore:
+            - "<gray>Radiant flower burst</gray>"
+          rarity: "Legendary"
+          rarityColor: "<gold>"
+        permission: "thewalls.cosmetics.killeffect.bloom"
+        cost: 300
+        shape: flower
+        radius: 1.3
+        petals: 7
+        points: 70
+        particle: DUST
+        color: "#f59e0b"
+        size: 1.6
+        sound: ENTITY_FIREWORK_ROCKET_BLAST
+      atom_burst:
+        display:
+          name: "<#8b5cf6><bold>Atom</bold></#8b5cf6>"
+          lore:
+            - "<gray>Quantum burst</gray>"
+          rarity: "Epic"
+          rarityColor: "<light_purple>"
+        permission: "thewalls.cosmetics.killeffect.atom"
+        cost: 220
+        shape: star
+        radius: 1.0
+        points: 60
+        particle: GLOW
+        sound: ENTITY_ENDER_EYE_DEATH
+      cup_fountain:
+        display:
+          name: "<#14b8a6><bold>Fountain</bold></#14b8a6>"
+          lore:
+            - "<gray>Rising splash</gray>"
+          rarity: "Rare"
+          rarityColor: "<aqua>"
+        permission: "thewalls.cosmetics.killeffect.fountain"
+        cost: 160
+        shape: line
+        height: 2.6
+        points: 55
+        particle: CLOUD
+        sound: ENTITY_PLAYER_SPLASH
 holograms:
   top:
     location:
@@ -156,12 +426,3 @@ arenas:
     example:
       maxPlayers: -1
       templateWorld: "mapa1"
-
-    name: "<gradient:#a78bfa:#22d3ee><bold>Lucky Crate</bold></gradient>"
-    lore:
-      - "<gray>Open to unlock a random perk</gray>"
-  rewards:
-    - perk: speed1
-      chance: 50
-    - perk: haste1
-      chance: 50

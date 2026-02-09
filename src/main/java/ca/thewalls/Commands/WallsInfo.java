@@ -60,11 +60,114 @@ public class WallsInfo implements CommandExecutor {
                     sender.sendMessage(Messages.msg("walls.only_player"));
                     return true;
                 }
-                if (!ca.thewalls.Config.data.getBoolean("crates.enabled", true)) {
+                if (!ca.thewalls.Crates.isEnabled()) {
                     sender.sendMessage(Messages.msg("walls.crate_disabled"));
                     return true;
                 }
                 ca.thewalls.Listeners.PerkMenu.open(walls, (Player) sender);
+                return true;
+            }
+            if (sub.equals("cosmetics")) {
+                return new WCosmetics(walls).onCommand(sender, command, label, slice(args, 1));
+            }
+            if (sub.equals("trail")) {
+                if (!sender.hasPermission("thewalls.walls.trail") && !sender.isOp()) {
+                    sender.sendMessage(Messages.msg("admin.no_permission"));
+                    return true;
+                }
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage(Messages.msg("walls.only_player"));
+                    return true;
+                }
+                if (args.length < 2) {
+                    sender.sendMessage(Messages.msg("walls.trail_usage"));
+                    return true;
+                }
+                String id = args[1].toLowerCase();
+                if (id.equals("off") || id.equals("none")) {
+                    ca.thewalls.Config.setPlayerTrail(((Player) sender).getUniqueId(), "");
+                    sender.sendMessage(Messages.msg("walls.trail_disabled"));
+                    return true;
+                }
+                if (!ca.thewalls.Cosmetics.isValidTrail(id)) {
+                    sender.sendMessage(Messages.msg("walls.trail_invalid"));
+                    return true;
+                }
+                if (!ca.thewalls.Cosmetics.hasTrailPermission((Player) sender, id) && !ca.thewalls.Cosmetics.isTrailUnlocked((Player) sender, id)) {
+                    int cost = ca.thewalls.Cosmetics.getTrailCost(id);
+                    if (cost > 0) {
+                        if (!ca.thewalls.EconomyService.isAvailable()) {
+                            sender.sendMessage(Messages.msg("walls.economy_missing"));
+                            return true;
+                        }
+                        double bal = ca.thewalls.EconomyService.getBalance((Player) sender);
+                        if (bal < cost) {
+                            sender.sendMessage(Messages.msg("walls.cosmetic_not_enough_money", java.util.Map.of("amount", String.valueOf(cost))));
+                            return true;
+                        }
+                        if (ca.thewalls.EconomyService.withdraw((Player) sender, cost)) {
+                            ca.thewalls.Cosmetics.unlockTrail((Player) sender, id);
+                            sender.sendMessage(Messages.msg("walls.cosmetic_unlocked", java.util.Map.of("item", id)));
+                        } else {
+                            sender.sendMessage(Messages.msg("walls.economy_missing"));
+                            return true;
+                        }
+                    } else {
+                        ca.thewalls.Cosmetics.unlockTrail((Player) sender, id);
+                    }
+                }
+                ca.thewalls.Config.setPlayerTrail(((Player) sender).getUniqueId(), id);
+                sender.sendMessage(Messages.msg("walls.trail_set", java.util.Map.of("trail", id)));
+                return true;
+            }
+            if (sub.equals("killeffect")) {
+                if (!sender.hasPermission("thewalls.walls.killeffect") && !sender.isOp()) {
+                    sender.sendMessage(Messages.msg("admin.no_permission"));
+                    return true;
+                }
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage(Messages.msg("walls.only_player"));
+                    return true;
+                }
+                if (args.length < 2) {
+                    sender.sendMessage(Messages.msg("walls.killeffect_usage"));
+                    return true;
+                }
+                String id = args[1].toLowerCase();
+                if (id.equals("off") || id.equals("none")) {
+                    ca.thewalls.Config.setPlayerKillEffect(((Player) sender).getUniqueId(), "");
+                    sender.sendMessage(Messages.msg("walls.killeffect_disabled"));
+                    return true;
+                }
+                if (!ca.thewalls.Cosmetics.isValidKillEffect(id)) {
+                    sender.sendMessage(Messages.msg("walls.killeffect_invalid"));
+                    return true;
+                }
+                if (!ca.thewalls.Cosmetics.hasKillEffectPermission((Player) sender, id) && !ca.thewalls.Cosmetics.isKillEffectUnlocked((Player) sender, id)) {
+                    int cost = ca.thewalls.Cosmetics.getKillEffectCost(id);
+                    if (cost > 0) {
+                        if (!ca.thewalls.EconomyService.isAvailable()) {
+                            sender.sendMessage(Messages.msg("walls.economy_missing"));
+                            return true;
+                        }
+                        double bal = ca.thewalls.EconomyService.getBalance((Player) sender);
+                        if (bal < cost) {
+                            sender.sendMessage(Messages.msg("walls.cosmetic_not_enough_money", java.util.Map.of("amount", String.valueOf(cost))));
+                            return true;
+                        }
+                        if (ca.thewalls.EconomyService.withdraw((Player) sender, cost)) {
+                            ca.thewalls.Cosmetics.unlockKillEffect((Player) sender, id);
+                            sender.sendMessage(Messages.msg("walls.cosmetic_unlocked", java.util.Map.of("item", id)));
+                        } else {
+                            sender.sendMessage(Messages.msg("walls.economy_missing"));
+                            return true;
+                        }
+                    } else {
+                        ca.thewalls.Cosmetics.unlockKillEffect((Player) sender, id);
+                    }
+                }
+                ca.thewalls.Config.setPlayerKillEffect(((Player) sender).getUniqueId(), id);
+                sender.sendMessage(Messages.msg("walls.killeffect_set", java.util.Map.of("effect", id)));
                 return true;
             }
             if (sub.equals("reload")) {

@@ -12,15 +12,30 @@ crates:
       - "<gray>Open to unlock a random perk</gray>"
       - "<dark_gray>Higher tier perks cost more</dark_gray>"
   rewards:
-    - perk: speed1
+    - type: perk
+      id: speed1
       chance: 22
-    - perk: haste1
+    - type: perk
+      id: haste1
       chance: 20
-    - perk: tank1
+    - type: perk
+      id: tank1
       chance: 16
-    - perk: runner1
+    - type: perk
+      id: runner1
       chance: 14
-    - perk: miner1
+    - type: perk
+      id: miner1
       chance: 14
-    - perk: berserk1
+    - type: perk
+      id: berserk1
       chance: 14
+    - type: trail
+      id: spiral_rose
+      chance: 6
+    - type: trail
+      id: donut_glow
+      chance: 4
+    - type: killeffect
+      id: bloom
+      chance: 4

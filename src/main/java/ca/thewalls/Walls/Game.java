@@ -92,6 +92,8 @@ class Loop implements Runnable {
             board.updateLines(lines);
         }
 
+        game.getBounty().tick();
+        game.updateBountyBar();
         game.time++;
         if (game.wallsFallen) {
             if (game.events.size() >= 1) {
@@ -108,9 +110,11 @@ class Loop implements Runnable {
 public class Game {
 
     Arena arena;
+    private final ca.thewalls.BountyManager bounty;
 
     public Game(Arena arena) {
         this.arena = arena;
+        this.bounty = new ca.thewalls.BountyManager(arena);
     }
 
     public boolean started = false;
@@ -134,6 +138,7 @@ public class Game {
     private final Map<UUID, FastBoard> boards = new HashMap<>();
     private final Map<UUID, org.bukkit.scoreboard.Scoreboard> tablistRestore = new HashMap<>();
     private final Map<UUID, Location> lastDeathLocations = new HashMap<>();
+    private org.bukkit.boss.BossBar bountyBar;
 
     public void ensureBoard(Player player) {
         if (boards.containsKey(player.getUniqueId())) return;
@@ -208,6 +213,14 @@ public class Game {
                 "team", myTeamName,
                 "kills", String.valueOf(myKills)
         )));
+
+        if (Config.data.getBoolean("bounties.showOnScoreboard", true) && bounty.getTarget() != null) {
+            Player target = Bukkit.getPlayer(bounty.getTarget());
+            String name = target != null ? target.getName() : "???";
+            lines.add(Messages.msg("scoreboard.game_bounty_header"));
+            lines.add(Messages.msg("scoreboard.game_bounty_target", java.util.Map.of("player", name)));
+            lines.add(Messages.msg("scoreboard.game_bounty_reward", java.util.Map.of("amount", String.valueOf(bounty.getReward()))));
+        }
 
         lines.add(Messages.msg("scoreboard.game_teams"));
         for (Team t : teams) {
@@ -540,6 +553,8 @@ public class Game {
             )));
         }
         clearBoards();
+        removeBountyBar();
+        bounty.clear();
         events.clear();
         teams.clear();
         aliveTeams.clear();
@@ -608,5 +623,60 @@ public class Game {
         for (Player p : players) {
             disableTablistHeartsForPlayer(p);
         }
+    }
+
+    private void ensureBountyBar() {
+        if (!Config.data.getBoolean("bounties.showBossBar", true)) return;
+        if (bountyBar != null) return;
+        try {
+            org.bukkit.boss.BarColor color = org.bukkit.boss.BarColor.valueOf(
+                    Config.data.getString("bounties.bossBarColor", "YELLOW").toUpperCase()
+            );
+            org.bukkit.boss.BarStyle style = org.bukkit.boss.BarStyle.valueOf(
+                    Config.data.getString("bounties.bossBarStyle", "SOLID").toUpperCase()
+            );
+            bountyBar = org.bukkit.Bukkit.createBossBar("", color, style);
+        } catch (Exception ex) {
+            bountyBar = org.bukkit.Bukkit.createBossBar("", org.bukkit.boss.BarColor.YELLOW, org.bukkit.boss.BarStyle.SOLID);
+        }
+    }
+
+    private void removeBountyBar() {
+        if (bountyBar == null) return;
+        bountyBar.removeAll();
+        bountyBar = null;
+    }
+
+    void updateBountyBar() {
+        if (!Config.data.getBoolean("bounties.showBossBar", true)) {
+            removeBountyBar();
+            return;
+        }
+        ensureBountyBar();
+        if (bountyBar == null) return;
+        if (bounty.getTarget() == null) {
+            bountyBar.removeAll();
+            return;
+        }
+        Player target = org.bukkit.Bukkit.getPlayer(bounty.getTarget());
+        String name = target != null ? target.getName() : "???";
+        String title = Utils.toLegacy(Utils.componentFromString(Messages.raw("bounty.bossbar", java.util.Map.of(
+                "target", name,
+                "amount", String.valueOf(bounty.getReward())
+        ))));
+        bountyBar.setTitle(title);
+        int interval = bounty.getIntervalSeconds();
+        int remaining = bounty.getRemainingSeconds();
+        double progress = interval <= 0 ? 1.0 : Math.min(1.0, Math.max(0.0, remaining / (double) interval));
+        bountyBar.setProgress(progress);
+        for (Player p : this.arena.getPlayers()) {
+            if (!bountyBar.getPlayers().contains(p)) {
+                bountyBar.addPlayer(p);
+            }
+        }
+    }
+
+    public ca.thewalls.BountyManager getBounty() {
+        return bounty;
     }
 }

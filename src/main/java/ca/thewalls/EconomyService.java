@@ -78,6 +78,23 @@ public final class EconomyService {
         return eco.withdrawPlayer(player, amount).transactionSuccess();
     }
 
+    public static boolean deposit(Player player, double amount) {
+        if (player == null) return false;
+        if (provider.equals("currenciesapi")) {
+            if (!currencyAvailable || currency == null) return false;
+            try {
+                currency.deposit(player, BigDecimal.valueOf(amount));
+                return true;
+            } catch (Throwable ex) {
+                currencyAvailable = false;
+                return false;
+            }
+        }
+        Economy eco = EconomyHook.getEconomy();
+        if (eco == null) return false;
+        return eco.depositPlayer(player, amount).transactionSuccess();
+    }
+
     public static String format(double amount) {
         if (provider.equals("currenciesapi")) {
             if (!currencyAvailable || currency == null) {

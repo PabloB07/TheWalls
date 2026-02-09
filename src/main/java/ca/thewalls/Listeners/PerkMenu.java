@@ -25,7 +25,7 @@ public class PerkMenu {
             double balance = ca.thewalls.EconomyService.getBalance(player);
             balanceText = Perks.getCurrencySymbol() + ca.thewalls.EconomyService.format(balance);
         }
-        String title = Utils.menuTitle("menu.perk_title", "Perks");
+        String title = Utils.menuTitle("menu.perk_title", null);
         SGMenu menu = plugin.spigui.create("thewalls-perks", size, title);
 
         int slot = 0;
@@ -51,7 +51,7 @@ public class PerkMenu {
         }
 
         // Crate button
-        if (Config.crates != null && Config.crates.getBoolean("crates.enabled", true)) {
+        if (ca.thewalls.Crates.isEnabled()) {
             ItemBuilder crate = new ItemBuilder(Material.ENDER_CHEST)
                     .name(Utils.toLegacy(Utils.componentFromString(Config.crates.getString("crates.display.name", "Crate"))));
             List<String> lore = Config.crates.getStringList("crates.display.lore");
@@ -68,11 +68,11 @@ public class PerkMenu {
                 crate = crate.lore(currentLore);
             }
             // show base cost in lore
-            int[] range = Perks.getCostRange();
+            int[] range = ca.thewalls.Crates.getCostRange();
             if (range[0] > 0 || range[1] > 0) {
                 String amount = (range[0] == range[1])
-                        ? (Perks.getCurrencySymbol() + range[0])
-                        : (Perks.getCurrencySymbol() + range[0] + "-" + Perks.getCurrencySymbol() + range[1]);
+                        ? (ca.thewalls.Crates.getCurrencySymbol() + range[0])
+                        : (ca.thewalls.Crates.getCurrencySymbol() + range[0] + "-" + ca.thewalls.Crates.getCurrencySymbol() + range[1]);
                 List<String> currentLore = new ArrayList<>(crate.build().getLore() == null ? java.util.Collections.emptyList() : crate.build().getLore());
                 currentLore.add(Utils.toLegacy(Messages.msg("menu.crate_cost", java.util.Map.of("amount", amount))));
                 crate = crate.lore(currentLore);
@@ -83,7 +83,7 @@ public class PerkMenu {
                     player.sendMessage(Messages.msg("walls.economy_missing"));
                     return;
                 }
-                PerkConfirmMenu.open(plugin, player, null, 0.0);
+                CrateConfirmMenu.open(plugin, player);
             });
             menu.setButton(Math.min(size * 9 - 1, 8), crateButton);
         }

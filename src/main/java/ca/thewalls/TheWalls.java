@@ -10,6 +10,7 @@ public final class TheWalls extends JavaPlugin {
     public ArenaManager arenas;
     public com.samjakob.spigui.SpiGUI spigui;
     public TopHolograms topHolograms;
+    public ReconnectManager reconnects;
 
     @Override
     public void onEnable() {
@@ -20,7 +21,9 @@ public final class TheWalls extends JavaPlugin {
         ca.thewalls.Kits.validateAll();
         // No special init needed for copy-based reset
         spigui = new com.samjakob.spigui.SpiGUI(this);
+        hm.zelha.particlesfx.util.ParticleSFX.setPlugin(this);
         arenas = new ArenaManager(this);
+        reconnects = new ReconnectManager(this);
         // No default arena: all arenas are explicit and created via config/commands.
         EconomyService.setup();
 
@@ -43,6 +46,9 @@ public final class TheWalls extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new JoinSign(this), this);
         this.getServer().getPluginManager().registerEvents(new LobbyProtection(this), this);
         this.getServer().getPluginManager().registerEvents(new LobbyItemsListener(this), this);
+        this.getServer().getPluginManager().registerEvents(new ArenaProtection(this), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerTrail(this), this);
+        this.getServer().getPluginManager().registerEvents(new HeadDatabaseHook(this), this);
 
         // Lobby tick: update lobby boards
         this.getServer().getScheduler().runTaskTimer(this, () -> {

@@ -19,7 +19,7 @@ public class ArenaSelectMenu {
     public static void open(TheWalls plugin, Player player) {
         List<Arena> arenas = new ArrayList<>(plugin.arenas.getArenas().values());
         int size = Math.max(1, ((arenas.size() - 1) / 9) + 1);
-        SGMenu menu = plugin.spigui.create("thewalls-arenas", size, Utils.menuTitle("menu.arena_title", "Arenas"));
+        SGMenu menu = plugin.spigui.create("thewalls-arenas", size, Utils.menuTitle("menu.arena_title", null));
 
         int slot = 0;
         for (Arena arena : arenas) {

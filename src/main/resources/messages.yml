@@ -81,6 +81,9 @@ scoreboard:
   game_teams: "<#22d3ee><bold>Teams</bold></#22d3ee>"
   game_team_alive: "{team} <dark_gray>•</dark_gray> <green>{alive}</green>"
   game_team_dead: "{team} <dark_gray>•</dark_gray> <red>DEAD</red>"
+  game_bounty_header: "<gold><bold>Bounty</bold></gold>"
+  game_bounty_target: "<gray>Target</gray> <white>{player}</white>"
+  game_bounty_reward: "<gray>Reward</gray> <green>{amount}</green>"
 hologram:
   top:
     title: "<gold><bold>TOP</bold></gold>"
@@ -118,6 +121,18 @@ walls:
   forceteam_usage: "<gray>Use:</gray> <green>/walls forceteam <player> <team> [arena]</green>"
   kits_usage: "<gray>Use:</gray> <green>/walls kits</green>"
   perks_usage: "<gray>Use:</gray> <green>/walls perks</green>"
+  cosmetics_usage: "<gray>Use:</gray> <green>/walls cosmetics</green>"
+  trail_usage: "<gray>Use:</gray> <green>/walls trail <id|off></green>"
+  trail_set: "<green>Trail set to:</green> <yellow>{trail}</yellow>"
+  trail_disabled: "<yellow>Trail disabled.</yellow>"
+  trail_invalid: "<red>Unknown trail.</red>"
+  killeffect_usage: "<gray>Use:</gray> <green>/walls killeffect <id|off></green>"
+  killeffect_set: "<green>Kill effect set to:</green> <yellow>{effect}</yellow>"
+  killeffect_disabled: "<yellow>Kill effect disabled.</yellow>"
+  killeffect_invalid: "<red>Unknown kill effect.</red>"
+  cosmetic_no_permission: "<red>You don't have access to this cosmetic.</red>"
+  cosmetic_not_enough_money: "<red>Not enough money. Cost: {amount}</red>"
+  cosmetic_unlocked: "<green>Unlocked cosmetic:</green> <yellow>{item}</yellow>"
   kit_selected: "<green>Kit selected:</green> <yellow>{kit}</yellow>"
   perk_unlocked: "<green>Unlocked perk:</green> <yellow>{perk}</yellow>"
   perk_already: "<yellow>You already own that perk.</yellow>"
@@ -127,6 +142,20 @@ walls:
   money_taken: "<gray>Cost:</gray> <yellow>{amount}</yellow>"
   crate_cost: "<gray>Cost:</gray> <yellow>{amount}</yellow>"
   no_perks: "<gray>No perks available.</gray>"
+
+bounty:
+  new: "<gold>Bounty:</gold> <yellow>{target}</yellow> <gray>for</gray> <green>{amount}</green>"
+  claimed: "<gold>Bounty claimed!</gold> <yellow>{killer}</yellow> <gray>eliminated</gray> <red>{target}</red> <gray>for</gray> <green>{amount}</green>"
+  no_economy: "<red>Economy not available. Reward skipped.</red>"
+  bossbar: "<gold>Bounty:</gold> <yellow>{target}</yellow> <gray>•</gray> <green>{amount}</green>"
+
+crate:
+  no_rewards: "<red>No rewards available.</red>"
+  already_owned: "<yellow>You already own this reward.</yellow>"
+  reward_unlocked: "<green>Unlocked:</green> <yellow>{name}</yellow>"
+
+antiabuse:
+  kill_ignored: "<red>Kill not rewarded (anti-abuse).</red>"
 hub:
   usage: "<gray>Use:</gray> <green>/walls hub <set|tp|off></green>"
   set: "<green>Hub set.</green>"
@@ -134,6 +163,26 @@ hub:
   disabled: "<yellow>Hub disabled.</yellow>"
   no_hub: "<red>No hub set.</red>"
 menu:
+  default_title: "<gray><bold>Menu</bold></gray>"
+  cosmetics_title: "<gradient:#f59e0b:#f97316><bold>Cosmetics</bold></gradient>"
+  cosmetics_trails: "<aqua><bold>Trails</bold></aqua>"
+  cosmetics_killeffects: "<red><bold>Kill Effects</bold></red>"
+  trails_title: "<aqua><bold>Trails</bold></aqua>"
+  killeffects_title: "<red><bold>Kill Effects</bold></red>"
+  cosmetics_cost: "<gray>Cost:</gray> <yellow>{amount}</yellow>"
+  cosmetics_owned: "<green>Owned</green>"
+  cosmetics_locked: "<red>Locked</red>"
+  cosmetics_preview: "<gray>Previewed.</gray> <dark_gray>(Right click)</dark_gray>"
+  cosmetics_rarity: "<gray>Rarity:</gray> {rarity}"
+  cosmetics_preview_bar: "<light_purple>Preview:</light_purple> {name}"
+  cosmetics_filter_all: "<white>All</white>"
+  cosmetics_filter_common: "<gray>Common</gray>"
+  cosmetics_filter_uncommon: "<green>Uncommon</green>"
+  cosmetics_filter_rare: "<aqua>Rare</aqua>"
+  cosmetics_filter_epic: "<light_purple>Epic</light_purple>"
+  cosmetics_filter_legendary: "<gold>Legendary</gold>"
+  cosmetics_headdb: "<dark_gray>Heads:</dark_gray> <gray>{id}</gray>"
+  cosmetics_headdb_missing: "<red>HeadDB missing</red> <gray>({id})</gray>"
   arena_title: "<gradient:#38bdf8:#a78bfa><bold>Select Arena</bold></gradient>"
   arena_item: "<yellow>{arena}</yellow>"
   arena_lore:

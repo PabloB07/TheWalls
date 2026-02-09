@@ -34,6 +34,9 @@ public class WallsCompleter implements TabCompleter {
             addIfPerm(sender, completions, "team", "thewalls.walls.team");
             addIfPerm(sender, completions, "kits", "thewalls.walls.kits");
             addIfPerm(sender, completions, "perks", "thewalls.walls.perks");
+            addIfPerm(sender, completions, "cosmetics", "thewalls.walls.cosmetics");
+            addIfPerm(sender, completions, "trail", "thewalls.walls.trail");
+            addIfPerm(sender, completions, "killeffect", "thewalls.walls.killeffect");
             addIfPerm(sender, completions, "lobby", "thewalls.walls.lobby");
             addIfPerm(sender, completions, "hub", "thewalls.walls.hub");
             addIfPerm(sender, completions, "sign", "thewalls.walls.sign");
@@ -86,6 +89,16 @@ public class WallsCompleter implements TabCompleter {
             }
             if (sub.equals("team")) {
                 completions.addAll(teamNames());
+                return StringUtil.copyPartialMatches(args[1], completions, new ArrayList<>());
+            }
+            if (sub.equals("trail")) {
+                completions.add("off");
+                completions.addAll(trailIds());
+                return StringUtil.copyPartialMatches(args[1], completions, new ArrayList<>());
+            }
+            if (sub.equals("killeffect")) {
+                completions.add("off");
+                completions.addAll(killEffectIds());
                 return StringUtil.copyPartialMatches(args[1], completions, new ArrayList<>());
             }
         }
@@ -154,4 +167,19 @@ public class WallsCompleter implements TabCompleter {
         if (t3 != null) names.add(t3.toLowerCase());
         return names;
     }
+
+    private List<String> trailIds() {
+        if (Config.data == null) return java.util.Collections.emptyList();
+        org.bukkit.configuration.ConfigurationSection sec = Config.data.getConfigurationSection("cosmetics.trails.list");
+        if (sec == null) return java.util.Collections.emptyList();
+        return new java.util.ArrayList<>(sec.getKeys(false));
+    }
+
+    private List<String> killEffectIds() {
+        if (Config.data == null) return java.util.Collections.emptyList();
+        org.bukkit.configuration.ConfigurationSection sec = Config.data.getConfigurationSection("cosmetics.killEffects.list");
+        if (sec == null) return java.util.Collections.emptyList();
+        return new java.util.ArrayList<>(sec.getKeys(false));
+    }
+
 }

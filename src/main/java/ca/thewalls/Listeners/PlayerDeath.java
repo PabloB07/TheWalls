@@ -54,9 +54,16 @@ public class PlayerDeath implements Listener {
         arena.getGame().disableTablistHeartsForPlayer(ply);
 
         if (e.getEntity().getKiller() != null) {
-            ca.thewalls.Config.incrementKills(e.getEntity().getKiller().getUniqueId());
-            if (walls.topHolograms != null) {
-                walls.topHolograms.refresh();
+            Player killer = e.getEntity().getKiller();
+            if (ca.thewalls.AntiAbuse.isKillRewardAllowed(killer, ply)) {
+                ca.thewalls.Config.incrementKills(killer.getUniqueId());
+                if (walls.topHolograms != null) {
+                    walls.topHolograms.refresh();
+                }
+                arena.getGame().getBounty().handleKill(killer, ply);
+                ca.thewalls.Cosmetics.playKillEffect(killer, ply.getLocation());
+            } else {
+                killer.sendMessage(Messages.msg("antiabuse.kill_ignored"));
             }
         }
 

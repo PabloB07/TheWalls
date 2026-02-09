@@ -110,7 +110,12 @@ public class Utils {
     public static String menuTitle(String key, String fallback) {
         String raw = Messages.raw(key);
         if (raw == null || raw.equals(key) || raw.isEmpty()) {
-            raw = fallback == null ? "Menu" : fallback;
+            if (fallback != null && !fallback.isEmpty()) {
+                raw = fallback;
+            } else {
+                String def = Messages.raw("menu.default_title");
+                raw = (def == null || def.equals("menu.default_title") || def.isEmpty()) ? "Menu" : def;
+            }
         }
         String legacy = toLegacy(componentFromString(raw));
         if (legacy.length() <= 32) return legacy;

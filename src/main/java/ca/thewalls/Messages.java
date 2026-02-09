@@ -21,11 +21,24 @@ public class Messages {
             plugin.saveResource("messages.yml", false);
         }
         reload();
+        applyDefaults(plugin);
     }
 
     public static void reload() {
         if (file == null) return;
         data = YamlConfiguration.loadConfiguration(file);
+    }
+
+    public static void applyDefaults(JavaPlugin plugin) {
+        try (java.io.InputStream in = plugin.getResource("messages.yml")) {
+            if (in == null || data == null) return;
+            java.io.InputStreamReader reader = new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8);
+            YamlConfiguration defaults = YamlConfiguration.loadConfiguration(reader);
+            data.setDefaults(defaults);
+            data.options().copyDefaults(true);
+            data.save(file);
+        } catch (Exception ignored) {
+        }
     }
 
     public static Component msg(String key) {

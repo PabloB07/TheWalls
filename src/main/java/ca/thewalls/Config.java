@@ -223,6 +223,114 @@ public class Config {
             if (!data.isSet("economy.currency")) {
                 data.set("economy.currency", "VAULT");
             }
+            if (!data.isSet("bounties.enabled")) {
+                data.set("bounties.enabled", true);
+            }
+            if (!data.isSet("bounties.minPlayers")) {
+                data.set("bounties.minPlayers", 2);
+            }
+            if (!data.isSet("bounties.intervalSeconds")) {
+                data.set("bounties.intervalSeconds", 120);
+            }
+            if (!data.isSet("bounties.rewardMin")) {
+                data.set("bounties.rewardMin", 5);
+            }
+            if (!data.isSet("bounties.rewardMax")) {
+                data.set("bounties.rewardMax", 15);
+            }
+            if (!data.isSet("bounties.showOnScoreboard")) {
+                data.set("bounties.showOnScoreboard", true);
+            }
+            if (!data.isSet("bounties.showBossBar")) {
+                data.set("bounties.showBossBar", true);
+            }
+            if (!data.isSet("bounties.bossBarColor")) {
+                data.set("bounties.bossBarColor", "YELLOW");
+            }
+            if (!data.isSet("bounties.bossBarStyle")) {
+                data.set("bounties.bossBarStyle", "SOLID");
+            }
+            if (!data.isSet("antiabuse.enabled")) {
+                data.set("antiabuse.enabled", true);
+            }
+            if (!data.isSet("antiabuse.kills.cooldownSeconds")) {
+                data.set("antiabuse.kills.cooldownSeconds", 60);
+            }
+            if (!data.isSet("reconnect.enabled")) {
+                data.set("reconnect.enabled", true);
+            }
+            if (!data.isSet("reconnect.graceSeconds")) {
+                data.set("reconnect.graceSeconds", 45);
+            }
+            if (!data.isSet("protections.enabled")) {
+                data.set("protections.enabled", true);
+            }
+            if (!data.isSet("protections.allowBuildInLobby")) {
+                data.set("protections.allowBuildInLobby", false);
+            }
+            if (!data.isSet("protections.allowBuildInGame")) {
+                data.set("protections.allowBuildInGame", true);
+            }
+            if (!data.isSet("protections.allowInteractInLobby")) {
+                data.set("protections.allowInteractInLobby", false);
+            }
+            if (!data.isSet("protections.allowInteractInGame")) {
+                data.set("protections.allowInteractInGame", true);
+            }
+            if (!data.isSet("protections.preventBlockExplosions")) {
+                data.set("protections.preventBlockExplosions", true);
+            }
+            if (!data.isSet("protections.preventFireIgnite")) {
+                data.set("protections.preventFireIgnite", true);
+            }
+            if (!data.isSet("cosmetics.trails.enabled")) {
+                data.set("cosmetics.trails.enabled", true);
+            }
+            if (!data.isSet("cosmetics.trails.default")) {
+                data.set("cosmetics.trails.default", "red_dust");
+            }
+            if (!data.isSet("cosmetics.trails.showInLobby")) {
+                data.set("cosmetics.trails.showInLobby", false);
+            }
+            if (!data.isSet("cosmetics.trails.stepDistance")) {
+                data.set("cosmetics.trails.stepDistance", 0.6);
+            }
+            if (!data.isSet("cosmetics.killEffects.enabled")) {
+                data.set("cosmetics.killEffects.enabled", true);
+            }
+            if (!data.isSet("cosmetics.killEffects.default")) {
+                data.set("cosmetics.killEffects.default", "burst_red");
+            }
+            if (!data.isSet("cosmetics.previewSeconds")) {
+                data.set("cosmetics.previewSeconds", 3);
+            }
+            if (!data.isSet("cosmetics.filters.enabled")) {
+                data.set("cosmetics.filters.enabled", true);
+            }
+            if (!data.isSet("cosmetics.sort.enabled")) {
+                data.set("cosmetics.sort.enabled", true);
+            }
+            if (!data.isSet("cosmetics.trails.list.red_dust")) {
+                data.set("cosmetics.trails.list.red_dust.particle", "DUST");
+                data.set("cosmetics.trails.list.red_dust.color", "#ff3b3b");
+                data.set("cosmetics.trails.list.red_dust.count", 8);
+                data.set("cosmetics.trails.list.red_dust.spread", 0.2);
+                data.set("cosmetics.trails.list.red_dust.size", 1.0);
+                data.set("cosmetics.trails.list.red_dust.permission", "thewalls.cosmetics.trail.red_dust");
+                data.set("cosmetics.trails.list.red_dust.display.name", "<#ff3b3b><bold>Red Dust</bold></#ff3b3b>");
+                data.set("cosmetics.trails.list.red_dust.display.lore", java.util.List.of("<gray>Leaves a red trail</gray>"));
+            }
+            if (!data.isSet("cosmetics.killEffects.list.burst_red")) {
+                data.set("cosmetics.killEffects.list.burst_red.particle", "DUST");
+                data.set("cosmetics.killEffects.list.burst_red.color", "#ff3b3b");
+                data.set("cosmetics.killEffects.list.burst_red.count", 24);
+                data.set("cosmetics.killEffects.list.burst_red.spread", 0.6);
+                data.set("cosmetics.killEffects.list.burst_red.size", 1.5);
+                data.set("cosmetics.killEffects.list.burst_red.sound", "ENTITY_PLAYER_LEVELUP");
+                data.set("cosmetics.killEffects.list.burst_red.permission", "thewalls.cosmetics.killeffect.burst_red");
+                data.set("cosmetics.killEffects.list.burst_red.display.name", "<#ff3b3b><bold>Red Burst</bold></#ff3b3b>");
+                data.set("cosmetics.killEffects.list.burst_red.display.lore", java.util.List.of("<gray>Explosive red kill effect</gray>"));
+            }
             if (!data.isSet("events.bossMan.enabled")) {
                 data.set("events.bossMan.enabled", true);
                 data.set("events.bossMan.prepTime", 3);
@@ -586,6 +694,75 @@ public class Config {
             data.save(dataFile);
         } catch (IOException ex) {
             Utils.getPlugin().getLogger().warning(ex.toString());
+        }
+    }
+
+    public static String getPlayerTrail(java.util.UUID uuid) {
+        if (uuid == null || data == null) return "";
+        return data.getString("players." + uuid + ".cosmetics.trail", "");
+    }
+
+    public static void setPlayerTrail(java.util.UUID uuid, String trailId) {
+        if (uuid == null || data == null) return;
+        String key = "players." + uuid + ".cosmetics.trail";
+        data.set(key, trailId == null || trailId.isEmpty() ? null : trailId);
+        try {
+            data.save(dataFile);
+        } catch (IOException ex) {
+            Utils.getPlugin().getLogger().warning(ex.toString());
+        }
+    }
+
+    public static String getPlayerKillEffect(java.util.UUID uuid) {
+        if (uuid == null || data == null) return "";
+        return data.getString("players." + uuid + ".cosmetics.killEffect", "");
+    }
+
+    public static void setPlayerKillEffect(java.util.UUID uuid, String effectId) {
+        if (uuid == null || data == null) return;
+        String key = "players." + uuid + ".cosmetics.killEffect";
+        data.set(key, effectId == null || effectId.isEmpty() ? null : effectId);
+        try {
+            data.save(dataFile);
+        } catch (IOException ex) {
+            Utils.getPlugin().getLogger().warning(ex.toString());
+        }
+    }
+
+    public static java.util.List<String> getUnlockedCosmetics(java.util.UUID uuid, String type) {
+        if (uuid == null || data == null || type == null) return java.util.Collections.emptyList();
+        String key = "players." + uuid + ".cosmetics.unlocked." + type;
+        return data.getStringList(key);
+    }
+
+    public static boolean isCosmeticUnlocked(java.util.UUID uuid, String type, String id) {
+        if (uuid == null || type == null || id == null) return false;
+        java.util.List<String> list = getUnlockedCosmetics(uuid, type);
+        for (String s : list) {
+            if (id.equalsIgnoreCase(s)) return true;
+        }
+        return false;
+    }
+
+    public static void unlockCosmetic(java.util.UUID uuid, String type, String id) {
+        if (uuid == null || data == null || type == null || id == null) return;
+        String key = "players." + uuid + ".cosmetics.unlocked." + type;
+        java.util.List<String> list = new java.util.ArrayList<>(data.getStringList(key));
+        boolean exists = false;
+        for (String s : list) {
+            if (id.equalsIgnoreCase(s)) {
+                exists = true;
+                break;
+            }
+        }
+        if (!exists) {
+            list.add(id);
+            data.set(key, list);
+            try {
+                data.save(dataFile);
+            } catch (IOException ex) {
+                Utils.getPlugin().getLogger().warning(ex.toString());
+            }
         }
     }
 

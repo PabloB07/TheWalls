@@ -130,13 +130,29 @@ public class Team {
     public static Team getPlayerTeam(Player p, ArrayList<Team> teams) {
         for (Team team : teams) {
             for (Player ply : team.members) {
-                if (p == ply) {
+                if (p.getUniqueId().equals(ply.getUniqueId())) {
                     return team;
                 }
             }
         }
 
         return null;
+    }
+
+    public static Team getPlayerTeamByUUID(java.util.UUID uuid, ArrayList<Team> teams) {
+        for (Team team : teams) {
+            for (Player ply : team.members) {
+                if (ply != null && ply.getUniqueId().equals(uuid)) {
+                    return team;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void removeMemberByUUID(java.util.UUID uuid) {
+        if (uuid == null) return;
+        members.removeIf(p -> p != null && p.getUniqueId().equals(uuid));
     }
 
 }

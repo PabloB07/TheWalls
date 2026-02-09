@@ -18,7 +18,7 @@ public class KitSelectMenu {
     public static void open(TheWalls plugin, Player player) {
         List<String> kits = Kits.getKitIds();
         int size = Math.max(1, ((kits.size() - 1) / 9) + 1);
-        SGMenu menu = plugin.spigui.create("thewalls-kits", size, Utils.menuTitle("menu.kit_title", "Kits"));
+        SGMenu menu = plugin.spigui.create("thewalls-kits", size, Utils.menuTitle("menu.kit_title", null));
 
         int slot = 0;
         for (String kitId : kits) {

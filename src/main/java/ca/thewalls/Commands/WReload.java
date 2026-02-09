@@ -25,6 +25,7 @@ public class WReload implements CommandExecutor {
 
         Config.initializeData();
         Messages.reload();
+        Messages.applyDefaults(walls);
         Config.reloadPerksAndCrates();
         ca.thewalls.EconomyService.setup();
         ca.thewalls.Kits.validateAll();
