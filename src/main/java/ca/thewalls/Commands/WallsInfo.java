@@ -60,10 +60,6 @@ public class WallsInfo implements CommandExecutor {
                     sender.sendMessage(Messages.msg("walls.only_player"));
                     return true;
                 }
-                if (!ca.thewalls.Crates.isEnabled()) {
-                    sender.sendMessage(Messages.msg("walls.crate_disabled"));
-                    return true;
-                }
                 ca.thewalls.Listeners.PerkMenu.open(walls, (Player) sender);
                 return true;
             }
